@@ -55,39 +55,21 @@
     `(let ,forms (declare (dynamic-extent ,@(get-vars forms))) ,@body)))
 
 (defmacro without-interrupts (&body body)
-  #FEATURE-CASE
-  ((:genera  `(scl::without-interrupts ,@body))
-   (:lucid   `(lcl:with-scheduling-inhibited ,@body))
-   (:allegro `(excl:without-interrupts ,@body))
-   (:mcl     `(ccl:without-interrupts ,@body))))
-
-(defmacro handler-case (form &rest clauses)
-  #FEATURE-CASE
-  ((:genera `(future-common-lisp:handler-case ,form ,@clauses))
-   (:lucid `(lcl:handler-case ,form ,@clauses))
-   (:allegro `(lisp:handler-case ,form ,@clauses))
-   (:mcl `(COMMON-LISP:handler-case ,form ,@clauses))))
-
-(defmacro handler-bind (bindings &body forms)
-  #FEATURE-CASE
-  ((:genera `(future-common-lisp:handler-bind ,bindings ,@forms))
-   (:lucid `(lcl:handler-bind ,bindings ,@forms))
-   (:allegro `(lisp:handler-bind ,bindings ,@forms))
-   (:mcl `(COMMON-LISP:handler-bind ,bindings ,@forms))
-   ))
+  #+sbcl
+  `(sb-unix::without-interrupts ,@body)
+  ;; Do nothing
+  #-sbcl (declare (ignore body))
+  )
 
 (defmacro condition-case ((&rest varlist) form &rest clauses)
-  #+genera (declare (zwei:indentation 1 4 2 2))
-  #+genera `(scl:condition-case ,varlist ,form ,@clauses)
-  #-genera
   `(let ,(cdr varlist)
      (handler-case
 	 ,form
        ,@(mapcar #'(lambda (cl)
 		     `(,(first cl)
-		       ,(if (first varlist) (list (first varlist)))
-		       ,@(cdr cl)))
-	   clauses))))
+			,(if (first varlist) (list (first varlist)))
+			,@(cdr cl)))
+		 clauses))))
 
 (defmacro ignore-errors (&body body)
   #FEATURE-CASE
@@ -106,13 +88,6 @@
        ,@body))
    (:mcl `(COMMON-LISP:with-simple-restart (,name ,format-string ,@format-args) ,@body))
    ))
-
-(defmacro restart-case (expression &body clauses)
-  #FEATURE-CASE
-  ((:genera `(future-common-lisp:restart-case ,expression ,@clauses))
-   (:lucid `(lcl:restart-case ,expression ,@clauses))
-   (:allegro `(lisp:restart-case ,expression ,@clauses))
-   (:mcl `(COMMON-LISP:restart-case ,expression ,@clauses))))
 
 (defun invoke-restart (restart &rest values)
   #FEATURE-CASE
@@ -669,68 +644,29 @@
        ,@body))))
 
 (defmacro with-program ((symbol) &body body)
-  #+clim
-  `(with-frame (,symbol) ,@body)
-  #-clim
-  `(let ((,symbol (if (boundp 'dw:*program*) dw:*program*))) ,@body))
+  `(with-frame (,symbol) ,@body))
 
 
-(defmacro accepting-values ((stream &key own-window label (abort-value :ABORT)
+(defmacro accepting-values ((stream &key own-window label (abort-value :abort)
 				    (exit-boxes ''((:exit "   OK   ")
 						   (:abort "   Cancel   "))))
 			    &body body)
-  ;; add :exit-boxes arg
-  #FEATURE-CASE
-  ((:clim-0.9
-    `(if (eq :abort
-	  (clim:accepting-values (,stream :own-window ,own-window)
-	   ,@(if label `((format ,stream "~A~%~%" ,label)))
-	   ,@body))
-      ,abort-value t))
-   (:clim-1.0
-    `(if (eq :abort
-	  (restart-case
-	   (clim:accepting-values (,stream :own-window ,own-window
-					   :label ,label
-					   :exit-boxes ,exit-boxes
-					   :resynchronize-every-pass t
-					   ;; get these things to come up
-					   ;; in some nonrandom location
-					   :x-position 200
-					   :y-position 200)
-				  (setf (clim:medium-text-style ,stream)
-					(parse-text-style '(:fix :roman :normal)))
-				  ,@body)
-	   (abort () :abort)))
-      ;; If you quit using a keyboard accelerator, clim leaves the keystroke
-      ;; in the input buffer (clim bug).
-      ,abort-value t))
-   (:clim-2
-    `(if (eq :abort
-	  (restart-case
-	   (clim:accepting-values
-	    (,stream :own-window ,own-window
-		     :label ,label
-		     :exit-boxes ,exit-boxes
-		     :resynchronize-every-pass t
-		     ;; get these things to come up
-		     ;; in some nonrandom location
-		     :x-position 200
-		     :y-position 200
-		     ,@(when (fboundp (intern "COLOR-STREAM-P" 'clim))
-			 ;; Scroll bars don't work till clim 2.0.beta2.
-			 `(:scroll-bars :both)))
-	    ,@body)
-	   (abort () :abort)))
-      ;; If you quit using a keyboard accelerator, clim leaves the keystroke
-      ;; in the input buffer (clim bug).
-      ,abort-value t))
-   ((not :clim)
-    `(condition-case ()
-      (progn
-	(dw:accepting-values (,stream :own-window ,own-window :label ,label
-				      :changed-value-overrides-default t)
-			     ,@body)
-	t)
-      ;; catch aborts and act like clim.
-      (sys:abort ,abort-value)))))
+  `(if (eq :abort
+	   (restart-case
+	       (clim:accepting-values
+		   (,stream :own-window ,own-window
+			    :label ,label
+			    :exit-boxes ,exit-boxes
+			    :resynchronize-every-pass t
+			    ;; get these things to come up
+			    ;; in some nonrandom location
+			    :x-position 200
+			    :y-position 200
+			    ,@(when (fboundp (intern "COLOR-STREAM-P" 'clim))
+				;; Scroll bars don't work till clim 2.0.beta2.
+				`(:scroll-bars :both)))
+		 ,@body)
+	     (abort () :abort)))
+       ;; If you quit using a keyboard accelerator, clim leaves the
+       ;; keystroke in the input buffer (clim bug).
+       ,abort-value t))

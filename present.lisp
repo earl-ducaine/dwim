@@ -156,11 +156,10 @@ advised of the possiblity of such damages.
 ;;   (invoke-restart 'clim::frame-exit))
 
 (defun accept-values (descriptions &key (prompt nil)
-					(stream *query-io*)
-					(own-window nil))
-  (values-list
-   (accepting-values
-    (stream :own-window own-window :label prompt)
+				     (stream *query-io*)
+				     (own-window nil))
+  (accepting-values
+      (stream :own-window own-window :label prompt)
     (mapcar #'(lambda (description)
 		(destructuring-bind (type &rest options)
 		    description
@@ -169,114 +168,62 @@ advised of the possiblity of such damages.
 				(getf options :query-identifier (car description))
 				options)
 		    (terpri stream))))
-	    descriptions))))
+	    descriptions)))
 
 (defun menu-choose (choices
 		    &key (prompt "Choose:")
-		         default-choice)
-  #FEATURE-CASE
-  ((:clim-0.9
-    (prog1 (clim:menu-choose choices
-			     :label prompt
-			     :associated-window *standard-input*
-			     :default-item default-choice
-			     )
-      ;; kludge city.  menu-lose leaves your mouse click in the buffer.
-      (stream-clear-input *standard-input*)))
-   (:clim-1.0
-    (clim:menu-choose choices
-		      :associated-window *standard-input*
-		      :label prompt :default-item default-choice))
-   (:clim-2
-    (clim:menu-choose choices
-		      :associated-window *standard-input*
-		      :label prompt :default-item default-choice))
-   ((not :clim) (dw:menu-choose choices :prompt prompt))))
+		      default-choice)
+  (clim:menu-choose choices
+		    :associated-window *standard-input*
+		    :label prompt :default-item default-choice))
 
-;;;
+
 ;;; formatting table etc.
-;;;
+
 
 (defmacro formatting-table ((stream &key (inter-column-spacing 8)) &body body)
-  #FEATURE-CASE
-  (((not :clim)
-    `(dw:formatting-table (,stream :dont-snapshot-variables t
-				   :inter-column-spacing ,inter-column-spacing)
-			  ,@body))
-   (:clim-0.9 `(clim:formatting-table (,stream) ,@body))
-   (:clim-1.0 `(clim:formatting-table
-		(,stream :inter-column-spacing ,inter-column-spacing)
-		,@body))
-   (:clim-2 `(clim:formatting-table
-		(,stream :x-spacing ,inter-column-spacing)
-		,@body))))
+  `(clim:formatting-table
+       (,stream :x-spacing ,inter-column-spacing)
+     ,@body))
 
 (defmacro formatting-row ((stream) &body body)
-  #-clim `(dw:formatting-row (,stream :dont-snapshot-variables t) ,@body)
-  #+clim `(clim:formatting-row (,stream) ,@body))
+  `(clim:formatting-row (,stream) ,@body))
 
 (defmacro formatting-column ((stream) &body body)
-  #-clim `(dw:formatting-column (,stream :dont-snapshot-variables t) ,@body)
-  #+clim `(clim:formatting-column (,stream) ,@body))
+  `(clim:formatting-column (,stream) ,@body))
 
 (defmacro formatting-column-headings ((stream &key (underline-p nil)) &body body)
-  #-clim `(dw:formatting-column-headings
-	    (,stream :underline-p ,underline-p :dont-snapshot-variables t)
-	    ,@body)
-  ;; dont have the time to do this one justice.
-  #+clim (if underline-p
-	     `(formatting-row (,stream) (with-underlining (,stream) ,@body))
-	     `(formatting-row (,stream) ,@body)))
+  (if underline-p
+      `(formatting-row (,stream) (with-underlining (,stream) ,@body))
+      `(formatting-row (,stream) ,@body)))
 
 (defmacro formatting-cell ((stream &key (align-x :left) align-y) &body body)
-  #+clim `(clim:formatting-cell (,stream ,@(if align-x `(:align-x ,align-x))
-					 ,@(if align-y `(:align-y ,align-y)))
-				 ,@body)
-  #-clim `(dw:formatting-cell (,stream :align-x ,align-x :align-y ,align-y)
-			       ; :dont-snapshot-variables t ;;++This seems to not work
-	    ,@body))
+  `(clim:formatting-cell (,stream ,@(if align-x `(:align-x ,align-x))
+				  ,@(if align-y `(:align-y ,align-y)))
+     ,@body))
 
 (defmacro formatting-item-list ((stream &rest options) &body body)
-  #+clim `(clim:formatting-item-list (,stream ,@options) ,@body)
-  #-clim `(dw:formatting-item-list (,stream ,@options) ,@body))
+  `(clim:formatting-item-list (,stream ,@options) ,@body))
 
 (defmacro format-item-list (list &rest keys)
-  #-clim `(dw:format-item-list ,list ,@keys)
-  #+clim
   (let ((stream (or (second (member :stream keys)) t)))
     `(formatting-item-list (,stream)
        (dolist (item ,list)
 	 (formatting-cell (,stream)
 	   (format ,stream "~A" item))))))
 
-;;;
+
 ;;; Presentation parser primitives
-;;;
+
 
 (defun read-char-for-accept (stream)
-  #+clim (read-char stream nil nil)
-  #-clim
-  (let ((char (loop thereis (send stream :any-tyi)
-		    until (not (interactive-stream-p stream )))))	;bug in IE
-    (cond ((listp char) char)
-	  #+dw-is-brain-damaged
-	  ((accept-blip-p char) (list ':accept char nil))
-	  (t char))))
+  (read-char stream nil nil))
 
 (defun unread-char-for-accept (char stream)
-  #FEATURE-CASE
-  (((or :clim-0.9 :clim-1.0)
-    (if (clim::activation-character-p char)
-	;; unreading an activation character causes problems for stream-unread-gesture.
-	(clim:with-activation-characters (nil :override t) (unread-char char stream))
+  (if (clim:activation-gesture-p char)
+      ;; unreading an activation character causes problems for stream-unread-gesture.
+      (clim:with-activation-gestures (nil :override t) (unread-char char stream))
       (unread-char char stream)))
-   (:clim-2
-    (if (clim:activation-gesture-p char)
-	;; unreading an activation character causes problems for stream-unread-gesture.
-	(clim:with-activation-gestures (nil :override t) (unread-char char stream))
-      (unread-char char stream)))
-   ((not :clim)
-    (dw:unread-char-for-accept char stream))))
 
 (defun peek-char-for-accept (stream &optional hang)
   (let ((ch (and (or hang
@@ -302,18 +249,13 @@ advised of the possiblity of such damages.
   #-clim (dw:read-standard-token stream))
 
 (defun input-position (stream)
-  ;; This location identifies the current position of the parser in a (buffered)
-  ;; input stream.  When a character gets read by read-char-for-accept, this pointer
-  ;; gets incremented.  Upon failure, the parser backtracks by decrementing it.
-  #FEATURE-CASE
-  (((not :clim) (scl:send stream :read-location))
-   (:clim-0.9 (clim::input-position stream))
-   (:clim-1.0 (if (clim:extended-input-stream-p stream)
-		 (clim::input-position stream)
-	       (file-position stream)))
-   (:clim-2 (if (clim:input-editing-stream-p stream)
-		  (clim:stream-scan-pointer stream)
-		(file-position stream)))))
+  ;; This location identifies the current position of the parser in a
+  ;; (buffered) input stream.  When a character gets read by
+  ;; read-char-for-accept, this pointer gets incremented.  Upon
+  ;; failure, the parser backtracks by decrementing it.
+  (if (clim:input-editing-stream-p stream)
+      (clim:stream-scan-pointer stream)
+      (file-position stream)))
 
 (defmethod (setf input-position) (new stream)
   #FEATURE-CASE
@@ -357,105 +299,41 @@ advised of the possiblity of such damages.
 (defun input-not-of-required-type (stream object type)
   "Use this to signal a parser failure and cause backtracking."
   (declare (ignore stream))
-  ;; Used by faes expression editor.  Don't use the one from clim or dw,
-  ;; it's so fancy that it outsmarts itself.
+  ;; Used by faes expression editor.  Don't use the one from clim or
+  ;; dw, it's so fancy that it outsmarts itself.
   (if *%%ready-to-catch%%* (throw 'catch-parser-failures t))
-  #FEATURE-CASE
-  (((or clim-1.0 clim-2)
-    (if (eq object :failure)
-	(parse-error "The input read was not of the required type.")
+  (if (eq object :failure)
+      (parse-error "The input read was not of the required type.")
       (clim:input-not-of-required-type object type)))
-   (clim-0.9 (clim:input-not-of-required-type stream object type))
-   ((not clim) (zl:parse-ferror "The input read, ~A, was not ~A" object type))))
 
 (defun parse-error (format-string &rest args)
-  #FEATURE-CASE
-  (((or :clim-0.9 :clim-1.0) (apply #'clim::parse-error format-string args))
-   (:clim-2 (apply #'clim:simple-parse-error format-string args))
-   ((not :clim) (apply #'sys::parse-error format-string args))))
+  (apply #'clim:simple-parse-error format-string args))
 
 (defun validate-object (object ptype)
-  #FEATURE-CASE
-  (((and (not :clim) :slow) (dw::ptypep object ptype))
-   ((not :clim)
-    ;; This is at least 6x faster than dw::ptypep.  I hope it works as well.
-    (let ((name (cond ((symbolp ptype) ptype)
-		      ((symbolp (car ptype)) (car ptype))
-		      (t (caar ptype)))))
-      (cond ((member name '(t sys:expression)) t)
-	    ((member name '(and or not))
-	     (return-from validate-object
-	       (typep object (if (or (symbolp ptype) (symbolp (car ptype)))
-				 ptype
-			       (car ptype)))))
-	    ((dw::with-type-descriptor ((type-desc expanded-type) ptype :exact-only t)
-	       (when type-desc
-		 (dw:with-type-decoded (type-sym type-dargs) expanded-type
-		      (declare (ignore type-sym))
-		      (let* ((typep-function
-			      (dw::presentation-type-descriptor-typep-function type-desc))
-			     (predicate
-			      (when typep-function
-				(dw::compute-type-predicate typep-function type-dargs nil))))
-			(return-from validate-object
-			  (if predicate (funcall predicate object) t)))))))
-	    ((multiple-value-bind (flavor-or-class structure-p typep)
-		 (dw::symbol-flavor-or-cl-type name)
-	       (when (or flavor-or-class structure-p typep)
-		 (return-from validate-object
-		   (typep object (if (or (symbolp ptype) (symbolp (car ptype)))
-				     ptype
-				   (car ptype)))))))
-	    (t t))))
-   (:clim-0.9 (ci::validate-object object ptype))
-   ((or :clim-1.0 :clim-2)
-    (let ((p (clim:expand-presentation-type-abbreviation ptype)))
-      (clim::presentation-typep object p)))))
+  (let ((p (clim:expand-presentation-type-abbreviation ptype)))
+    (clim::presentation-typep object p)))
 
 (defmacro with-accept-activation-chars ((additional-characters &key override) &body body)
-  #FEATURE-CASE
-  (((not :clim)
-    `(dw:with-accept-activation-chars (,additional-characters :override ,override)
-       ,@body))
-   ((or :clim-0.9 :clim-1.0)
-    `(clim:with-activation-characters (,additional-characters :override ,override)
-       ,@body))
-   (:clim-2
-    `(clim:with-activation-gestures (,additional-characters :override ,override)
-      ,@body))))
+  `(clim:with-activation-gestures (,additional-characters :override ,override)
+     ,@body))
 
 (defun accept-activation-p (char &optional
-			    (achars #-clim dw::*accept-activation-chars*
-				    #+clim-0.9 nil
-				    #+clim-1.0 clim:*activation-characters*))
-  (declare (ignore bchars))
-  #FEATURE-CASE
-  ((:clim-0.9 (clim::activation-character-p char))
-   (:clim-2 (ignore achars) (clim:activation-gesture-p char))
-   ((or :clim-1.0 :clim-2 (not :clim))
-    (and
-     (if (consp char) (setq char (second char)) t)
-     (dolist (l achars nil)
-       (if (member char l) (return t)))))))
+			    (achars clim:*activation-gestures*))
+  (declare (ignore bchars achars))
+  (clim:activation-gesture-p char)
+  (and
+   (if (consp char) (setq char (second char)) t)
+   (dolist (l achars nil)
+     (if (member char l) (return t)))))
 
 (defmacro with-accept-blip-chars ((additional-characters &key override) &body body)
-  #FEATURE-CASE
-  (((not :clim)
-    `(dw:with-accept-blip-chars (,additional-characters :override ,override) ,@body))
-   ((or :clim-0.9 :clim-1.0)
-    `(clim:with-blip-characters (,additional-characters :override ,override) ,@body))
-   (:clim-2
-    `(clim:with-delimiter-gestures (,additional-characters :override ,override) ,@body))))
+  `(clim:with-delimiter-gestures (,additional-characters :override ,override) ,@body))
 
-(defun accept-blip-p (char &optional (chars #-clim dw::*accept-blip-chars*
-					    #+clim-1.0 clim:*blip-characters*
-					    #+clim-0.9 nil))
-  #FEATURE-CASE
-  ((:clim-0.9 (clim::blip-character-p char))
-   (:clim-2 (ignore chars) (clim:delimiter-gesture-p char))
-   ((or :clim-1.0 :clim-2 (not :clim))
-    (loop for l in chars
-	thereis (and (characterp char) (member char l :test #'char-equal))))))
+(defun accept-blip-p (char &optional (chars activation-gestures))
+  (ignore chars)
+  (clim:delimiter-gesture-p char)
+  (loop for l in chars
+     thereis (and (characterp char) (member char l :test #'char-equal))))
 
 (defmacro with-activation-characters ((additional-characters &key override) &body body)
   `(with-accept-activation-chars (,additional-characters :override ,override) ,@body))
@@ -464,18 +342,11 @@ advised of the possiblity of such damages.
   `(with-accept-blip-chars (,additional-characters :override ,override) ,@body))
 
 (defmacro completing-from-suggestions
-	  ((stream &key delimiters allow-any-input
-		   (initially-display-possibilities nil idp)
-		   (type nil typep))
-	   &body body)
-  #+clim (declare (ignore initially-display-possibilities type))
-  #-clim (declare (ignore idp typep))
-  #-clim `(dw:completing-from-suggestions
-	    (,stream
-	     :allow-any-input ,allow-any-input :delimiters ,delimiters :type ,type
-	     :initially-display-possibilities ,initially-display-possibilities)
-	    ,@body)
-  #+clim
+    ((stream &key delimiters allow-any-input
+	     (initially-display-possibilities nil idp)
+	     (type nil typep))
+     &body body)
+  (declare (ignore initially-display-possibilities type))
   (progn
     (if idp (format t "~% completing-from-suggestions :initially-display-possibilities not supported."))
     (if typep (format t "~% completing-from-suggestions :type not supported."))
@@ -484,96 +355,62 @@ advised of the possiblity of such damages.
        ,@body)))
 
 (eval-when (compile load eval)
-  (import #-clim 'dw::suggest
-	  #+clim 'clim:suggest
-	  'dwim))
+  (import  'clim:suggest 'dwim))
 
 (defun complete-from-sequence (sequence stream &key type (name-key #'string))
-  #+clim (declare (ignore type))
-  (completing-from-suggestions (stream #-clim :type #-clim type)
+  (declare (ignore type))
+  (completing-from-suggestions (stream)
     (map nil #'(lambda (elt) (suggest (funcall name-key elt) elt)) sequence)))
 
-;;; JPM.  This isn't really portable because it generates a
-;;; DWish blip object.  Use with-input-context below, if you can.
+;;; JPM.  This isn't really portable because it generates a DWish blip
+;;; object. Use with-input-context below, if you can.
 (defmacro with-presentation-input-context
-	  ((PRESENTATION-TYPE &rest OPTIONS)
-	   (&optional (BLIP-VAR   '.BLIP.))
-	   NON-BLIP-FORM
-	   &body CLAUSES)
-  #+Genera  (declare (zwei:indentation 0 2 2 4 3 2))
-  #-clim
-  `(dw:with-presentation-input-context
-      (,PRESENTATION-TYPE ,@OPTIONS)
-      (,BLIP-VAR)
-	,NON-BLIP-FORM
-      ,@CLAUSES)
-  #+clim
+    ((PRESENTATION-TYPE &rest OPTIONS)
+			  (&optional (BLIP-VAR   '.BLIP.))
+			     NON-BLIP-FORM
+     &body CLAUSES)
   `(clim:with-input-context (,PRESENTATION-TYPE :override ,(getf options :inherit))
-			    (.object. .presentation-type. .gesture.)
-	,NON-BLIP-FORM
-	,@(mapcar #'(lambda (clause)
-		      `(,(first clause)
-			(let ((,blip-var (list .presentation-type.
-					       .gesture.
-					       .object.)))
-			  ,blip-var
-			  ,@(rest clause))))
-		  CLAUSES)))
+       (.object. .presentation-type. .gesture.)
+       ,NON-BLIP-FORM
+     ,@(mapcar #'(lambda (clause)
+		   `(,(first clause)
+		      (let ((,blip-var (list .presentation-type.
+					     .gesture.
+					     .object.)))
+			,blip-var
+			,@(rest clause))))
+	       CLAUSES)))
 
 (defmacro with-input-context
-	  ((PRESENTATION-TYPE &key OVERRIDE STREAM)
-	   (&optional (OBJECT-VAR '.object.)
-		      (PT-VAR     '.presentation-type.)
-		      (GESTURE-VAR   '.gesture. gesture-p))
-	   NON-BLIP-FORM
-	   &body CLAUSES)
-  #+Genera (declare (zwei:indentation 0 2 2 4 3 2))
-  #-clim
-  (let ((blip-var '.blip.))
-    `(dw:with-presentation-input-context
-	(,PRESENTATION-TYPE :inherit (not ,override) :stream ,stream)
-	(,BLIP-VAR)
-	  ,NON-BLIP-FORM
-	,@(mapcar #'(lambda (clause)
-		      `(,(first clause)
-			(let ((,object-var (dw:presentation-blip-object ,blip-var))
-			      (,pt-var (dw:presentation-blip-presentation-type
-					 ,blip-var))
-			      (,gesture-var (dw:presentation-blip-mouse-char
-					      ,blip-var)))
-			  (and ,object-var ,pt-var ,gesture-var)
-			  ,@(rest clause))))
-		  clauses)))
-  #+clim (declare (ignore stream))
-  #+clim
-  `(clim:with-input-context (,PRESENTATION-TYPE :override ,OVERRIDE)
-			    (,OBJECT-VAR ,PT-VAR ,@(if gesture-p GESTURE-VAR))
-	,NON-BLIP-FORM
-      ,@CLAUSES))
+    ((presentation-type &key override stream)
+			  (&optional (object-var '.object.)
+				     (pt-var     '.presentation-type.)
+				     (gesture-var   '.gesture. gesture-p))
+			     non-blip-form
+     &body clauses)
+  (declare (ignore stream))
+  `(clim:with-input-context (,presentation-type :override ,override)
+       (,object-var ,pt-var ,@(if gesture-p gesture-var))
+       ,non-blip-form
+     ,@clauses))
 
-;;;
+
 ;;; Presentation types
-;;;
+
 
 (define-presentation-type sheet ()
    :parser ((stream)
-	    #+clim
 	    (progn
 	      (read-char stream)
 	      (error "The SHEET presentation type is broken.  Sorry."))
-	    #-clim (dw:accept 'tv:sheet :stream stream :prompt nil))
    :printer ((window stream)
 	     (let ((*print-readably* nil))
 	       (declare (special *print-readably*))
-	       #+clim (format stream "~A" window)
-	       #-clim (present window 'tv:sheet :stream stream)))
-   :description "a window")
+	       (format stream "~A" window)))
+   :description "a window"))
 
-#-clim
-(eval-when (compile load eval)
-  (import 'dw:alist-subset 'dwim))
 
-#+(or clim-1.0 clim-2)
+
 (clim:define-presentation-type-abbreviation alist-member (&key alist (test 'eql))
   `(clim:member-alist ,alist :test ,test))
 

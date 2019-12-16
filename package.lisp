@@ -29,13 +29,10 @@
 (defpackage :dwim
   (:shadow *default-server-path*
 	   find-restart
-	   handler-bind
-	   handler-case
 	   ignore-errors
 	   interactive-stream-p
 	   invoke-restart
 	   parse-error
-	   restart-case
 	   with-simple-restart
    )
   (:use cl))

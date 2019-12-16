@@ -30,21 +30,21 @@ advised of the possiblity of such damages.
 #|
 SYSTEM DWIM
 
-DWIM is an interface to graphical user interface systems.  We are concerned (so far) 
+DWIM is an interface to graphical user interface systems.  We are concerned (so far)
 with Dynamic Windows (DW) and CLIM.  This system is written for programs that:
  1.  Were originally written with DW in mind,
  2.  But now want to run in clim on other hardware platforms,
  3.  But want to retain backward compatibility with DW.
 
 The policy of DWIM is to provide the most commonly used functionality from the
-symbolics interface in a package from which applications may inherit symbols.  
+symbolics interface in a package from which applications may inherit symbols.
 Application packages generally would inherit from DWIM, CL, and CLOS.
-Porting source code is then largely a process of removing package prefixes.  
+Porting source code is then largely a process of removing package prefixes.
 
 Much of the syntax and nomenclature of CLIM is also provided by DWIM.  In many cases,
 however, name conflicts occur (e.g. with-output-as-presentation), and in such cases
 the DW syntax will be preferred.  The bias does not reflect a belief that DW is
-better, but rather that most applications will be going from DW to CLIM and not 
+better, but rather that most applications will be going from DW to CLIM and not
 the other way, therefore porting effort is minimized.
 
 It is not our goal to define a third interface management language, but rather
@@ -53,11 +53,11 @@ to provide a tool for easing the porting process.
 There are several exceptions to this rule of DW portability.
  a.  DWIM is small so far, so the more obscure functions from TV and DW may not
       yet be there.  We expect this library to grow as more applications use it.
- b.  SEND will not be supported by DWIM.  In these cases, DWIM will provide a 
+ b.  SEND will not be supported by DWIM.  In these cases, DWIM will provide a
       function.  So for example, (send stream :line-height) would be rewritten
       as (stream-line-height stream).  Generally, the name of the function will
       be the name used by CLIM.
- c.  Some DW macros, such as define-program-framework, are too hard to parse 
+ c.  Some DW macros, such as define-program-framework, are too hard to parse
       and will not be supported in DWIM.
 
 DWIM-LISP is what user programs should use as the lisp package.  It's purpose is to
@@ -73,13 +73,13 @@ SUBSYSTEMS:  None.
 
 #-clim
 (eval-when (compile load eval)
-  (when (find-package 'clim) 
+  (when (find-package 'clim)
     (pushnew :clim *features*))) ; Add a CLIM feature.
 
 (eval-when (compile load eval)
   ;; CLIM 1 doesn't affect the *features*.  Here's a rule of thumb
   ;; that seems to work.
-  (when 
+  (when
       (and (find-package 'clim)
 	   (not (boundp (intern "CLIM-VERSION" 'clim))) ; from clim 0.9
 	   (not (fboundp (intern "STREAM-CURSOR-POSITION" 'clim))) ; from clim 2
@@ -89,30 +89,7 @@ SUBSYSTEMS:  None.
     (pushnew :clim-1.0 *features*)))
 
 (defun file-type-for-sources ()
-  #+MCL #.(pathname-type *.lisp-pathname*)
-  #+genera "LISP"
-  #+unix "lisp"
-  #+(and (not mcl) (not genera) (not unix)) (error "Not yet implemented."))
-
-(defun file-type-for-binaries ()
-  #+MCL                      #.(pathname-type *.fasl-pathname*)
-  #+genera                   si:*default-binary-file-type*
-  #+allegro                  #.(if (fboundp 'compile-file-pathname)
-				   (pathname-type (compile-file-pathname "foo"))
-				 "fasl")
-  #+lucid                    (car lcl:*load-binary-pathname-types*)
-  #+(and (not genera)
-         (not allegro)
-         (not lucid)
-         (not mcl))
-  (error "Not yet implemented."))
-
-#+genera
-(setq *load-pathname* 
-  (make-pathname :defaults si:fdefine-file-pathname
-		 :name nil :type nil :version nil))
-
-
+  "lisp")
 
 (defun suggest-bin-directory (&optional (base *load-pathname*)
                                         (prefix "BIN-"))
@@ -133,10 +110,10 @@ SUBSYSTEMS:  None.
     (namestring (make-pathname
                  :directory
                  (append
-                  (if base (pathname-directory base) '(:relative)) 
+                  (if base (pathname-directory base) '(:relative))
                   (list (string-downcase
                          (format nil "~A~A-~A"
-                                 prefix 
+                                 prefix
                                  instruction-set
                                  gui))))))))
 
@@ -144,7 +121,7 @@ SUBSYSTEMS:  None.
     (:default-pathname *load-pathname*
 	:default-binary-pathname (suggest-bin-directory)
 	:default-optimizations ()
-	:patch-file-pattern NIL 
+	:patch-file-pattern NIL
 	:needed-systems ()
 	:load-before-compile ())
   ("package")
