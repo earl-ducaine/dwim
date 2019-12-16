@@ -27,109 +27,39 @@ advised of the possiblity of such damages.
 
 (in-package :dwim)
 
-#+clim
+
 ;;; I guess this is as good of a place as any to put this.
 (make-command-table :global)
 
-#+clim
 (defun continuation-output-rectangle (continuation stream)
-  ;; Repositioning the cursor seems to improve the reliability of
-  ;; this computation in clim 0.9.
-  #-clim-2
-  (with-output-truncation (stream)
-    (multiple-value-bind (x y) (stream-cursor-position* stream)
-      (unwind-protect
-	  (progn (stream-set-cursor-position* stream 100 100)
-		 (let ((record (clim:with-output-to-output-record (stream)
-				 (funcall continuation stream))))
-		   (clim:bounding-rectangle record)))
-	(stream-set-cursor-position* stream x y))))
-  #+clim-2
+  ;; Repositioning the cursor seems to improve the reliability of this
+  ;; computation in clim 0.9.
   (let ((record (clim:with-output-to-output-record (stream)
 		  (funcall continuation stream))))
     (clim:bounding-rectangle record)))
 
 (defun continuation-output-size (continuation stream)
-  (declare (values width height))
-  #FEATURE-CASE
-  (((not :clim) (dw:continuation-output-size continuation stream))
-   (:clim-0.9 (multiple-value-bind (width height)
-		  (clim:bounding-rectangle-dimensions
-		   (continuation-output-rectangle continuation stream))
-		;; edges can be floats, so truncate them.
-		(values (truncate width) (truncate height))))
-   ((or :clim-1.0 :clim-2)
     (clim:rectangle-size
-     (continuation-output-rectangle continuation stream)))))
+     (continuation-output-rectangle continuation stream)))
 
-;;;
+
 ;;; Manipulating presentations
-;;;
 
-#+clim-1.0
-(progn
-  (clim:define-gesture-name :left :button :left)
-  (clim:define-gesture-name :middle :button :middle)
-  (clim:define-gesture-name :right :button :right))
 
-#+clim-2
 (progn
   (clim:define-gesture-name :left :pointer-button :left)
   (clim:define-gesture-name :middle :pointer-button :middle)
   (clim:define-gesture-name :right :pointer-button :right))
 
 (defun erase-graphics-presentation (presentation &key (stream *standard-output*))
-  #FEATURE-CASE
-  (((not :clim)
-    ;; Ordinarily, graphics:erase-graphics-presentation would be the right thing.
-    ;; This modification makes one slight change to the procedure
-    ;; so that the entire area is cleared at once, rather than erasing
-    ;; every inferior ad nauseum.
-    (when (typep stream 'dw:dynamic-window)
-      (labels ((eraser (p)
-		 (when (typep p 'dw:presentation)
-		   (dolist (inf (scl:symbol-value-in-instance p 'dw::inferiors))
-		     (eraser inf))
-		   (setf (scl:symbol-value-in-instance p 'dw::inferiors) nil))
-		 ;; delete from coordinate sorted set of window:
-		 (if (typep p 'dw::text-displayed-presentation)
-		     (dw::erase-displayed-presentation p stream t nil t)
-		   (send stream :delete-graphics-displayed-presentation p))))
-	(eraser presentation))
-      ;; Delete from superior's list of inferiors:
-      (send stream :delete-displayed-presentation presentation)
-      ;; Clear the rectangle and redraw overlapping presentations:
-      (send stream :redraw-inside-sets
-	    (dw:presentation-displayed-box presentation) t)))
-   ((or :clim-0.9 :clim-1.0)
-    ;; If clim can't find the presentation, it signals an error.
-    ;; As far as I'm concerned, if it can't find it, it's as good as erased.
-    (multiple-value-bind (value errorp)
-	(ignore-errors (clim:erase-output-record presentation stream))
-      (if errorp
-	  ;; If an error happened, the display is probably screwed up.
-	  ;; So beep to admit responsibility and try somehow to recover.
-	  (progn #+ig (beep)
-		 (clim:output-recording-stream-replay stream presentation))
-	value)))
-   (:clim-2
-    (clim:erase-output-record presentation stream nil))))
+    (clim:erase-output-record presentation stream nil))
 
 (defun presentation-under-pointer (stream)
-  #FEATURE-CASE
-  (((not :clim) (scl:send stream :last-highlighted-presentation))
-   (:clim-0.9 (ci::highlighted-presentation stream))
-   (:clim-1.0 (multiple-value-bind (x y) (clim:stream-pointer-position* stream)
-		(clim::find-innermost-applicable-presentation 
-		 '((t)) stream x y)))
-   (:clim-2 (multiple-value-bind (x y) (clim:stream-pointer-position stream)
-		(clim::find-innermost-applicable-presentation '((t)) stream x y)))))
+  (multiple-value-bind (x y) (clim:stream-pointer-position stream)
+    (clim::find-innermost-applicable-presentation '((t)) stream x y)))
 
 (defun presentation-p (object)
-  #FEATURE-CASE
-  (((not :clim) (typep object 'dw::presentation))
-   (:clim-0.9 (ci::presentation-p object))
-   ((or :clim-1.0 :clim-2) (typep* object 'clim:presentation))))
+  (typep object 'clim:presentation))
 
 (defun presentation-superior (presentation)
   #+clim (clim:output-record-parent presentation)
@@ -153,40 +83,22 @@ advised of the possiblity of such damages.
 
 (defun bounding-rectangle* (presentation)
   "Get the bounding edges of the presentation."
-  (declare (values left top right bottom))
-  #FEATURE-CASE
-  (((not :clim)
-    (when (presentation-p presentation)
-      (let ((box (dw:presentation-displayed-box presentation)))
-	(if box (dw:box-edges box)))))
-   (:clim-0.9
-    (multiple-value-bind (left top right bottom)
-	(clim:bounding-rectangle* presentation)
-      ;; edges can be floats, so truncate them.
-      (values (truncate left) (truncate top) (truncate right) (truncate bottom))))
-   ((or :clim-1.0 :clim-2)
-    (let ((stream *standard-output*))
-      ;; Seem to need to know the stream under the presentation.
-      ;; Take a wild guess.
-      (multiple-value-bind (xoff yoff)
-	  (clim::convert-from-relative-to-absolute-coordinates
-	   stream
-	   (clim::output-record-parent presentation))
-	(clim:with-bounding-rectangle*
-	    (left top right bottom) presentation
-	    (values (+ left xoff) (+ top yoff) (+ right xoff) (+ bottom yoff))))))))
+  (let ((stream *standard-output*))
+    ;; Seem to need to know the stream under the presentation.
+    ;; Take a wild guess.
+    (multiple-value-bind (xoff yoff)
+	(clim::convert-from-relative-to-absolute-coordinates
+	 stream
+	 (clim::output-record-parent presentation))
+      (clim:with-bounding-rectangle*
+	  (left top right bottom) presentation
+	(values (+ left xoff) (+ top yoff) (+ right xoff) (+ bottom yoff))))))
 
 (defun redisplay (record stream)
-  #FEATURE-CASE
-  (((not :clim) (dw:do-redisplay record stream :truncate-p nil))
-   ((or :clim-1.0 :clim-2) (clim:redisplay record stream :check-overlapping nil))))
+  (clim:redisplay record stream :check-overlapping nil))
 
 (defun redisplayable? (stream)
-  #FEATURE-CASE
-  ((:clim-2 (clim:redisplayable-stream-p stream))
-   (:clim-1.0 (clim:stream-redisplayable-p stream))
-   (:clim-0.9 (clim-internals::stream-redisplayable-p stream))
-   ((not :clim) stream)))
+  (clim:redisplayable-stream-p stream))
 
 (defun redisplayable-format (stream string &rest args)
   (if (eq stream 't) (setq stream *standard-output*))
@@ -200,38 +112,24 @@ advised of the possiblity of such damages.
       (apply #'format stream string args)))
 
 (defun accept (presentation-type &key
-				 (view nil view-p)
-				 (stream *standard-output*)
-				 (prompt #+clim t #-clim :enter-type)
-				 default query-identifier)
-  #FEATURE-CASE
-  (((not :clim) (dw:accept presentation-type
-			   :stream stream
-			   :prompt prompt
-			   :default default
-			   :query-identifier query-identifier
-			   :newline-after-query nil))
-   (:clim-0.9
-    (clim:accept presentation-type
-		 :stream stream
-		 :prompt prompt
-		 :default default
-		 :query-identifier query-identifier))
-   ((or :clim-1.0 :clim-2)
-    (if view-p
-	(clim:accept presentation-type
-		     :view view
-		     :stream stream
-		     :prompt prompt
-		     :default default
-		     :display-default nil
-		     :query-identifier query-identifier)
+				   (view nil view-p)
+				   (stream *standard-output*)
+				   (prompt #+clim t #-clim :enter-type)
+				   default query-identifier)
+  (if view-p
+      (clim:accept presentation-type
+		   :view view
+		   :stream stream
+		   :prompt prompt
+		   :default default
+		   :display-default nil
+		   :query-identifier query-identifier)
       (clim:accept presentation-type
 		   :stream stream
 		   :prompt prompt
 		   :default default
 		   :display-default nil
-		   :query-identifier query-identifier)))))
+		   :query-identifier query-identifier)))
 
 #+(and clim-1.0 (not mcl))
 (progn
@@ -256,7 +154,7 @@ advised of the possiblity of such damages.
 					(stream *query-io*)
 					(own-window nil))
   (values-list
-   (accepting-values 
+   (accepting-values
     (stream :own-window own-window :label prompt)
     (mapcar #'(lambda (description)
 		(destructuring-bind (type &rest options)
@@ -682,7 +580,7 @@ advised of the possiblity of such damages.
 
 (defun token-element-string (element)
   (typecase element
-    (null (symbol-name element))		
+    (null (symbol-name element))
     (cons (string (first element)))
     (symbol (string-capitalize (symbol-name element)))
     (string element)
@@ -865,7 +763,7 @@ advised of the possiblity of such damages.
 
 (defun readline-no-echo (stream)
   #FEATURE-CASE
-  ((:clim-2 
+  ((:clim-2
     (clim:with-output-recording-options (stream :draw nil :record nil)
       (accept 'string :stream stream :prompt nil :default nil)))
    (:clim-1.0

@@ -28,7 +28,7 @@ advised of the possiblity of such damages.
 (in-package :dwim)
 
 (eval-when (compile load eval)
-  (export '(status-pane status-line set-status-line mouse-documentation-pane 
+  (export '(status-pane status-line set-status-line mouse-documentation-pane
 	    *include-machine-name-in-status-line-p*
 	    *frame-for-status-line* *time-type*
 	    initialize-status-line make-status-line refresh-status-line
@@ -52,7 +52,7 @@ advised of the possiblity of such damages.
 ;;;      a slot on your frame whose :initform is (MAKE-STATUS-LINE stream) and
 ;;;      whose :accessor is STATUS-LINE.  (The stream argument to MAKE-STATUS-LINE
 ;;;      should be the status pane.)
-;;;  c. Initialize the status line (and for clim-0.9, 
+;;;  c. Initialize the status line (and for clim-0.9,
 ;;;     bind *frame-for-status-line*):
 ;;;
 ;;;      (defmethod dart-frame-top-level ((frame dart-frame))
@@ -83,20 +83,20 @@ advised of the possiblity of such damages.
 
 (defun whoami ()
   #FEATURE-CASE
-  ((:unix 
+  ((:unix
     (let ((host-string (and *include-machine-name-in-status-line-p*
-			    (let ((raw-host-string (getenv "HOST")))
+			    (let ((raw-host-string (asdf:getenv "HOST")))
 			      (cond ((null raw-host-string) nil)
 				    ((let ((dot-pos (position #\. raw-host-string)))
 				       (if dot-pos
 					   (subseq (the string raw-host-string) 0 dot-pos)
-					 raw-host-string)))))))
-	  (user-string (getenv "USER")))
+					   raw-host-string)))))))
+	  (user-string (asdf:getenv "USER")))
       (if host-string
 	  (concatenate 'string user-string "@" host-string)
-	user-string)))
-    (:lispm (let ((me si:*user*))
-	      (and me (scl:send me :lispm-name))))))
+	  user-string)))
+   (:lispm (let ((me si:*user*))
+	     (and me (scl:send me :lispm-name))))))
 
 
 ;;; frequently used strings:
@@ -193,27 +193,27 @@ advised of the possiblity of such damages.
 		(with-output-recording-disabled (stream)
 		  (draw-status-element status-line field-name string
 				       minx (+ miny fudge-factor) stream)))
-	    (force-output stream)		
+	    (force-output stream)
 	    ))))))
 
 (defmethod set-status-line ((frame t) (field (eql 'status-line-time)) string
 			    &optional (record-p t))
   (let* ((status-line (status-line frame)))
-    (when status-line 
+    (when status-line
       (process-status-element status-line 'time 'ptime
 			      string time-left record-p))))
 
 (defmethod set-status-line ((frame t) (field (eql 'status-line-username)) string
 			    &optional (record-p t))
   (let* ((status-line (status-line frame)))
-    (when status-line 
+    (when status-line
       (process-status-element status-line 'username 'pusername
 			      string username-left record-p))))
 
 (defmethod set-status-line ((frame t) (field (eql 'status-line-process)) string
 			    &optional (record-p t))
   (let* ((status-line (status-line frame)))
-    (when status-line 
+    (when status-line
       (process-status-element status-line 'process 'pprocess
 			      string process-left record-p))))
 
@@ -590,7 +590,7 @@ advised of the possiblity of such damages.
       (otherwise
 	;; We don't really know what state those processes are in,
 	;; so take a guess.  Ideally, we should store those states
-	;; away and restore them when GC is done.       
+	;; away and restore them when GC is done.
 	(set-all-status-lines run-string 'status-line-process
 			      :how-many 1 :record-p nil)))))
 
@@ -644,4 +644,3 @@ advised of the possiblity of such damages.
 	       (ignore-errors
 		(set-all-status-lines run-string 'status-line-process)
 		))))))))
-

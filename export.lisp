@@ -29,7 +29,7 @@ advised of the possiblity of such damages.
 
 ;;;These symbols inherited from other packages.
 (eval-when (compile load eval)
-  (export '(defpackage 
+  (export '(defpackage
 	    present
 	    present-to-string
 	    presentation-type
@@ -209,9 +209,7 @@ advised of the possiblity of such damages.
 	    *load-pathname*
 	    *source-pathname*
 	    working-directory
-	    getenv
 	    run-shell-command
-            process-wait
 	    process-run-function
 	    with-process-lock
 	    dotimes-unrolled
@@ -231,15 +229,15 @@ advised of the possiblity of such damages.
 
 ;;;************************************************************
 ;;;
-;;; DWIM-LISP is what user programs should use as the lisp package.  
-;;; It's purpose is to handle all the hairy importing and shadowing 
-;;; constraints so that users don't have to go through this every time 
-;;; they define a package that uses dwim stuff.  DWIM-LISP exports 
+;;; DWIM-LISP is what user programs should use as the lisp package.
+;;; It's purpose is to handle all the hairy importing and shadowing
+;;; constraints so that users don't have to go through this every time
+;;; they define a package that uses dwim stuff.  DWIM-LISP exports
 ;;; Common Lisp, CLOS, and the relevant DWIM symbols.  As ANSI
 ;;; Common Lisp comes along, DWIM should go along with it.
 ;;; User package definitions should look very simple, e.g.
 ;;;    (in-package 'my-package :use '(dwim-lisp))
-;;; 
+;;;
 
 (defun export-inherited-symbols (package)
   (unless (packagep package)
@@ -264,14 +262,14 @@ advised of the possiblity of such damages.
     (:shadowing-import-from future-common-lisp dynamic-extent)
     ;; Shadow the things defined in dwim that offer potential name conflicts
     ;; with common lisp.
-    (:shadowing-import-from 
+    (:shadowing-import-from
      "DWIM"
      :without-interrupts
      :interactive-stream-p
      :ignore
      :loop
      :ignore-errors
-     :handler-case 
+     :handler-case
      :with-simple-restart
      :parse-error
      :restart-case
@@ -284,7 +282,7 @@ advised of the possiblity of such damages.
     (:use #-lucid                      common-lisp
 	  #+(and lucid clim-0.9)       clim-lisp
 	  #+(and lucid (not clim-0.9)) lisp
-	  #+(or lucid allegro genera)  clos 
+	  #+(or lucid allegro genera)  clos
 	  #+mcl                        ccl
 	  dwim)))
 
@@ -304,6 +302,5 @@ advised of the possiblity of such damages.
   #+Genera
   ;; Bless this package as a "reasonable facsimile of LISP"
   (pushnew (find-package "DWIM-LISP") si:*reasonable-packages*)
-  
-  (pushnew :dwim *features*))
 
+  (pushnew :dwim *features*))

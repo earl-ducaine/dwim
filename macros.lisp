@@ -1,61 +1,42 @@
 ;;; -*- Syntax: Common-lisp; Package: DWIM-*-
-#|
-Copyright (c) 1987-1993 by BBN Systems and Technologies,
-A Division of Bolt, Beranek and Newman Inc.
-All rights reserved.
 
-Permission to use, copy, modify and distribute this software and its
-documentation is hereby granted without fee, provided that the above
-copyright notice of BBN Systems and Technologies, this paragraph and the
-one following appear in all copies and in supporting documentation, and
-that the name Bolt Beranek and Newman Inc. not be used in advertising or
-publicity pertaining to distribution of the software without specific,
-written prior permission. Any distribution of this software or derivative
-works must comply with all applicable United States export control laws.
+;; Copyright (c) 1987-1993 by BBN Systems and Technologies,
+;; A Division of Bolt, Beranek and Newman Inc.
+;; All rights reserved.
+;;
+;; Permission to use, copy, modify and distribute this software and its
+;; documentation is hereby granted without fee, provided that the above
+;; copyright notice of BBN Systems and Technologies, this paragraph and the
+;; one following appear in all copies and in supporting documentation, and
+;; that the name Bolt Beranek and Newman Inc. not be used in advertising or
+;; publicity pertaining to distribution of the software without specific,
+;; written prior permission. Any distribution of this software or derivative
+;; works must comply with all applicable United States export control laws.
+;;
+;; BBN makes no representation about the suitability of this software for any
+;; purposes.  It is provided "AS IS", without express or implied warranties
+;; including (but not limited to) all implied warranties of merchantability
+;; and fitness for a particular purpose, and notwithstanding any other
+;; provision contained herein.  In no event shall BBN be liable for any
+;; special, indirect or consequential damages whatsoever resulting from loss
+;; of use, data or profits, whether in an action of contract, negligence or
+;; other tortuous action, arising out of or in connection with the use or
+;; performance of this software, even if BBN Systems and Technologies is
+;; advised of the possiblity of such damages.
 
-BBN makes no representation about the suitability of this software for any
-purposes.  It is provided "AS IS", without express or implied warranties
-including (but not limited to) all implied warranties of merchantability
-and fitness for a particular purpose, and notwithstanding any other
-provision contained herein.  In no event shall BBN be liable for any
-special, indirect or consequential damages whatsoever resulting from loss
-of use, data or profits, whether in an action of contract, negligence or
-other tortuous action, arising out of or in connection with the use or
-performance of this software, even if BBN Systems and Technologies is
-advised of the possiblity of such damages.
-|#
 
 (in-package :dwim)
 
 (defmacro printing-random-object ((object stream . options) &body body)
-  #+genera  `(si:printing-random-object (,object ,stream . ,options) ,@body)
-  #+lucid   `(system:printing-random-object (,object ,stream . ,options) ,@body)
-  #+allegro `(progn
-	       (if *print-readably* (error "Can't print readably"))
-	       (write-string "#<" ,stream)
-	       (unless ,(null (member :typep options))
-		 (format ,stream "~S " (class-name (class-of ,object))))
-	       ,@body
-	       (when ,(null (member :no-pointer options))
-		 (write-char #\space ,stream)
-		 (format ,stream " ~X" (excl::pointer-to-fixnum ,object)))
-	       (write-string ">" ,stream)))
+  `(system:printing-random-object (,object ,stream . ,options) ,@body))
 
 (defmacro with-stack-list ((var &rest elements) &body body)
-  #+Genera
-  `(scl:with-stack-list (,var ,@elements) ,@body)
-  #+allegro
-  `(excl:with-stack-list (,var ,@elements) ,@body)
-  #+(and (not genera) (not allegro))
   `(funcall #'(lambda (&rest ,var)
 		(declare (dynamic-extent ,var))
 		,@body)
 	  ,@elements))
 
 (defmacro with-stack-array ((var length &rest options) &body body)
-  #+genera
-  `(sys:with-stack-array (,var ,length ,@options) ,@body)
-  #-genera
   `(let ((,var (make-array ,length ,@options)))
      (declare (dynamic-extent ,var))
      ,@body))
@@ -111,7 +92,7 @@ advised of the possiblity of such damages.
 (defmacro ignore-errors (&body body)
   #FEATURE-CASE
   ((:Allegro `(lisp:ignore-errors ,@body))
-   (:mcl `(COMMON-LISP:ignore-errors ,@body))   
+   (:mcl `(COMMON-LISP:ignore-errors ,@body))
    (:Lucid `(lcl:ignore-errors ,@body))
    (:Xerox `(xcl:ignore-errors ,@body))
    (:Genera `(future-common-lisp:ignore-errors ,@body))))
@@ -167,7 +148,7 @@ advised of the possiblity of such damages.
     (clim:find-command-table NAME :errorp errorp))
    ((not :CLIM) (cp:find-command-table name :if-does-not-exist (and errorp :error)))))
 
-(defmacro command-table-inherit-from (NAME) 
+(defmacro command-table-inherit-from (NAME)
   #FEATURE-CASE
   ((:CLIM `(clim::command-table-inherit-from ,NAME))))
 
@@ -186,7 +167,7 @@ advised of the possiblity of such damages.
 		   (t (setf (aref string i) (char-downcase (aref string i))))))
 	   string)))
 
-(defmacro define-command ((command-name &key (command-table :global) 
+(defmacro define-command ((command-name &key (command-table :global)
 					     keystroke
 					     name menu
 					     (provide-output-destination-keyword t))
@@ -212,7 +193,7 @@ advised of the possiblity of such damages.
 					 :name ,(or name
 						    (command-pretty-name
 						     (copy-seq (string command-name)))))
-	 ,arguments ,@body))   
+	 ,arguments ,@body))
    (clim-2
     `(clim:define-command (,command-name :command-table ,(eval command-table)
 					 :keystroke ,keystroke
@@ -235,7 +216,7 @@ advised of the possiblity of such damages.
    ((not :clim)
     (let ((tab (cp:find-command-table command-table :if-does-not-exist nil)))
       (and tab (cp:command-table-delete-command-symbol tab command-symbol
-						       :if-does-not-exist nil))	   
+						       :if-does-not-exist nil))
       (cp:install-command command-table command-symbol command-name)))))
 
 (defun canonicalize-argument-list (list)
@@ -339,7 +320,7 @@ advised of the possiblity of such damages.
 		       :documentation ,documentation)
 	 ,arguments
 	 ,@body)))
-   
+
    ((or :clim-1.0 :clim-2)
     (let ((test tester))
       `(clim:define-presentation-translator
@@ -385,7 +366,7 @@ advised of the possiblity of such damages.
       ;; applicability of the translator, the tester should return T as the second
       ;; value.
       (cond ((not tester)
-	     (setq tester `((presentation) 
+	     (setq tester `((presentation)
 			    (values (ci::presentation-matches-type-p
 				     presentation ',from-type)
 				    t))))
@@ -393,7 +374,7 @@ advised of the possiblity of such damages.
       (when (and command-table (eql to-type 'command))
 	(setq to-type `(command :command-table ,command-table)))
       (let ((g (find 'gesture arglist :test #'string-equal))
-	    (w (find 'window arglist :test #'string-equal)))      
+	    (w (find 'window arglist :test #'string-equal)))
 	`(clim:define-presentation-translator
 	     ,name
 	     (,from-type ,to-type :tester ,tester :gesture ,gesture
@@ -417,7 +398,7 @@ advised of the possiblity of such damages.
        ,@body))))
 
 (defmacro define-presentation-type (name arglist
-				    &key 
+				    &key
 				    parser printer abbreviation-for (no-deftype t)
 				    typep describer description accept-values-displayer
 				    highlighter
@@ -642,7 +623,7 @@ advised of the possiblity of such damages.
 	       :copy-cache-value ,copy-cache-value
 	       ;; I hate behavior that depends on
 	       ;; whether or not you supply the default value.
-	       ,@(if cache-value-p `(:cache-value ,cache-value))) 
+	       ,@(if cache-value-p `(:cache-value ,cache-value)))
 	    ,@body))
 
 (defmacro with-character-face ((face &optional (stream t)) &body body)
@@ -712,7 +693,7 @@ advised of the possiblity of such damages.
   #FEATURE-CASE
   ((:clim-0.9
     `(if (eq :abort
-	  (clim:accepting-values (,stream :own-window ,own-window) 
+	  (clim:accepting-values (,stream :own-window ,own-window)
 	   ,@(if label `((format ,stream "~A~%~%" ,label)))
 	   ,@body))
       ,abort-value t))
@@ -763,4 +744,3 @@ advised of the possiblity of such damages.
 	t)
       ;; catch aborts and act like clim.
       (sys:abort ,abort-value)))))
-
