@@ -606,25 +606,15 @@
 		 (cache-value nil cache-value-p)
 		 (cache-test #'eql) copy-cache-value)
 	   &body body)
-  #+clim `(if (clim:extended-input-stream-p ,stream)
-	      (clim:updating-output
-	       (,stream ,@(if unique-id-p `(:unique-id ,unique-id))
-			:id-test ,id-test
-			,@(if cache-value-p `(:cache-value ,cache-value))
-			:cache-test ,cache-test
-			:copy-cache-value ,copy-cache-value)
-	       ,@body)
-	      (progn ,@body))
-  #-clim `(dw:with-redisplayable-output
-	      (:stream ,stream
-	       :id-test ,id-test
-	       ,@(if unique-id-p `(:unique-id ,unique-id))
-	       :cache-test ,cache-test
-	       :copy-cache-value ,copy-cache-value
-	       ;; I hate behavior that depends on
-	       ;; whether or not you supply the default value.
-	       ,@(if cache-value-p `(:cache-value ,cache-value)))
-	    ,@body))
+  `(if (clim:extended-input-stream-p ,stream)
+       (clim:updating-output
+	   (,stream ,@(if unique-id-p `(:unique-id ,unique-id))
+		    :id-test ,id-test
+		    ,@(if cache-value-p `(:cache-value ,cache-value))
+		    :cache-test ,cache-test
+		    :copy-cache-value ,copy-cache-value)
+	 ,@body)
+       (progn ,@body)))
 
 (defmacro with-character-face ((face &optional (stream t)) &body body)
   #FEATURE-CASE

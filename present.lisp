@@ -101,21 +101,26 @@ advised of the possiblity of such damages.
   (clim:redisplayable-stream-p stream))
 
 (defun redisplayable-format (stream string &rest args)
-  (if (eq stream 't) (setq stream *standard-output*))
-  (if (redisplayable? stream)
-      (let ((a (copy-list args)))
-	(with-redisplayable-output (:stream stream
-					    :unique-id string
-					    :cache-value a
-					    :cache-test #'equal)
-	  (apply #'format stream string a)))
-      (apply #'format stream string args)))
+  (declare (ignore stream string args))
+  (error "Note, implemented. See redisplayable-format-alt for poblematic code"))
 
-(defun accept (presentation-type &key
-				   (view nil view-p)
-				   (stream *standard-output*)
-				   (prompt #+clim t #-clim :enter-type)
-				   default query-identifier)
+;; (defun redisplayable-format-alt (stream string &rest args)
+;;   (if (eq stream 't) (setq stream *standard-output*))
+;;   (if (redisplayable? stream)
+;;       (let ((a (copy-list args)))
+;; 	(with-redisplayable-output (:stream stream
+;; 					    :unique-id string
+;; 					    :cache-value a
+;; 					    :cache-test #'equal)
+;; 	  (apply #'format stream string a)))
+;;       (apply #'format stream string args)))
+
+(defun accept (presentation-type
+	       &key
+		 (view nil view-p)
+		 (stream *standard-output*)
+		 (prompt #+clim t #-clim :enter-type)
+		 default query-identifier)
   (if view-p
       (clim:accept presentation-type
 		   :view view
@@ -131,24 +136,24 @@ advised of the possiblity of such damages.
 		   :display-default nil
 		   :query-identifier query-identifier)))
 
-#+(and clim-1.0 (not mcl))
-(progn
-  ;;CLIM additions to the input editor to conform to my old EMACs ways
-  (clim::add-input-editor-command #\meta-< 'clim::com-ie-beginning-of-buffer)
-  (clim::add-input-editor-command #\meta-> 'clim::com-ie-end-of-buffer)
-  (clim::add-input-editor-command #\meta-\b 'clim::com-ie-backward-word)
-  (clim::add-input-editor-command #\meta-\f 'clim::com-ie-forward-word)
-  (clim::add-input-editor-command #\meta-rubout 'clim::com-ie-rubout-word)
-  (clim::add-input-editor-command #\meta-\d 'clim::com-ie-delete-word)
-  (clim::add-input-editor-command #\control-meta-\y 'clim::com-ie-history-yank)
-  (clim::add-input-editor-command #\meta-\y 'clim::com-ie-yank-next)
-  (clim::add-input-editor-command #\meta-\v 'clim::com-ie-scroll-backward))
+;; #+(and clim-1.0 (not mcl))
+;; (progn
+;;   ;;CLIM additions to the input editor to conform to my old EMACs ways
+;;   (clim::add-input-editor-command #\meta-< 'clim::com-ie-beginning-of-buffer)
+;;   (clim::add-input-editor-command #\meta-> 'clim::com-ie-end-of-buffer)
+;;   (clim::add-input-editor-command #\meta-\b 'clim::com-ie-backward-word)
+;;   (clim::add-input-editor-command #\meta-\f 'clim::com-ie-forward-word)
+;;   (clim::add-input-editor-command #\meta-rubout 'clim::com-ie-rubout-word)
+;;   (clim::add-input-editor-command #\meta-\d 'clim::com-ie-delete-word)
+;;   (clim::add-input-editor-command #\control-meta-\y 'clim::com-ie-history-yank)
+;;   (clim::add-input-editor-command #\meta-\y 'clim::com-ie-yank-next)
+;;   (clim::add-input-editor-command #\meta-\v 'clim::com-ie-scroll-backward))
 
 
 ;;;Alas there is no <End> key so let's fake it out with the <control-d> key
-#+(and clim-1.0 (not genera) (not mcl))
-(clim::define-accept-values-command (com-exit-avv :keystroke #\control-\d) ()
-  (invoke-restart 'clim::frame-exit))
+;; #+(and clim-1.0 (not genera) (not mcl))
+;; (clim::define-accept-values-command (com-exit-avv :keystroke #\control-\d) ()
+;;   (invoke-restart 'clim::frame-exit))
 
 (defun accept-values (descriptions &key (prompt nil)
 					(stream *query-io*)
