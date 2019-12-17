@@ -5,11 +5,14 @@
   ;; (:import make-mac)
   (:nicknames :mac :mac-windows))
 
+(defpackage :tv
+  (:use cl))
 
 
+;; these symbols should be imported by the mac package
 
-;;; These symbols should be imported by the MAC package
-
+;; Roughly, the following symbols are those needed to support the
+;; 'classic' Lisp Machine TV system.
 (defparameter *mac-support-symbols*
   '(*cold-load-streams-screen-selected-p*
     *default-Mac-window-height*
@@ -20,10 +23,13 @@
     *mac*
     *mac-keyboard-p*
     *mac-system-p*
-    *Mac-resident-Explorer-screens*	;dab 8/24/88
-    *undisplaced-Mac-window-arrays*	;dab 8/24/88
+    ;; dab 8/24/88
+    *Mac-resident-Explorer-screens*
+    ;; dab 8/24/88
+    *undisplaced-Mac-window-arrays*
     *window-system-mouse-on-the-mac*
-    dump-draw-char-cache                  ;dab 08-24-88 DAB
+    ;; dab 08-24-88 DAB
+    dump-draw-char-cache
     lispm-shift-bit
     lispm-greek-bit
     lispm-top-bit
@@ -44,15 +50,17 @@
     Mac-MOUSE-bit
     Mac-AUTOKEY-bit
     Mac-Window-Activate-bit
-
-    mac-explorer-screen-ID-for-screen-being-created	;dab 8/24/88
+    ;; dab 8/24/88
+    mac-explorer-screen-ID-for-screen-being-created
     mac-extended-kbd-descriptor
     mac-kbd-modifier-table
     mac-kbd-modifier-table-zmacs-mode
     mac-screen
-    Mac-screen-for-printer		;dab 8/24/88
+    ;; dab 8/24/88
+    Mac-screen-for-printer
     mac-standard-kbd-descriptor
-    not-visible-p				;dab 8/24/88
+    ;; dab 8/24/88
+    not-visible-p
     kbd-mac-table
 
     ;; functions
@@ -73,9 +81,11 @@
     mac-system-p
     mac-window-p
     make-a-Mac-resident-Explorer-screen
-    make-explorer-screen			;dab 8/24/88
+    ;; dab 8/24/88
+    make-explorer-screen
     redirect-drawing-of-window-and-inferiors
-    remember-bit-array			       ;10/18/88
+    ;; 10/18/88
+    remember-bit-array
     remember-this-screens-last-selected-window
     select-cold-load-streams-screen
     send-adjust-bit-array-maybe

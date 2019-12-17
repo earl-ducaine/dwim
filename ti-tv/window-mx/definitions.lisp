@@ -1,6 +1,3 @@
-;;; -*- Mode:Common-Lisp; Package:MAC-WINDOWS; Base:10; Fonts:(COURIER HL12B HL12BI COURIER MEDFNB); -*-
-
-
 
 ;;;                           RESTRICTED RIGHTS LEGEND
 
@@ -16,30 +13,34 @@
 ;;; Copyright (C) 1987-1989 Texas Instruments Incorporated. All rights reserved.
 
 
-;;;   This file contains structure definitions, macros, and functions that either are now or might at
-;;;   some future time be proclaimed to be INLINE.  The defsystem forces this file to be compiled and
-;;;   loaded before any other files.  A change in this file forces the recompilation of all other files,
-;;;   so expect to wait awhile if you change this file.
+;;; This file contains structure definitions, macros, and functions
+;;; that either are now or might at some future time be proclaimed to
+;;; be INLINE.  The defsystem forces this file to be compiled and
+;;; loaded before any other files.  A change in this file forces the
+;;; recompilation of all other files, so expect to wait awhile if you
+;;; change this file.
 
-;;;##########################################################
-;;;--------------------------------------------------------------------
-;;;                 Patch
-;;;   Date  Author  Number   Description
-;;;--------------------------------------------------------------------
+;;;                     Patch
+;;;  Date  Author       Number Description
+;;;
 ;;;  02-14-89   LG      5-36   Added TIME-RCVD slot to CBUFFER structure.
-;;;  10-16-88   LG      5-18   Redefined remember-call to maintain a circular list of the calls to it.
-;;;  10-16-88   LG	      5-17   Added definition for CBUFFER structure.
-;;;  09-13-88   LG      5-10	  Changed setup-this-window-on-the-mac to locally bind the list
-;;;  			  of undisplaced arrays for debugging purposes.
+;;;  10-16-88   LG      5-18   Redefined remember-call to maintain a circular
+;;;                            list of the calls to it.
+;;;  10-16-88   LG	5-17   Added definition for CBUFFER structure.
+;;;  09-13-88   LG      5-10   Changed setup-this-window-on-the-mac to locally
+;;;  			       bind the list of undisplaced arrays for
+;;;  			       debugging purposes.
 
-;;ab 1/6/88
-tv:
-(DEFMACRO Mac-explorer-window-id (window)
+;; ab 1/6/88
+
+(in-package :mac-windows)
+
+
+(defmacro tv::mac-explorer-window-id (window)
   `(tv:sheet-window-id ,window))
 
-tv:
-(DEFSETF Mac-explorer-window-id (window) (x)
-  `(SETF (tv:sheet-window-id ,window) ,x))
+(defsetf tv::mac-explorer-window-id (window) (x)
+  `(setf (tv:sheet-window-id ,window) ,x))
 
 (DEFSTRUCT (cbuffer (:conc-name cbuffer-)
 		      (:type :array-leader) (:callable-constructors nil)
@@ -152,11 +153,11 @@ edges specified by the clipping rectangle."
   ;;     1. The bit array being drawn to by window W1's is not Mac resident.
   ;;     2. Window W1's redirection is not known on the Mac.
   (LET ((window-id (tv:Mac-explorer-window-id window)))
-    
+
     ;;  Handle a deactivated window...
     (WHEN (EQ t window-id)
       (SETF window-id (give-a-window-an-id window)))
-    
+
     ;;  Iff the Mac has no cognizance of this window's redirection, tell it, in
     ;;  the process using send-redirect-drawing to get the bit-array
     ;;  Mac resident if necessary...
@@ -181,7 +182,7 @@ edges specified by the clipping rectangle."
     ;;  the bit-array of a window possessing a Mac-resident bit array...
     (SETF array-and-window
 	  (ASSOC array-displaced-to list-of-undisplaced-Mac-window-arrays :test 'EQ))
-    
+
     ;;
     (IF array-and-window
       (MULTIPLE-VALUE-BIND (y-offset x-offset)
@@ -203,7 +204,7 @@ edges specified by the clipping rectangle."
 	   ()
 	   (tv:standard-screen)
   :settable-instance-variables)
-  
+
 (DEFFLAVOR Mac-window
 	   ()
 	   (tv:window)
@@ -267,5 +268,5 @@ edges specified by the clipping rectangle."
 
 (defmethod (mac-screen-for-printer :printer-screen-p) () T)
 
-(defmethod (mac-screen-for-printer :close) (&rest ignore) 
+(defmethod (mac-screen-for-printer :close) (&rest ignore)
    )
