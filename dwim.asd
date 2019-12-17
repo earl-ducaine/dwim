@@ -1,7 +1,5 @@
 
 
-
-
 (asdf:defsystem :dwim
   :depends-on (:mcclim :closer-mop :zeta-lisp-compatability :flavors :asdf)
   ;; The DWIM part of SCIGRAPH
