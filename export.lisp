@@ -170,11 +170,8 @@ advised of the possiblity of such damages.
 	    stack-let
 	    without-interrupts
 	    condition-case
-	    handler-case
-	    handler-bind
 	    ignore-errors
 	    with-simple-restart
-	    restart-case
 	    invoke-restart
 	    find-restart
 	    make-command-table
@@ -269,13 +266,10 @@ advised of the possiblity of such damages.
      :ignore
      :loop
      :ignore-errors
-     :handler-case
      :with-simple-restart
      :parse-error
-     :restart-case
      :find-restart
      :invoke-restart
-     :handler-bind)
     #+clim-0.9
     (:shadowing-import-from
      "CLIM-LISP" "DESCRIBE-OBJECT" "MAKE-LOAD-FORM-SAVING-SLOTS")
