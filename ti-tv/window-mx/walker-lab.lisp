@@ -37,15 +37,15 @@
 
 
 
-(let* ((function-object (sb-kernel::%fun-fun function))
-       (function-header (sb-kernel:fun-code-header function-object))
-       (debug-info (sb-kernel:%code-debug-info function-header))
-       (debug-source (sb-c::debug-info-source debug-info))
-       (debug-fun (debug-info-debug-function function debug-info)))
-  (sb-c::%make-definition-source-location
-   (sb-c::debug-source-namestring debug-source)
-   (sb-c::compiled-debug-info-tlf-number debug-info)
-   (sb-c::compiled-debug-fun-form-number debug-fun)))
+;; (let* ((function-object (sb-kernel::%fun-fun function))
+;;        (function-header (sb-kernel:fun-code-header function-object))
+;;        (debug-info (sb-kernel:%code-debug-info function-header))
+;;        (debug-source (sb-c::debug-info-source debug-info))
+;;        (debug-fun (debug-info-debug-function function debug-info)))
+;;   (sb-c::%make-definition-source-location
+;;    (sb-c::debug-source-namestring debug-source)
+;;    (sb-c::compiled-debug-info-tlf-number debug-info)
+;;    (sb-c::compiled-debug-fun-form-number debug-fun)))
 
 (defparameter *current-file*
   (open "/home/rett/dev/common-lisp/dwim/dwim-git/ti-tv/window-mx/definitions.lisp"))
