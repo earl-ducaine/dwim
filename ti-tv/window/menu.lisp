@@ -19,15 +19,15 @@
 ;;;
 ;;;  Date      Author	Description
 ;;; -------------------------------------------------------------------------------------
-;;;  10-25-88  MAY      Changed (MENU :AFTER :SET-FONT-MAP) and (MENU :REDEFINE-MARGINS) to handle 
-;;;                         case of menu NEITHER sheet-menu-pop-up NOR sheet-menu-permanent. 
+;;;  10-25-88  MAY      Changed (MENU :AFTER :SET-FONT-MAP) and (MENU :REDEFINE-MARGINS) to handle
+;;;                         case of menu NEITHER sheet-menu-pop-up NOR sheet-menu-permanent.
 ;;;                         Corrects bug introduced 09-07-88. Fixes addin-bug #194.
 ;;;  09-14-88  MAY	Changed DEFAULT-MENU-ITEM-DOCUMENTER to call #'documention with 'variable instead
 ;;;                         of default 'function so that variable with doc like *print-base* displays mouse doc in
-;;; 			w:menu-choose. Changed (MENU :END-ITEM-SELECTION) MENU-MARGIN-CHOICE-FUNCTION 
-;;;			and MENU-SIMPLE-MARGIN-CHOICE-FROM-ITEM to use eighth instead of sixth item in 
+;;; 			w:menu-choose. Changed (MENU :END-ITEM-SELECTION) MENU-MARGIN-CHOICE-FUNCTION
+;;;			and MENU-SIMPLE-MARGIN-CHOICE-FROM-ITEM to use eighth instead of sixth item in
 ;;;			choice-box to put :documentation strings back in. SPR 8241.
-;;;  09-07-88  MAY	Changed (MENU :REDEFINE-MARGINS) and (MENU :AFTER :SET-FONT-MAP) to preserve 
+;;;  09-07-88  MAY	Changed (MENU :REDEFINE-MARGINS) and (MENU :AFTER :SET-FONT-MAP) to preserve
 ;;;                         OUTSIDE size for :permanent windows so that :geometry is not ignored.  SPR 8504.
 ;;;  07-29-88  MAY      Fixed Assert in w:-menu-choose for SPR 7599
 ;;;  02/11/88   LG         Made %draw-rectangle in :PARTIAL-MENU-DRAW write to SELF
@@ -90,7 +90,7 @@
 ;;;			the initialization of a default border for permanent menus.
 ;;;  1/21/87   TWE	Updated the settable/gettable parts of the MENU flavor to agree with the documentation.
 ;;;  1/14/87   KDB	Continued fix done on 1/9/87.
-;;;  1/09/87   KDB	Fixed bug that made ALL Top-box-labels appear in reverse-video if W:Menu-based 
+;;;  1/09/87   KDB	Fixed bug that made ALL Top-box-labels appear in reverse-video if W:Menu-based
 ;;;			by setting TEMPORARY-BIT-ARRAY in W:MENU :after :init. Also, value of :PERMANANT
 ;;;			is now access via  SHEET-FLAG instance variable.
 ;;;  12/18/86  SLM	Fixed Suggestions call to (locally (declare..))
@@ -120,7 +120,7 @@
 ;;;  09/12/86  TWE	Changed the documentation in MENU-CHOOSE to mention that sorting the item list is
 ;;;			destructive.  Also changed (MENU :EXECUTE) to allow it to handle poorly formed items
 ;;;			such as ("Foo" :documentation "Hi there") in a reasonable manner.  Strictly speaking
-;;;			items such as these are not allowed according to the documentation, but can be 
+;;;			items such as these are not allowed according to the documentation, but can be
 ;;;			handled in a reasonable manner.  Also fixed up MENU-CHOOSE to properly handle the
 ;;;			dynamic keyword.
 ;;;  09/10/86  TWE	Fixed up the help display to be more consistant.
@@ -139,7 +139,7 @@
 ;;;			the FONT defstruct.
 ;;;  07/29/86  TWE	Changed to use Common Lisp functions.
 ;;;  07/09/86  TWE	Removed all debug code.
-;;;  07/08/86  TWE	Changed the :MARGIN-CHOICES-MINIMUM-WIDTH method to make the margin choice 
+;;;  07/08/86  TWE	Changed the :MARGIN-CHOICES-MINIMUM-WIDTH method to make the margin choice
 ;;;			calculation more accurate.  (Changed 2 --> 5.)
 ;;;  07/02/86  TWE	Added debug code to the :before/:after :init methods to see where the system menu crashed in VM2.
 ;;;  05/21/86  TWE	Added support for icons.
@@ -148,7 +148,7 @@
 ;;;  04/16/86  GRH	Added updating of who-line doc after boxing menu items.
 ;;;  04/15/86  TWE	Fixed up many things to make menus work during a system build.
 ;;;  04/10/86  TWE       Fixed MENU-COMPUTE-GEOMETRY to test *delay-compute-geometry* properly.
-;;;  04/08/86  LGO	Make STRING inline for MENU-ITEM-STRING 
+;;;  04/08/86  LGO	Make STRING inline for MENU-ITEM-STRING
 ;;;  04/08/86  LGO	Make FONT-EVALUATE inline for MENU-ITEM-STRING-WIDTH
 ;;;  04/08/86  LGO	Added DELAYING-COMPUTE-GEOMETRY macro call to MENU-CHOOSE to prevent
 ;;;			the geometry from being computed twice, once for the label and once for the item-list.
@@ -315,7 +315,7 @@ Make this larger to add extra blank lines below the menu items.")
 ;The GEOMETRY variable in a menu has a structure of this type as its value.
 ;That variable records "permanent" constraining shape information,
 ;that is to be used in recomputing the shape when things (such as the item list) change.
-(DEFSTRUCT (GEOMETRY (:TYPE :LIST) (:CONSTRUCTOR NIL) (:CONC-NAME NIL) (:CALLABLE-CONSTRUCTORS NIL)
+(DEFSTRUCT (GEOMETRY (:TYPE :LIST) (:CONSTRUCTOR NIL) (:CONC-NAME NIL)
   (:ALTERANT ALTER-GEOMETRY) (:PREDICATE NIL) (:COPIER NIL))
   GEOMETRY-N-COLUMNS
   GEOMETRY-N-ROWS
@@ -365,7 +365,7 @@ which can be seen in a menu and selected by a user.
 ;;; the function is to draw the icon.  The X and Y specify the position in
 ;;; WINDOW where the upper left corner of the icon is to be located.  ITEM is
 ;;; the menu item for this icon.  Any additional arguments are passed from the
-;;; ICON-ARGUMENTS slot in the ICON defstruct. 
+;;; ICON-ARGUMENTS slot in the ICON defstruct.
 ;;;
 ;;; If one wants to define an icon with additional slots then all one needs to
 ;;; do is to define a new defstruct and use the INCLUDE defstruct option to
@@ -374,7 +374,7 @@ which can be seen in a menu and selected by a user.
 ;;; the icon defstruct.
 
 (DEFSTRUCT (ICON  :NAMED (:type :ARRAY-LEADER) (:INCLUDE FONT) (:CONC-NAME ICON-)
-		  (:CALLABLE-CONSTRUCTORS NIL) (:COPIER NIL))
+		   (:COPIER NIL))
   DRAW-FUNCTION       ;Function to be invoked to draw the icon.
   ARGUMENTS           ;Additional arguments to pass to FUNCTION when drawing the icon.
   )
@@ -460,7 +460,7 @@ which can be seen in a menu and selected by a user.
             ;; consists of (heading item-list-form .  options).  Heading is a string to
             ;; go at the top of the column, and options are menu-item options for it
             ;; (typically font). item-list-form is a form to be evaluated (without
-            ;; side-effects) to get the item list for that column.  
+            ;; side-effects) to get the item list for that column.
             (COLUMN-SPEC-LIST NIL)
 
             ;; Used in dynamic multicolumn menus to remember what has been changed.  It
@@ -552,7 +552,7 @@ which can be seen in a menu and selected by a user.
     ;; COLUMN-SPEC-LIST      ; We explicitly define a method for this operation
     ;; ITEM-LIST             ; We explicitly define a method for this operation
     ITEM-LIST-POINTER
-    LAST-ITEM             
+    LAST-ITEM
     CHOSEN-ITEM
     ;; HIGHLIGHTED-ITEMS     ; We explicitly define a method for this operation
     SORT
@@ -576,25 +576,25 @@ which can be seen in a menu and selected by a user.
     ;; margin choices then the ABORT is searched for there first, and then the menu
     ;; items if it isn't a margin choice.
     :ABORT-ON-DEEXPOSE
-    
+
 
     :COMMAND-MENU
-    
+
     ;; Allows the menu to have an item list that's being dynamically modified.  Causes
     ;; the menu's item list to be updated at appropriate times.  The actual item list
     ;; is computed via the :UPDATE-ITEM-LIST message.
     :DYNAMIC
-    
+
     ;; Provides for highlighting of items with inverse video.  A menu in which you can
     ;; select more than one choice.  HIGHLIGHTED-ITEMS is a list of those items in the
     ;; ITEM-LIST that are currently selected.
     :HIGHLIGHTING
-    
+
     ;; Makes a menu have multiple 'dynamic' columns.  Each column comes from a
     ;; separate item-list which is recomputed at appropriate times.  Currently this
     ;; must be dynamic too.
     :MULTICOLUMN
-    
+
     ;; Flag which determines whether this is a temporary or a permanent menu.
     :PERMANENT
 
@@ -682,8 +682,8 @@ Uses ITEM-DEFAULT-FONT if the item does not specify one."
   "Return the documentation for the value of a menu-item"
   (SETQ VALUE (MENU-EXECUTE-NO-SIDE-EFFECTS ITEM))
   (IF (SYMBOLP VALUE) 	 		   ;; may 9-14-88 was ATOM now SYMBOLP for '("a" . :a) cons case
-      (IF (fBOUNDP value) 	   	   ;; may 9-14-88 
-	   (DOCUMENTATION VALUE) 
+      (IF (fBOUNDP value) 	   	   ;; may 9-14-88
+	   (DOCUMENTATION VALUE)
 	   (DOCUMENTATION VALUE 'variable)))) ;; may 9-14-88
 
 ;;; Here is where we invoke the icon drawing function.
@@ -695,7 +695,7 @@ X,Y		the pixel position of the upper left corner of there the icon is to start d
 ITEM		the menu item which corresponds to this icon.  This is useful for icons in menus.
 ICON-COLOR	the color used to draw the icon.  This is useful only on a system which has color."
   (DECLARE (IGNORE ICON-COLOR))
-  (APPLY (ICON-DRAW-FUNCTION ICON-OBJECT) ICON-OBJECT WINDOW X 
+  (APPLY (ICON-DRAW-FUNCTION ICON-OBJECT) ICON-OBJECT WINDOW X
          ;; Make the baseline of the icon line up with the baseline of characters in the window.
          (+ Y (- (SHEET-BASELINE WINDOW) (ICON-FONT-BASELINE ICON-OBJECT)))
          ITEM
@@ -1027,7 +1027,7 @@ If STOP-X is specified, we will not return a value larger than that."
 			   (CONSP (CDR x));; not (cons 'a 'b)
 			   (get x :documentation)))
 	    :documentation nil)
-	doc			
+	doc
 	x))
 
 (DEFUN MENU-UPDATE-MOUSE-CURSOR (CURRENT-ROW)
@@ -1056,7 +1056,7 @@ If STOP-X is specified, we will not return a value larger than that."
     `(,MARGIN-CHOICE-ABORT-STRING :EVAL (SIGNAL-CONDITION EH:ABORT-OBJECT))))
 
 (DEFUN ABORT-OR-DOIT-MARGIN-CHOICES ()
-  "Margin choices for both the Abort and Do It boxes.  
+  "Margin choices for both the Abort and Do It boxes.
 Specify :ABORT-OR-DOIT as a margin choice to get this."
   (LIST (ABORT-MARGIN-CHOICE) (DOIT-MARGIN-CHOICE)))
 
@@ -1114,7 +1114,7 @@ Normally you should add allowances for interword spacing to this."
   (AND (CONSP ITEM)
        (> (LENGTH ITEM) 1)
        (MEMBER :NO-SELECT ITEM)))
-  
+
 (DEFUN MENU-EXECUTE-NO-SIDE-EFFECTS (ITEM &AUX OP ARG)
   "Try to get the value a menu would return if ITEM were chosen, but avoid side effects.
 If getting the value might require a side-effect, just return NIL."
@@ -1228,7 +1228,7 @@ If getting the value might require a side-effect, just return NIL."
       ;; Allow the user to specify a complete margin choice by a keyword.
       (ABORT-OR-DOIT-MARGIN-CHOICES)
       ;;ELSE
-      ;;;; build a list of the expaneded margin choices.  
+      ;;;; build a list of the expaneded margin choices.
       ;;;; This allows the use of :abort-or-doit in a list as it returns 2 values
       (dolist (item CHOICES temp)
 	(dolist (other-item (multiple-value-list (MENU-MARGIN-CHOICE-FROM-ITEM item)))
@@ -1298,7 +1298,7 @@ If getting the value might require a side-effect, just return NIL."
 
 (DEFMETHOD (MENU :BEFORE :INIT) (INIT-PLIST &AUX (SUP SUPERIOR) TEM )
   (SETQ SUP (OR SUP (GET INIT-PLIST :SUPERIOR) DEFAULT-SCREEN))
-  (SETQ DEFAULT-FONT (SEND (SHEET-GET-SCREEN SUP) :PARSE-FONT-SPECIFIER 
+  (SETQ DEFAULT-FONT (SEND (SHEET-GET-SCREEN SUP) :PARSE-FONT-SPECIFIER
                            (IF (VARIABLE-BOUNDP DEFAULT-FONT)
                                DEFAULT-FONT
                                ;; ELSE We do not have a font to use.  Use the default one.
@@ -1317,7 +1317,7 @@ If getting the value might require a side-effect, just return NIL."
   (SETF (SHEET-MENU-MULTICOLUMN)       (IF (CADR (MEMBER :MULTICOLUMN       (CAR INIT-PLIST))) 1 0))
   (SETF (SHEET-MENU-POP-UP)            (IF (CADR (MEMBER :POP-UP            (CAR INIT-PLIST))) 1 0))
   (SETF (SHEET-MENU-PERMANENT)         (IF (CADR (MEMBER :PERMANENT         (CAR INIT-PLIST))) 1 0))
-						
+
   ;; Perform some consistency checking.  Note that we can have three cases of perrmanent and pop-up:
   ;; permanent t + pop-up nil, permanent nil + pop-up t, and permanent nil pop-up nil.  The first two
   ;; cases are normal for permanent and pop-up menus respectively.  The last one is somewhat strange
@@ -1549,7 +1549,7 @@ the existing items in the menu."
 
 
 (DEFMETHOD (MENU :EXECUTE) (ITEM &AUX OP ARG ITEM-NAME)
-  (WHEN (PLUSP (SHEET-MENU-POP-UP)) 
+  (WHEN (PLUSP (SHEET-MENU-POP-UP))
     ;; Get here if either 1) user clicks on an item or 2) menu is deactivated.
     (SEND SELF :DEACTIVATE)
     (UNLESS ITEM
@@ -1635,7 +1635,7 @@ This is used by highlighting option. |#
 		 saveb  ;;; >>> added for color
 		 alu)                 ;;; >>> added to handle remove highlight in color
 	   (SETQ alu (IF on-state alu-add alu-sub))
-           (unwind-protect 
+           (unwind-protect
              (progn
 	       (when (color-system-p self)
 		   (setf savef (tv:foreground-color-register)
@@ -1643,7 +1643,7 @@ This is used by highlighting option. |#
 	           (tv:set-foreground-color-register highlighting-color) ;;; added         changed this below to select alu
 	           (tv:set-background-color-register 0) ;;; >>>
 	       )
-	       (DRAW-RECTANGLE-INSIDE-CLIPPED (- RIGHT LEFT) (- BOTTOM TOP) LEFT TOP 
+	       (DRAW-RECTANGLE-INSIDE-CLIPPED (- RIGHT LEFT) (- BOTTOM TOP) LEFT TOP
                     (IF (color-system-p self) alu alu-xor) SELF)
               )
 	      (when (color-system-p self)
@@ -1736,7 +1736,7 @@ This is used by highlighting option. |#
       (%DRAW-RECTANGLE (SHEET-INSIDE-WIDTH) (* ROWS-TO-DRAW ROW-HEIGHT)
 		       (SHEET-INSIDE-LEFT)  (+ (SHEET-INSIDE-TOP) START-Y)
 		       ERASE-ALUF           self)
-      
+
       (LOOP FOR ROW   FROM START-ROW BELOW (MIN TOTAL-ROWS (+ START-ROW ROWS-TO-DRAW))
 	    FOR Y-POS FROM START-Y BY ROW-HEIGHT
 	    DO
@@ -1756,7 +1756,7 @@ This is used by highlighting option. |#
 					 (NOT (TYPEP FONT 'ICON))
 					 CURRENT-FONT))
 			 (SHEET-SET-FONT SELF FONT))
-		    
+
 		    (IF (AND color (color-system-p self))
  		      (SEND self :set-foreground-color color)
                       (SEND self :set-foreground-color current-color)
@@ -1818,7 +1818,7 @@ This is used by highlighting option. |#
                 0)))
     (MAX L MC 20.)))
 
-  
+
 
 ;;; Mouse-click handler for menus.
 ;;; All buttons are treated the same, select the item you are on.
@@ -1826,7 +1826,7 @@ This is used by highlighting option. |#
 (DEFMETHOD (MENU :MOUSE-BUTTONS) (BD X Y)
   (COND ((AND (>= X (SHEET-INSIDE-LEFT)) (< X (SHEET-INSIDE-RIGHT))
 	      (>= Y (SHEET-INSIDE-TOP))  (< Y (SHEET-INSIDE-BOTTOM))
-	      CURRENT-ITEM)                           
+	      CURRENT-ITEM)
 	 (SEND SELF :MOUSE-BUTTONS-ON-ITEM BD))	;Any button, select item.
 	(T
 	 (let ((buttons (MOUSE-CHARACTER-BUTTON-ENCODE BD)))
@@ -2016,8 +2016,8 @@ This is used by highlighting option. |#
 
 (DEFMETHOD (MENU :SCROLL-TO) (NEW-TOP-ROW MODE)
   (CASE MODE
-    (:ABSOLUTE)      
-    (:RELATIVE (SETQ NEW-TOP-ROW (+ TOP-ROW NEW-TOP-ROW)))      
+    (:ABSOLUTE)
+    (:RELATIVE (SETQ NEW-TOP-ROW (+ TOP-ROW NEW-TOP-ROW)))
     (OTHERWISE (FERROR () "Illegal scroll mode ~A" MODE)))
 
   ;; Check for change. Peg NEW-TOP-ROW to first row or to a screenful above last row.
@@ -2031,11 +2031,11 @@ This is used by highlighting option. |#
 	   (DELTA-ROWS   (ABS DELTA))
 	   (ROWS-SHIFTED (MAX 0 (- SCREEN-ROWS DELTA-ROWS)))
 	   ROW-TO-REDRAW)
-          
+
       (IF (PLUSP ROWS-SHIFTED)
 	  ;; Scrolling less that SCREEN-ROWS -- bitblt part of current menu image up or down
 	  (LET ((FROM-Y       (+ (SHEET-INSIDE-TOP) (* (MAX 0 DELTA) ROW-HEIGHT)))
-		(HEIGHT-ORDER (* (SIGNUM DELTA) (* ROWS-SHIFTED ROW-HEIGHT))))	    
+		(HEIGHT-ORDER (* (SIGNUM DELTA) (* ROWS-SHIFTED ROW-HEIGHT))))
 	    (PREPARE-SHEET (SELF)
 	      (BITBLT W:ALU-SETA (SHEET-INSIDE-WIDTH) HEIGHT-ORDER
 		  SCREEN-ARRAY (SHEET-INSIDE-LEFT) FROM-Y
@@ -2050,8 +2050,8 @@ This is used by highlighting option. |#
 	    ROW-TO-REDRAW			;start row
 	    (* (- ROW-TO-REDRAW TOP-ROW)	;start y
 	       ROW-HEIGHT)
-	    DELTA-ROWS)				;number of rows to draw 
-						;(:PARTIAL-MENU-DRAW forces this <= SCREEN-ROWS)	
+	    DELTA-ROWS)				;number of rows to draw
+						;(:PARTIAL-MENU-DRAW forces this <= SCREEN-ROWS)
       (SEND SELF :NEW-SCROLL-POSITION TOP-ROW))))
 
 (DEFMETHOD (MENU :SET-COLUMN-SPEC-LIST) (NEW-COLUMN-SPEC-LIST)
@@ -2138,8 +2138,8 @@ This is used by highlighting option. |#
 (DEFMETHOD (MENU :SET-ITEM-LIST) (NEW-ITEM-LIST)
   (WHEN (PLUSP (SHEET-MENU-HIGHLIGHTING))
     (SEND SELF :SET-HIGHLIGHTED-ITEMS HIGHLIGHTED-ITEMS))
-  
-;;;; If multicolumn is specified the sort funtion is performed in 
+
+;;;; If multicolumn is specified the sort funtion is performed in
 ;;;; the upadte-item-list method so don't do it again
   (WHEN (and SORT (zerop (SHEET-MENU-MULTICOLUMN)))
     (MENU-ITEM-SORTER NEW-ITEM-LIST SORT))
@@ -2176,7 +2176,7 @@ This is used by highlighting option. |#
                                  OLD-ITEM-LIST)))
           ;; Something has changed, set up new item list.
           ;; Start by extracting the column lists and setting up the headings.
-	 
+
 	  (LOOP FOR (HEADING FORM . OPTIONS) IN COLUMN-SPEC-LIST
                 AND STATEL ON PREVIOUS-STATE
 		;; modified the next line to remove NILs from the item list
@@ -2185,7 +2185,7 @@ This is used by highlighting option. |#
                 AND SORT-OPTION     = (CADR (MEMBER :SORT OPTIONS))
 		AND SORT-ALL = (SEND SELF :SORT)
 		IF (OR SORT-ALL SORT-OPTION)
-		WHEN SORT-OPTION 
+		WHEN SORT-OPTION
                 DO (SETQ INTERIOR-ITEMS (MENU-ITEM-SORTER INTERIOR-ITEMS SORT-OPTION))
 		ELSE DO (SETQ INTERIOR-ITEMS (MENU-ITEM-SORTER INTERIOR-ITEMS SORT-ALL))
                 COLLECT `(,HEADING :NO-SELECT T . ,OPTIONS) INTO NEW-ITEM-LIST
@@ -2692,7 +2692,7 @@ would make complex code even more complex, with only a small gain in  usability.
           ;; The original movement moved to a good item.  Update the mouse accordingly.
           (MENU-UPDATE-MOUSE-CURSOR CURRENT-ROW))))
   NIL)
- 
+
 #| The following function is the easy-to-use interface to the MENU flavor.  The idea  is
 to make full use of  the MENU flavor's initialization  options, but to provide  defaults
 which allow the novice user to easily bring up a menu.  |#
@@ -2890,7 +2890,7 @@ Otherwise, NIL is returned."
                                         :SORT                SORT))
           (SETQ MENU-CHOOSE-WAS-ABORTED MENU)
           (SEND MENU :SET-HIGHLIGHTED-ITEMS HIGHLIGHTED-ITEMS)
-          (DELAYING-COMPUTE-GEOMETRY 
+          (DELAYING-COMPUTE-GEOMETRY
             (SEND MENU :SET-LABEL LABEL))
 	  (IF MULTICOLUMN
               (SEND MENU :SET-COLUMN-SPEC-LIST ALIST)
@@ -2898,7 +2898,7 @@ Otherwise, NIL is returned."
 	      (IF (NOT DYNAMIC)
 		  (SEND MENU :SET-ITEM-LIST ALIST)
 		  ;;;; HACK ALERT
-		  ;;;; ------ this is not the no-op it seems 
+		  ;;;; ------ this is not the no-op it seems
 		  ;;;; some instance variables and the geometry need
 		  ;;;; to be reset after label processing ------
 		  (send menu :set-item-list (send menu :item-list))))
@@ -2918,7 +2918,7 @@ Otherwise, NIL is returned."
 	    (send menu :set-label-background label-background)
 	    )
           )
-	  
+
           (EXPOSE-WINDOW-NEAR MENU NEAR-MODE)
           (AND DEFAULT-ITEM
                (NOT (MEMBER (CAR NEAR-MODE) '(:MOUSE :POINT) :TEST #'EQ))
@@ -3027,7 +3027,7 @@ NIL is returned for both values."
 		 :borders 5
 		 :deexposed-typeout-action :permit)
   :initial-copies 0
-  ) 
+  )
 
 
 
@@ -3042,7 +3042,7 @@ NIL is returned for both values."
 	(str (APPLY #'FORMAT nil (CONS format-string format-args)))
 	val)
     (WHEN (eq width :default) (setq width (max 40 (+ (length str) 20))))
-    (SEND w :set-size-in-characters width 4)  
+    (SEND w :set-size-in-characters width 4)
     (send w :expose-near expose-near)
     (window-call (w :deactivate)
       (loop

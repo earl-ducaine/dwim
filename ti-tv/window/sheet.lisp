@@ -39,14 +39,14 @@
 ;;; 		     called from within grow-bit-array when on a Mac.
 ;;; 05/27/88   KJF      Check for default-screen being NIL in FONT-EVALUATE.  Needed during Window System
 ;;;                        build.  Caused by change by LG on 3/08/88, I think??
-;;; 05-25-88   ab      Remove LG fix to SHEET-NEW-FONT-MAP of 5-17. 
+;;; 05-25-88   ab      Remove LG fix to SHEET-NEW-FONT-MAP of 5-17.
 ;;;  05/25/88  LG      Fix the 5/10 patch to work right!!! (Mea culpa, mea culpa!)
 ;;; 05/23/88   KJF     Changed references to screen-descriptor to screens-who-line-screen due to source build
 ;;;                        being done which allowed instance variable to take on a meaningful name.
 ;;;  05/17/88  LG      In sheet-new-font-map, calculate a sheet's line-height as the sum
 ;;;  		        of the largest font-baseline and the largest (- font-char-height
 ;;;  		        font-baseline), each maximized independently over all the sheet's
-;;;  		        fonts. 
+;;;  		        fonts.
 ;;;   05/10/88  LG         In :change-of-size-or-margins tell the Mac when a window with or
 ;;;                                 without a bit array changes size.  Don't try to redirect a window's
 ;;;                                 screen-array if there's nothing to indirect from or to.
@@ -60,8 +60,8 @@
 ;;;                          multiple screen/dual monitor support.  Search for KJF
 ;;;   3/18/88   KED       Changed sheet-parse-font-descriptor to return a new font rather
 ;;;                                than going into error handler when font not found on Mac screens.
-;;;   03/08/88  LG	Made FONT-EVALUATE always parse the font descriptor it is about to return for 
-;;;		graceful handling of Mac font descriptors. 
+;;;   03/08/88  LG	Made FONT-EVALUATE always parse the font descriptor it is about to return for
+;;;		graceful handling of Mac font descriptors.
 ;;;   03/07/88  LG       Made sure :change-of-size-or-margins and :set-superior both
 ;;; 		      told the Mac whenever they changed a window's bit-array.
 ;;;   02/25/88  LG       (:method sheet :deexpose) was not telling the Mac about having created a bit array
@@ -88,7 +88,7 @@
 ;;;   3/12/87  GRH	Fix bit-arrays so that they are only as wide as necessary, not as wide as the screen.
 ;;;   3/09/87  TWE	Defined 2 methods to allow one to set or get the keypad bit.  This is needed for the
 ;;;			VT100 emulator.
-;;;   3/04/87  KDB	Fixed DISPLAY-FONT line-width problem. Closed SPR 3764. 
+;;;   3/04/87  KDB	Fixed DISPLAY-FONT line-width problem. Closed SPR 3764.
 ;;;  1/09/87   TWE	Fixed up the initialization for the keypad-enable initialization option to set the flag to
 ;;;			the proper value.
 ;;; 12/22/86   TWE	Made several changes to make the build process cleaner.
@@ -319,7 +319,7 @@ available to us now.  INHIBIT-SCHEDULING-FLAG must be non-NIL."
 	     (AND LOCK (NOT (ZEROP (SHEET-LOCK-COUNT SHEET)))))
 	 ;; If we own the lock, or if temp locked and the lock count is
          ;; non-zero, then we must decrement the lock count.
-	 (SETF (SHEET-LOCK-COUNT SHEET) (1- (SHEET-LOCK-COUNT SHEET)))	 
+	 (SETF (SHEET-LOCK-COUNT SHEET) (1- (SHEET-LOCK-COUNT SHEET)))
 	 (WHEN (AND (ZEROP (SHEET-LOCK-COUNT SHEET))
 		    (NOT (CONSP LOCK)))
 	   ;; If the count is currently zero, and the sheet is not
@@ -506,7 +506,7 @@ other processes can run when this function is called."
         &AUX LOCK-COUNT)
   ;; This code assumes that the caller has locked the sheet once already.
   (SETF (SHEET-LOCK-COUNT SHEET)
-	(SETQ LOCK-COUNT 
+	(SETQ LOCK-COUNT
 	      (+ SUPERIOR-LOCK-COUNT (SHEET-LOCK-COUNT SHEET)
 		 (OR (CDR (ASSOC SHEET STATE :TEST #'EQ)) 0)
 		 -1)))
@@ -600,7 +600,7 @@ do the actual work."
        (SETQ INHIBIT-SCHEDULING-FLAG NIL)
        (SEND SELF :DEEXPOSE)
        (SETQ INHIBIT-SCHEDULING-FLAG T))
-     (COND ((MEMBER SELF (SHEET-INFERIORS SUPERIOR) :TEST #'EQ) 
+     (COND ((MEMBER SELF (SHEET-INFERIORS SUPERIOR) :TEST #'EQ)
 	    (OR (ZEROP (SHEET-LOCK-COUNT SUPERIOR))
 		;; Superior is locked by us, must subtract his lock
 		;; count from ours because he isn't going to do it
@@ -730,13 +730,13 @@ OUTER-SHEET's superior."
 (DEFUN TURN-OFF-SHEET-BLINKERS (SHEET)
   "Turn visibility of blinkers of SHEET off."
   (DOLIST (BLINKER (SHEET-BLINKER-LIST SHEET))
-    (AND (MEMBER (BLINKER-VISIBILITY BLINKER) '(:BLINK :ON) :TEST #'EQ) 
+    (AND (MEMBER (BLINKER-VISIBILITY BLINKER) '(:BLINK :ON) :TEST #'EQ)
 	 (SETF (BLINKER-VISIBILITY BLINKER) :OFF))))
 
 (DEFUN TURN-ON-SHEET-BLINKERS (WINDOW)
   "Turns on the blinkers in the specified window"
   (DOLIST (ONE-BLINKER (SEND WINDOW :SEND-IF-HANDLES :BLINKER-LIST))
-    (SEND ONE-BLINKER :SET-VISIBILITY :BLINK))) 
+    (SEND ONE-BLINKER :SET-VISIBILITY :BLINK)))
 
 (DEFUN GET-VISIBILITY-OF-ALL-SHEETS-BLINKERS (SHEET)
   "Returns visibility of all of SHEET's blinkers, including inferiors."
@@ -798,7 +798,7 @@ all of the blinkers are turned off when we exit from here."
 (DEFUN SELECT-SHEET-BLINKERS (SHEET)
   "Set visibility of blinkers of SHEET to their SELECTED values."
   (DOLIST (BLINKER (SHEET-BLINKER-LIST SHEET))
-    (AND (MEMBER (BLINKER-VISIBILITY BLINKER) '(:ON :OFF) :TEST #'EQ) 
+    (AND (MEMBER (BLINKER-VISIBILITY BLINKER) '(:ON :OFF) :TEST #'EQ)
 	 (SETF (BLINKER-VISIBILITY BLINKER) :BLINK))))
 
 (DEFUN SHEET-FOLLOWING-BLINKER (SHEET)
@@ -870,7 +870,7 @@ with INHIBIT-SCHEDULING-FLAG bound."
           TOP-MARGIN-SIZE
           RIGHT-MARGIN-SIZE
           BOTTOM-MARGIN-SIZE))
- ;;; Screen management issues 
+ ;;; Screen management issues
 (DEFMETHOD (SHEET :NAME-FOR-SELECTION) () NIL)
 
 (DEFMETHOD (SHEET :ORDER-INFERIORS) ()
@@ -1173,7 +1173,7 @@ values."
     (SETF window-id t)
     (remember-bit-array self))
   (SETF (SHEET-OUTPUT-HOLD-FLAG) 1)
-  
+
 ;;;>>> changed char and erase aluf
   (OR (VARIABLE-BOUNDP CHAR-ALUF)
       (if (color-system-p self)
@@ -1189,11 +1189,11 @@ values."
   (SETQ color-reverse-video-state reverse-video-p)
 ;;; now flip the colors if reverse-video is true. NOTE - check the instance variable, not the AUX variable, since the
 ;;; instance variable is inittable.
-  
+
   (WHEN (AND color-reverse-video-state (color-system-p self))
     (SEND self :complement-bow-mode)
     )
-  
+
 ;; Setup the color map based on who and what we are.
   (UNLESS color-map  ;; If one already specified, don't change it.
     (IF (TYPEP self 'screen)  ;; If we're a screen, we have our own copy.
@@ -1423,7 +1423,7 @@ the standard-screen (default-screen)."
 (DEFMETHOD (SCREEN :SELECTABLE-WINDOWS) ()
   (MAPCAN #'(LAMBDA (I) (FUNCALL I :SELECTABLE-WINDOWS)) INFERIORS))
 
-(DEFMETHOD (SHEET :IDLE-LISP-LISTENER) () 
+(DEFMETHOD (SHEET :IDLE-LISP-LISTENER) ()
   (IF SUPERIOR
       (FUNCALL SUPERIOR :IDLE-LISP-LISTENER)
       (IDLE-LISP-LISTENER SELF)))
@@ -1509,7 +1509,7 @@ the standard-screen (default-screen)."
 (DEFMETHOD (SCREEN :PARSE-FONT-NAME) (FD)
   (MULTIPLE-VALUE-BIND (FONT -NAME-)
       (SEND SELF :PARSE-FONT-SPECIFIER FD)
-    (OR -NAME- 
+    (OR -NAME-
 	(IF (AND (SYMBOLP FD)
 	     (EQ (FONT-EVALUATE FD) FONT))
 	    FD (FONT-NAME FONT)))))
@@ -1526,7 +1526,7 @@ screen for which the font purpose is evaluated."
       ;; Find font name belonging to font purpose
       (CHECK-TYPE SCREEN SCREEN "a SHEET or a SCREEN object.")
       (SETQ FONTNAME (SEND SCREEN :FONT-NAME-FOR FONTNAME)))
-    
+
     ;; Evaluate font name symbol
     (send screen :parse-font-descriptor
 	  (DO ((F FONTNAME (SYMBOL-VALUE F)))
@@ -1551,7 +1551,7 @@ This is actually the array index into the font map."
   (ARRAY-LEADER FONT-MAP 2))
 
 (DEFSTRUCT (FONT-MAP (:ALTERANT NIL) (:MAKE-ARRAY (:LENGTH 26.)) (:CONC-NAME FONT-MAP-)
-  (:CALLABLE-CONSTRUCTORS NIL) (:PREDICATE NIL) (:COPIER NIL) (:TYPE :ARRAY-LEADER))
+   (:PREDICATE NIL) (:COPIER NIL) (:TYPE :ARRAY-LEADER))
   (FILL-POINTER 26.)
   (FONT-LIST NIL :DOCUMENTATION
 	     "List of fonts or font names from this font-map was constructed.")
@@ -1767,7 +1767,7 @@ array of fonts or font descriptors.  VSP is a number of pixels."
 (DEFUN FONT-CHAR-MIN-RASTER-WIDTH (FONT CHAR-CODE &OPTIONAL LOW-LEVEL
 				   &AUX BIT-POS WORD-POS TEM MIN-RASTER-WIDTH F-RASTER-WIDTH
 				   RASTER-HEIGHT)
-  
+
   (IF (GET (font-name font) :mac-fd)
       (AREF (font-char-width-table font) char-code)
     ;; else...
@@ -1817,7 +1817,7 @@ The first font in FONT-MAP-OR-LIST will be the current font prior to entering th
 	   (SEND ,window :SET-FONT-MAP ,font-map-or-list)
 	   ,@BODY)
        (SEND ,window :SET-FONT-MAP OLD-FONT-MAP)
-       ;; Do this because the :current-font was NOT necessarily the 0'th font in old font map array 
+       ;; Do this because the :current-font was NOT necessarily the 0'th font in old font map array
        (SEND ,window :SET-CURRENT-FONT OLD-CURRENT-FONT T))))
 
 ;; may 04/04/89 ADDED new function.
@@ -1939,7 +1939,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
         ;; could be made to see if the current cursorpos is (0,0) to see if it can just smash
         ;; the item list (like we are doing here).
 	(SET-IN-INSTANCE WINDOW 'ITEM-LIST NIL)
- 	(SEND WINDOW :STRING-OUT-EXPLICIT 
+ 	(SEND WINDOW :STRING-OUT-EXPLICIT
 	      "Mouse on any character to select it"
 	      START-X-OFFSET
 	      (MAX (- START-Y-OFFSET 75.) (TRUNCATE START-Y-OFFSET 4))
@@ -1948,7 +1948,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
 	      aluf)) ;;; ior to char-aluf
 
       ;; Write out the name of this font centered
-      (SEND WINDOW :STRING-OUT-CENTERED-EXPLICIT 
+      (SEND WINDOW :STRING-OUT-CENTERED-EXPLICIT
 	    (FORMAT NIL "~A ~:[(Continued)~]" (FONT-NAME FONT) (ZEROP ROW-INDEX))
 	    START-X-OFFSET
 	    (MAX (- START-Y-OFFSET 50.)
@@ -1957,7 +1957,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
 		 (+ START-X-OFFSET (* COLUMNS COLUMN-INCREMENT)))
 	    999.
 	    HEADER-FONT)
-      
+
       ;; Do the Vertical lines and put the number labels above them.
       (DOTIMES (COLUMN-INDEX COLUMNS)
 	;; Draw the vertical lines.
@@ -1989,7 +1989,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
 			   (+ START-X-OFFSET X-OFFSET-LINE-FUDGE (* COLUMNS COLUMN-INCREMENT))  ; X
 			   (+ START-Y-OFFSET Y-OFFSET-LINE-FUDGE)       ; Y
                            ALUF WINDOW) ;;; >>> ior to char-aluf
-	
+
 
 
       ;; Draw the topmost horizontal line.
@@ -1998,8 +1998,8 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
 			    (+ START-X-OFFSET X-OFFSET-LINE-FUDGE)      ; X
 			    (+ START-Y-OFFSET Y-OFFSET-LINE-FUDGE)      ; Y
 			     ALUF WINDOW) ;;; ior to char-aluf
-			       
- 
+
+
 
       ;; Loop through all of the rows in the font that can fit on one screen.
       (BLOCK OUTER
@@ -2026,7 +2026,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
 		    (SETQ CURSOR-X (+ START-X-OFFSET (* COLUMN-INDEX COLUMN-INCREMENT)))
 		    ;; Here is where we actually draw the character.
 		    ;; Draw a character in the sample font above the other character.
-		   
+
 		      (DRAW-CHAR SAMPLE-FONT
 				 (IF (< CHARACTER (FONT-FILL-POINTER SAMPLE-FONT))
 				     CHARACTER
@@ -2050,7 +2050,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
 			    (- CURSOR-X 1)                                 ; Left
 			    (- CURSOR-Y 1)                                 ; Top
 			    (+ CURSOR-X (MAX SAMPLE-FONT-MAX-RASTER-WIDTH  ; Right
-					     FONT-MAX-RASTER-WIDTH) 1)	      
+					     FONT-MAX-RASTER-WIDTH) 1)
 			    (+ CURSOR-Y SPACING-BETWEEN-FONTS              ; Bottom
 			       (FONT-RASTER-HEIGHT SAMPLE-FONT)
 			       (FONT-RASTER-HEIGHT FONT)
@@ -2098,7 +2098,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
 )
 
 (DEFMETHOD (SHEET :SET-REVERSE-VIDEO-P) (REVERSE-VIDEO-P)
-  (IF (color-system-p self)  
+  (IF (color-system-p self)
      (WHEN (NEQ reverse-video-p color-reverse-video-state) ; requested state differs from current state
        (SETQ color-reverse-video-state reverse-video-p)    ; set state to new state (which must be the opposite of what it was!)
        (SEND self :complement-bow-mode)                    ; now reverse the meaning of foreground and background color
@@ -2179,7 +2179,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
                   ;; deexpose them with us locked.
 		  (DOLIST (I EXPOSED-INFERIORS)
 		    (FUNCALL I :DEEXPOSE :DEFAULT :NOOP NIL))
-		  (WITHOUT-INTERRUPTS		    
+		  (WITHOUT-INTERRUPTS
 		    (SETQ OLD-SCREEN-ARRAY SCREEN-ARRAY)
 		    (LET ((ARRAY (SHEET-SUPERIOR-SCREEN-ARRAY)))
 		      (REDIRECT-ARRAY OLD-SCREEN-ARRAY
@@ -2204,7 +2204,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
   ;; This function erases the margins of a window.  This function must
   ;; be called from within a method in order to work properly.  The
   ;; order of erasing is as follows.
-  ;;      
+  ;;
   ;;      .--------C--------.
   ;;      |                 |
   ;;      |                 |
@@ -2214,7 +2214,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
   ;;      |                 |
   ;;      |                 |
   ;;      `--------D--------'
-  ;;      
+  ;;
   ;; The letters on the sides of the labels correspond to the comment on
   ;; the call to %DRAW-RECTANGLE which does the actual erasing of the
   ;; margin.
@@ -2412,7 +2412,7 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
 	(NOT (= OLD-INSIDE-HEIGHT (SHEET-INSIDE-HEIGHT))))))
 
 ;;The following used to be used by the method (SHEET :AFTER :CHANGE-OF-SIZE-OR-MARGINS)
-;;See the commented-out method right below this function. 
+;;See the commented-out method right below this function.
 ;(DEFUN CLEAR-HUGE-RESOURCES (SUPERIOR)
 ;  "Scan through all window resources that have SUPERIOR as their
 ;superior to see if they will fit within SUPERIOR."
@@ -2426,13 +2426,13 @@ RESET-CURSOR-P - IF non-nil, puts the cursor at 0 0 instead of at the end of the
 ;	SUPERIOR-HEIGHT)
 ;    (MULTIPLE-VALUE-SETQ (SUPERIOR-WIDTH SUPERIOR-HEIGHT)
 ;      (SEND SUPERIOR :SEND-IF-HANDLES :SIZE))
-    
+
 ;    ; Go through the list of window resource names maintained by
 ;    ; the window system.
 ;    (DOLIST (RESOURCE-NAME TV:WINDOW-RESOURCE-NAMES)
 ;      (LET (
 ;            ;; Flag -> t when we need to clear the resource.
-;            (CLEAR-THE-RESOURCE NIL)	
+;            (CLEAR-THE-RESOURCE NIL)
 ;	    (RESOURCE (GET RESOURCE-NAME 'DEFRESOURCE))
 ;            ;; height, width of window resource.
 ;	    WINDOW-HEIGHT
@@ -2671,7 +2671,7 @@ conversion may take place."
 				 BIT-ARRAY 0)
 		 (when (mac-window-p self)
 		   (send-adjust-bit-array-maybe self)
-		   (redirect-drawing-of-window-and-inferiors self)))		 
+		   (redirect-drawing-of-window-and-inferiors self)))
 		(T
 		 (REDIRECT-ARRAY OLD-SCREEN-ARRAY (ARRAY-ELEMENT-TYPE OLD-SCREEN-ARRAY)
 				 (TRUNCATE (* LOCATIONS-PER-LINE 32.)
@@ -2732,7 +2732,7 @@ conversion may take place."
 	    (RETURN-FROM ABORT T BITS-ACTION NIL))
 	  (OR (NOT INSIDE-EXPOSE-METHOD)
 	      (NULL SUPERIOR)
-	      (MEMBER SELF (SHEET-INFERIORS SUPERIOR) :TEST #'EQ) 
+	      (MEMBER SELF (SHEET-INFERIORS SUPERIOR) :TEST #'EQ)
 	      ;; We can only be exposed if we are activated
 	      (RETURN-FROM
 		ABORT NIL BITS-ACTION
@@ -3207,7 +3207,7 @@ some bits may remain)"
 	   (%DRAW-RECTANGLE WIDTH HEIGHT 0 0 ERASE-ALUF SELF))
 	 (SEND SELF :REFRESH-MARGINS)
 	 (DOLIST (INFERIOR INFERIORS)
-	   (AND 
+	   (AND
              ;; EXPOSED-INFERIORS may not all be on screen.
              (SHEET-EXPOSED-P INFERIOR)
 		(FUNCALL INFERIOR :REFRESH :COMPLETE-REDISPLAY)))
@@ -3500,7 +3500,7 @@ locks, or do nothing.  Do nothing means we wait, as described above."
                                "How do you want to handle error in process ~A?
 You can handle it in the error handler by typing
         C  to use the cold-load stream (like Terminal Call),
-        U  to forcibly unlock all windows so a notification can come out 
+        U  to forcibly unlock all windows so a notification can come out
            (like Terminal Control-Clear-input)
      or N  to tell it to wait until you do some other thing. "
 				     (PROCESS-NAME CURRENT-PROCESS))))

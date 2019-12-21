@@ -22,11 +22,11 @@
 
 (DEFVAR *min-font-length* 128.)
 
-(DEFSTRUCT (font-descriptor (:type :array-leader) :named (:callable-constructors nil) (:conc-name nil))
+(DEFSTRUCT (font-descriptor (:type :array-leader) :named (:conc-name nil))
 	   (fd-fill-pointer 0)
 	   fd-name
 	   FD-LINE-SPACING		;; ;  Vertical distance between baselines.
-	   FD-BASELINE			;; ;  Vertical distance from top of characters in this font.  
+	   FD-BASELINE			;; ;  Vertical distance from top of characters in this font.
 					;; ;  The baseline is what is aligned for different fonts.
 	   FD-BLINKER-HEIGHT		;; ;  Height of a "blinker" in this font.
 	   FD-BLINKER-WIDTH		;; ;  Width of a "blinker" in this font.
@@ -47,7 +47,7 @@
 ;; ;  A CHAR-DESCRIPTOR is a two dimensional array (with leader).
 ;; ;  The first dimension is the height of the character and the second is the width
 
-(DEFSTRUCT (char-descriptor (:type :array-leader) :named (:callable-constructors nil) (:conc-name nil))
+(DEFSTRUCT (char-descriptor (:type :array-leader) :named (:conc-name nil))
 	   cd-fill-pointer
 	   cd-name
 	   cd-char-width		;; ;  The horizontal distance taken by this character
@@ -88,7 +88,7 @@ also alters the corresponding font descriptor."
 	font-descriptor font-chars-exist-table temp
 	raster-width character-width left-kern pixel)
     "Create an return a font-descriptor containing the data from font."
-    
+
     (ERRSET (SETQ font-chars-exist-table (tv:font-chars-exist-table font)) nil)
     ;; Correct for old fonts that may not have valid fill pointers.
     (WHEN (< (tv:font-fill-pointer font) *min-font-length*)
@@ -112,8 +112,8 @@ also alters the corresponding font descriptor."
 	     ;; the window system to handle these chars correctly.
 	     (SETQ character-width (COND (fcwt (OR (AREF fcwt char-code) fcw)) ;don't put nil in CD.
 					 (t fcw)))
-	     (SETQ raster-width (tv:font-char-min-raster-width font char-code)) 
-	     ;; If we don't know for sure which chars exist, 
+	     (SETQ raster-width (tv:font-char-min-raster-width font char-code))
+	     ;; If we don't know for sure which chars exist,
 	     ;; discard chars containing no information.
 	     (COND ((AND (NULL font-chars-exist-table)
 			 (ZEROP raster-width)

@@ -147,7 +147,7 @@ Returns the new edges of WINDOW."
     (MULTIPLE-VALUE-BIND (LEFT TOP RIGHT BOTTOM)
         ;; Get the largest rectangle.
 	(EXPAND-RECTANGULAR-AREA
-	  (SHEET-SUPERIOR WINDOW)	
+	  (SHEET-SUPERIOR WINDOW)
 	  X-OFFSET
 	  Y-OFFSET
 	  (+ X-OFFSET (SHEET-WIDTH WINDOW))
@@ -191,7 +191,7 @@ SUPERIOR (except IGNORED-WINDOW)."
 
 ;;; The hairy window whitespace reclaimer.  This is used to access
 ;;; elements of the list created by SEC-EXPAND-ALL.
-(DEFSTRUCT (EXPAND-WINDOWS-ITEM (:CONSTRUCTOR NIL) (:CONC-NAME NIL) (:CALLABLE-CONSTRUCTORS NIL)
+(DEFSTRUCT (EXPAND-WINDOWS-ITEM (:CONSTRUCTOR NIL) (:CONC-NAME NIL)
   (:ALTERANT ALTER-EXPAND-WINDOWS-ITEM) (:PREDICATE NIL) (:COPIER NIL) (:TYPE :LIST))
   EXPAND-WINDOWS-WINDOW
   EXPAND-WINDOWS-LEFT
@@ -964,35 +964,35 @@ exposed inferior."
 	    (w:CVV-GET-COLOR w s o n window)))
   (setq fore-list `(foreground "Foreground Color"
 			       :side-effect ,local-side-effect  ;;w:CVV-GET-COLOR
-			       :documentation "The color text is drawn."  
+			       :documentation "The color text is drawn."
 			       :menu `(("Color Names" :font fonts:hl12b :color ,white :no-select)
 				       ,@w:color-alist ("" :no-select nil)
 				       ("Other" :font fonts:hl12b :color ,white :no-select)
 				       ("Show Color Map" :value :color-map)
 				       ("Enter Color Number" :value :color-number))))
   (setq back-list `(background "Background Color" :side-effect ,local-side-effect ;;w:CVV-GET-COLOR
-			       :documentation "The color the window becomes when erased."  
+			       :documentation "The color the window becomes when erased."
 			       :menu `(("Color Names" :font fonts:hl12b :color ,white :no-select)
 				       ,@w:color-alist ("" :no-select nil)
 				       ("Other" :font fonts:hl12b :color ,white :no-select)
 				       ("Show Color Map" :value :color-map)
 				       ("Enter Color Number" :value :color-number))))
-  (setq border-list `(border-color "Border Color" :side-effect ,local-side-effect  ;;W:CVV-GET-COLOR	
-				   :documentation "The color of the window's border"  
+  (setq border-list `(border-color "Border Color" :side-effect ,local-side-effect  ;;W:CVV-GET-COLOR
+				   :documentation "The color of the window's border"
 				   :menu `(("Color Names" :font fonts:hl12b :color ,white :no-select)
 					   ,@w:color-alist ("" :no-select nil)
 					   ("Other" :font fonts:hl12b :color ,white :no-select)
 					   ("Show Color Map" :value :color-map)
 					   ("Enter Color Number" :value :color-number))))
-  (setq label-list `(label-color "Label Color" :side-effect ,local-side-effect  ;;W:CVV-GET-COLOR  
-				 :documentation "The color of the LABEL text."  
-				 :menu `(("Color Names" :font fonts:hl12b :color ,white :no-select)	
+  (setq label-list `(label-color "Label Color" :side-effect ,local-side-effect  ;;W:CVV-GET-COLOR
+				 :documentation "The color of the LABEL text."
+				 :menu `(("Color Names" :font fonts:hl12b :color ,white :no-select)
 					 ,@w:color-alist ("" :no-select nil)
 					 ("Other" :font fonts:hl12b :no-select)
 					 ("Show Color Map" :value :color-map)
 					 ("Enter Color Number" :value :color-number))))
-  (setq label-back-list `(label-background "Label Background Color" :side-effect ,local-side-effect  ;;W:CVV-GET-COLOR  
-					   :documentation "The color of the label area"  
+  (setq label-back-list `(label-background "Label Background Color" :side-effect ,local-side-effect  ;;W:CVV-GET-COLOR
+					   :documentation "The color of the label area"
 					   :menu `(("Color Names" :font fonts:hl12b :color ,white :no-select)
 						   ,@w:color-alist ("" :no-select nil)
 						   ("Other" :font fonts:hl12b :no-select)
@@ -1113,7 +1113,7 @@ exposed inferior."
 	   (OLD-BORDER-MARGIN-WIDTH-VALUE BORDER-MARGIN-WIDTH-VALUE))
       (DECLARE
 	(SPECIAL BORDER-MARGIN-WIDTH-VALUE CURRENT-FONT-VALUE MORE-P-VALUE REVERSE-VIDEO-P
-		 BORDERS-SPEC LABEL-OR-NAME VSP foreground background border-color 
+		 BORDERS-SPEC LABEL-OR-NAME VSP foreground background border-color
                  label-color label-background IN-ACTION CHAR-ALU-FCN
 		 ERASE-ALU-FCN PRIORITY-VALUE
 		 SAVE-BITS-VALUE OUT-ACTION OTHER-OUT-ACTION))
@@ -1135,7 +1135,7 @@ exposed inferior."
                                              (color-MAKE-ATTRIBUTES-LIST WINDOW BORDERS-P LABEL-P NAME-P)
                                              (MAKE-ATTRIBUTES-LIST WINDOW BORDERS-P LABEL-P NAME-P)
                                           )
-					:LABEL `(:string 
+					:LABEL `(:string
 					  ,(FORMAT NIL "Edit window attributes of ~A." WINDOW)
 					  :color ,tv:*default-menu-label-foreground*
 					  :background ,tv:*default-menu-label-background*)
@@ -1284,7 +1284,7 @@ exposed inferior."
 		   (+ TRI-HEIGHT RECT-HEIGHT))))
 
 (DEFUN SET-FOLLOWING-ARROW-BLINKER-ORIGIN (BLINKER X-ORIGIN Y-ORIGIN)
-  (SEND BLINKER :SET-ORIGIN X-ORIGIN Y-ORIGIN))					
+  (SEND BLINKER :SET-ORIGIN X-ORIGIN Y-ORIGIN))
 
 (DEFMETHOD (FOLLOWING-ARROW-BLINKER :SET-ORIGIN) (NX-ORIGIN NY-ORIGIN)
   (WITHOUT-INTERRUPTS
@@ -1404,7 +1404,7 @@ exposed inferior."
     ;; else...
     (SYSTEM:%DRAW-shaded-TRIANGLE X-POS Y-POS X2 Y2 X4 Y4 (mouse-alu phase) t t nil  nil SHEET)
     (SYSTEM:%DRAW-shaded-TRIANGLE X-POS Y-POS X4 Y4 X6 Y6 (mouse-alu phase) t t nil  nil SHEET)
-    (SYSTEM:%DRAW-shaded-TRIANGLE X-POS Y-POS X6 Y6 X7 Y7 (mouse-alu phase) t t nil  nil SHEET) 
+    (SYSTEM:%DRAW-shaded-TRIANGLE X-POS Y-POS X6 Y6 X7 Y7 (mouse-alu phase) t t nil  nil SHEET)
     (SYSTEM:%DRAW-shaded-TRIANGLE X-POS Y-POS X7 Y7 X5 Y5 (mouse-alu phase) t t nil  nil SHEET)
     (SYSTEM:%DRAW-shaded-TRIANGLE X-POS Y-POS X5 Y5 X3 Y3 (mouse-alu phase) t t nil  nil SHEET))
   )

@@ -26,10 +26,10 @@ user-options are now in one of the obsolete files.  -GRH 2-19-86 |#
 ;;;  02/02/89  MAY	Removed hardcoded fonts:cptfontb in label of CHOOSE-VARIABLE-VALUES. SPR 9252.
 ;;;  08-13-88  MAY      Changed CHOOSE-VARIABLE-VALUES to use same kind of margin-choice's as does w:menu
 ;;; 			this allows documentation to be placed on margin-choices in cvv menus. Supplements SPR 8241.
-;;;                         Also changed CHOOSE-VARIABLE-VALUES-PROCESS-MESSAGE, EXECUTE-MARGIN-CHOICE, 
+;;;                         Also changed CHOOSE-VARIABLE-VALUES-PROCESS-MESSAGE, EXECUTE-MARGIN-CHOICE,
 ;;;			and MORE-CHOICES to look at eighth item in margin-choice list in/of sixth item.
 ;;;  08-13-88  MAY      Changed CHOOSE-VARIABLE-VALUES-MENU-PRINT to allow both lists AND non-lists in
-;;;			alist passed to :menu option of cvv. Was judging contents of alist on the first item ONLY. SPR 8348 
+;;;			alist passed to :menu option of cvv. Was judging contents of alist on the first item ONLY. SPR 8348
 ;;;  07/01/88  MAY       Changed :setup method of BASIC-CHOOSE-VARIABLE-VALUES to default -WIDTH- to t. SPR 7027
 ;;;  9/14/87    PMH      Added W:CVV-GET-COLOR; we should have made a :color type; until then
 ;;;                         use this function as a constraint or side-effect
@@ -50,7 +50,7 @@ user-options are now in one of the obsolete files.  -GRH 2-19-86 |#
 ;;;   4/23/87  SLM       Make the CHOOSE-VARIABLE-VALUES-KEYWORD property for CVV-type :CHARACTER
 ;;;                         use READ-CHAR instead of (READ-CHAR).  This makes :LIST-OF :CHARACTER work.
 ;;;                         Fixes PROFILE SPR# 4842.
-;;;   3/27/87  KDB	Fixed (BASIC-CHOOSE-VARIABLE-VALUES :SETUP) to handle between item space properly. 
+;;;   3/27/87  KDB	Fixed (BASIC-CHOOSE-VARIABLE-VALUES :SETUP) to handle between item space properly.
 ;;;                         Added CHOICE-ITEM-LAYOUT function to modularize calculation. Closed SPR# 3835.
 ;;;   3/20/87  KDB	Patched CVV-MULTIPLE-MENU-PRINT. Replaced CONSP with LISTP.
 ;;;   3/19/87  KDB	Fixed CVV :CHARACTER keyword handling. Now calls (READ-CHAR) instead of (CHAR)
@@ -64,7 +64,7 @@ user-options are now in one of the obsolete files.  -GRH 2-19-86 |#
 ;;;   3/11/87  KDB	Prevented CVV from accepting NIL variable lists. Closed SPR# 3813.
 ;;;   2/12/87  KDB	Fixed CVV margin choice item overlap bug by adding space to margin region width if
 ;;;                          more than two choices. Fix is in (BASIC-CHOOSE-VARIABLE-VALUES :SETUP) and
-;;;                         :SET-VARIABLES. Closes bug reports 3417 and 3418. 
+;;;                         :SET-VARIABLES. Closes bug reports 3417 and 3418.
 ;;;   2/05/87  TWE	Fixed up the CVV function to return NIL on the END key case if there is no margin
 ;;;			choice form to evaluate.  Also fixed up the ABORT key case to signal the abort
 ;;;			condition when there is no ABORT margin choice.  This fixes bug 3292.
@@ -150,12 +150,12 @@ the mouse documentation while the cursor is in the line area.  |#
   (DECLARE (:SELF-FLAVOR LINE-AREA-TEXT-SCROLL-MIXIN))
   (CASE OP
      ((:REFRESH :MOUSE-MOVES) NIL)
-     (:MOUSE-ENTERS-REGION 
+     (:MOUSE-ENTERS-REGION
       (MOUSE-SET-BLINKER-DEFINITION :CHARACTER 13. 6. :ON
 				    :SET-CHARACTER MOUSE-GLYPH-THIN-RIGHT-ARROW))
-     (:MOUSE-LEAVES-REGION 
+     (:MOUSE-LEAVES-REGION
       (MOUSE-STANDARD-BLINKER))
-     (:MOUSE-CLICK 
+     (:MOUSE-CLICK
       (LET (ITEM LINE)
 	(IF (AND (>= Y (SHEET-INSIDE-TOP))
 		 (SETQ LINE (+ TOP-ITEM (SHEET-LINE-NO () Y)))
@@ -165,7 +165,7 @@ the mouse documentation while the cursor is in the line area.  |#
 	      (SEND SELF :FORCE-KBD-INPUT `(:LINE-AREA ,ITEM ,SELF ,BD)))
 	    ;;ELSE
 	    (BEEP))))
-     (:WHO-LINE-DOCUMENTATION-STRING 
+     (:WHO-LINE-DOCUMENTATION-STRING
       (SEND SELF :LINE-AREA-MOUSE-DOCUMENTATION))))
 
 
@@ -238,7 +238,7 @@ the mouse documentation while the cursor is in the line area.  |#
 
 (DEFSTRUCT (CHOICE-TYPE (:CONSTRUCTOR           NIL)
                         (:CONC-NAME             NIL)
-                        (:CALLABLE-CONSTRUCTORS NIL)
+
                         (:ALTERANT              ALTER-CHOICE-TYPE)
                         (:PREDICATE             NIL)
                         (:COPIER                NIL)
@@ -252,7 +252,7 @@ the mouse documentation while the cursor is in the line area.  |#
 
 (DEFSTRUCT (CHOICE-ITEM (:CONSTRUCTOR           NIL)
                         (:CONC-NAME             NIL)
-                        (:CALLABLE-CONSTRUCTORS NIL)
+
                         (:ALTERANT              ALTER-CHOICE-ITEM)
                         (:PREDICATE             NIL)
                         (:COPIER                NIL)
@@ -274,7 +274,7 @@ the mouse documentation while the cursor is in the line area.  |#
 (DEFMETHOD (BASIC-MULTIPLE-CHOICE :ADJUSTABLE-SIZE-P) ()
   T)
 
-;;  Temporary hack.  Delete both of these forms when we know that the first 
+;;  Temporary hack.  Delete both of these forms when we know that the first
 ;;     method definition is no longer around.                                -GRH 9/30/86
 ;commented out 11/13/87 PMH
 ;(DEFMETHOD (BASIC-MULTIPLE-CHOICE :ENABLE-SCROLLING-P) () t)  ;;;;;
@@ -302,7 +302,7 @@ the mouse documentation while the cursor is in the line area.  |#
 	   (ALTER-CHOICE-TYPE CHOICE-TYPE CHOICE-TYPE-OFF-NEGATIVE-IMPLICATIONS ALLTYPES))))
   ;; Now compute the length of the name needed
   (SETQ NITEMS 0
-        NAME-LENGTH (IF ITEM-NAME (+  CHAR-WIDTH 
+        NAME-LENGTH (IF ITEM-NAME (+  CHAR-WIDTH
                                      (SHEET-STRING-LENGTH SELF ITEM-NAME)) 0))
   (DOLIST (CHOICE NEW-CHOICES)
     (SETQ NITEMS (1+ NITEMS))
@@ -311,7 +311,7 @@ the mouse documentation while the cursor is in the line area.  |#
                                 (+ (SHEET-STRING-LENGTH
                                      SELF
                                      (CHOICE-ITEM-NAME CHOICE))
-                                    CHAR-WIDTH)))))  
+                                    CHAR-WIDTH)))))
   ;; Make prototype boxes
   (DO ((X NAME-LENGTH (+ X TYPE-WIDTH))
        (TYPES CHOICE-TYPES (CDR TYPES))
@@ -768,7 +768,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 	   (BASIC-CHOOSE-VARIABLE-VALUES
 	    BORDERS-MIXIN
 	    w:scroll-bar-mixin
-	    TOP-BOX-LABEL-MIXIN  
+	    TOP-BOX-LABEL-MIXIN
 	    MARGIN-CHOICE-MIXIN
             ANY-TYI-MIXIN
 	    WINDOW)
@@ -832,10 +832,10 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 (DEFMETHOD (BASIC-CHOOSE-VARIABLE-VALUES :SET-VARIABLES)
            (ELEMS  &OPTIONAL NO-SET-HEIGHT
 	    ;; enable resizing as default behavior  PMH
-	    (-WIDTH- (not NO-SET-HEIGHT))	
+	    (-WIDTH- (not NO-SET-HEIGHT))
 	    EXTRA-WIDTH
 	    ;; take sensible default in case of resizing PMH
-	    EXTRA-MARGIN-CHOICE-WIDTH 	
+	    EXTRA-MARGIN-CHOICE-WIDTH
             &AUX (NELEM (LENGTH ELEMS)) TEMP margin-choices)
   (unless EXTRA-MARGIN-CHOICE-WIDTH		;if this flavor has margins mixed in
       (setf extra-margin-choice-width		;better make sure we get the width right PMH
@@ -843,7 +843,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 		(let ((between-item-spaces 60))
 		  (+ (CHOICE-ITEM-LAYOUT margin-choices)
 		     1 3  ;; FUDGE FOR LEFT AND RIGHT BORDERS
-		     (* between-item-spaces 
+		     (* between-item-spaces
 			(- (LENGTH  MARGIN-CHOICES) 1))))
 		0)))
   (SETQ TOP-ITEM 0)                             ;Unscroll
@@ -922,7 +922,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
   "RETURN THE TOTAL PIXEL WIDTH OF MARGIN CHOICE STRINGS, BOXES AND SPACE BETWEEN THEM"
   (LET ((BOX-AND-SPACE (+ (CHOICE-BOX-WIDTH SELF)
 			  (TRUNCATE (* (SHEET-CHAR-WIDTH SELF) BOX-WIDTH-FACTOR)))))
-  (SETQ TOTAL-STRING-AND-BOX-WIDTH (LOOP FOR CHOICE-STRING IN CHOICES  ;; STRING LENGTHS 
+  (SETQ TOTAL-STRING-AND-BOX-WIDTH (LOOP FOR CHOICE-STRING IN CHOICES  ;; STRING LENGTHS
 					    SUMMING (+ (SHEET-STRING-LENGTH SELF (string (CAR CHOICE-STRING)))
 						       BOX-AND-SPACE )) ;; SPACE BETWEEN STRING AND CHOICE BOX.
 				      )))
@@ -936,7 +936,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
   (SETQ FUNCTION NEW-FUNCTION)
   ;; SAVE THE CURRENT STACK AWAY SO THAT WE CAN LOOK AT AND CHANGE THE
   ;; VALUES OF SYMBOLS LOCATED THERE.
-  (SETQ STACK-GROUP 
+  (SETQ STACK-GROUP
 #-ELROY        CURRENT-STACK-GROUP
 #+ELROY        EH:*CURRENT-STACK-GROUP*)
   (SETF (IO-BUFFER-LAST-OUTPUT-PROCESS IO-BUFFER) CURRENT-PROCESS)      ;KLUDGE
@@ -945,7 +945,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
   (LET ((BETWEEN-ITEM-SPACE 60)) ;; default
     (SETQ EXTRA-MARGIN-CHOICE-WIDTH (+ (CHOICE-ITEM-LAYOUT NEW-MARGIN-CHOICES)
 					  1 3  ;; FUDGE FOR LEFT AND RIGHT BORDERS
-					  (* between-item-space 
+					  (* between-item-space
 					     (- (LENGTH  NEW-MARGIN-CHOICES) 1))))
        (SEND SELF :SET-VARIABLES ELEMS NIL -WIDTH- EXTRA-WIDTH EXTRA-MARGIN-CHOICE-WIDTH )))
 
@@ -1002,7 +1002,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
   (IF (CHAR= (SETQ CH (READ-CHAR STREAM)) #\return)
       NIL
       (WRITE-CHAR CH STREAM)))
-  
+
 ; Make it easy to add arbitrary constraints to choose variable values
 (SETF (GET :CONSTRAINT 'CHOOSE-VARIABLE-VALUES-KEYWORD-FUNCTION) 'CONSTRAINT-ITEM)
 (DEFUN CONSTRAINT-ITEM (KEYWORD-AND-ARGS)
@@ -1325,7 +1325,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
   (DECLARE (SPECIAL DEFAULTS))
   (SETQ STRING (READ-STRING STREAM))
   (AND (PLUSP (LENGTH STRING))
-       (SEND (FS:MERGE-PATHNAME-DEFAULTS 
+       (SEND (FS:MERGE-PATHNAME-DEFAULTS
 	       STRING
 	       (IF (SYMBOLP DEFAULTS) (SYMBOL-VALUE DEFAULTS) DEFAULTS))
 	:STRING-FOR-PRINTING)))
@@ -1364,7 +1364,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 ;;;  (LET ((FUNCTION (READ STREAM T)))
 ;;;    (UNLESS (OR (FUNCTIONP FUNCTION) (NULL FUNCTION))
 ;;;      (FERROR () "A function is required."))
-;;;    FUNCTION)) 
+;;;    FUNCTION))
 
 
 (SETF (GET :LIST 'CHOOSE-VARIABLE-VALUES-KEYWORD) '(PRIN1 READ-SEXP))
@@ -1381,7 +1381,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
   (LET ((FIXNUM (READ STREAM T)))
     (UNLESS (AND (FIXNUMP FIXNUM) (NOT (MINUSP FIXNUM)))
       (FERROR () "A non-negative integer is required"))
-    FIXNUM)) 
+    FIXNUM))
 
 
 
@@ -1396,7 +1396,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
   (LET ((FIXNUM-OR-NIL (READ STREAM T)))
     (OR (OR (NULL FIXNUM-OR-NIL) (AND (NOT (MINUSP FIXNUM-OR-NIL)) (FIXNUMP FIXNUM-OR-NIL)))
        (FERROR () "A positive integer or NIL is required"))
-    FIXNUM-OR-NIL)) 
+    FIXNUM-OR-NIL))
 
 
 ;;;(SETF (GET :FONT 'CHOOSE-VARIABLE-VALUES-KEYWORD) '(PRIN1 CVV-READ-FONT))
@@ -1411,7 +1411,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 ;;;      (FERROR () "A Font is required."))
 ;;;    (IF (AND (SYMBOLP FONT) (BOUNDP FONT))
 ;;;	(SYMBOL-VALUE FONT)
-;;;	FONT))) 
+;;;	FONT)))
 
 
 ;;;(SETF (GET :FONT-LIST 'CHOOSE-VARIABLE-VALUES-KEYWORD) '(PRIN1 CVV-READ-FONT-LIST))
@@ -1444,7 +1444,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 ;;;	 (KEYWORD (READ STREAM T)))
 ;;;    (UNLESS (KEYWORDP KEYWORD)
 ;;;      (FERROR () "A Keyword is required."))
-;;;    KEYWORD)) 
+;;;    KEYWORD))
 
 
 (SETF (GET :MULTIPLE-MENU 'CHOOSE-VARIABLE-VALUES-KEYWORD-FUNCTION) 'CVV-DECODE-MULTIPLE-MENU)
@@ -1455,7 +1455,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
     (VALUES (CLOSURE '(MENU ) 'CVV-MULTIPLE-MENU-PRINT)
 	    () () ()
 	    (CLOSURE '(MENU) 'CVV-MULTIPLE-MENU-READ)
-	    "Click left to select new values from a menu."))) 
+	    "Click left to select new values from a menu.")))
 
 
 (DEFUN CVV-MULTIPLE-MENU-READ (OLD-VALUE)
@@ -1480,15 +1480,15 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 (DEFUN CVV-MULTIPLE-MENU-PRINT (CURRENT-VALUES STREAM)
   (DECLARE (SPECIAL MENU ))
   (unless (listp current-values)  ;; must be a list...
-    (ferror nil "A variable that you specified had a value of ~A which was the wrong type.  You must redefine 
-         the variable to be a LIST in order to make the :MULTIPLE-MENU option work. 
+    (ferror nil "A variable that you specified had a value of ~A which was the wrong type.  You must redefine
+         the variable to be a LIST in order to make the :MULTIPLE-MENU option work.
 "    current-values current-values ))
-	   
-  (LET* ((MENU-ALIST (EVAL MENU))		
+
+  (LET* ((MENU-ALIST (EVAL MENU))
 	 (CURRENT-ITEM-STRINGS
 	   (LOOP FOR VALUE IN CURRENT-VALUES
 		 COLLECT (LOOP FOR MENU-ITEM IN MENU-ALIST
-			   
+
 			       WHEN (EQ VALUE (W:MENU-EXECUTE-NO-SIDE-EFFECTS MENU-ITEM))
 			       RETURN (W:MENU-ITEM-STRING MENU-ITEM)
 			       FINALLY (RETURN VALUE)))))
@@ -1589,7 +1589,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 
 ;;;(DEFPARAMETER CHARACTER-LIST-DEFAULT-REPRESENTATION-TYPE :FIXNUM
 ;;;   "Used by the CVV variable type :CHARACTER-LIST to determine what the elements of the list will be.
-;;; Must be either :fixnum or :character.") 
+;;; Must be either :fixnum or :character.")
 
 ;;;(DEFUN DECODE-CHARACTER-LIST (KWD-AND-ARGS)
 ;;;  "KWD-AND-ARGS is expected to be a list of one or two elements,
@@ -1602,7 +1602,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 ;;;	    (CASE REPRESENTATION-TYPE
 ;;;	      (:FIXNUM 'CVV-READ-GENERIC-CHARACTER-LIST)
 ;;;	      (:CHARACTER 'CVV-READ-CHARACTER-CHARACTER-LIST))
-;;;	    () () () '(:MOUSE-L-1 "Click Mouse to change this list of characters.")))) 
+;;;	    () () () '(:MOUSE-L-1 "Click Mouse to change this list of characters."))))
 
 ;;;(DEFUN CVV-READ-GENERIC-CHARACTER-LIST (REPRESENTATION-TYPE STREAM)
 ;;;  (LET ((CHAR-LIST (READ-SEXP STREAM)))
@@ -1615,13 +1615,13 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 ;;;		(CASE REPRESENTATION-TYPE
 ;;;		      (:FIXNUM (CHAR-INT (FIRST SUBLIST)))    ;Can't coerce a character into an integer
 ;;;		      (:CHARACTER (COERCE (FIRST SUBLIST) 'GLOBAL:CHARACTER)))))
-;;;    CHAR-LIST)) 
+;;;    CHAR-LIST))
 
 ;;;(DEFUN CVV-READ-FIXNUM-CHARACTER-LIST (STREAM)
-;;;  (CVV-READ-GENERIC-CHARACTER-LIST :FIXNUM STREAM)) 
+;;;  (CVV-READ-GENERIC-CHARACTER-LIST :FIXNUM STREAM))
 
 ;;;(DEFUN CVV-READ-CHARACTER-CHARACTER-LIST (STREAM)
-;;;  (CVV-READ-GENERIC-CHARACTER-LIST :CHARACTER STREAM)) 
+;;;  (CVV-READ-GENERIC-CHARACTER-LIST :CHARACTER STREAM))
 
 
 
@@ -1640,7 +1640,7 @@ first value is a list (ITEM SELECTED-CHOICES...)."
 	(PROGN (SETQ STRING-VALUE (SUBSEQ STRING-VALUE 0 LAST-INDEX))
 	       (IF (STRING-EQUAL "NIL" STRING-VALUE)
 		   ()
-		   STRING-VALUE))))) 
+		   STRING-VALUE)))))
 
 ;;; The following function can be used as a constraint or side-effect
 ;;; on color selections.  We really should have a :COLOR type.  PMH
@@ -1841,7 +1841,7 @@ Screen Editor, GWIN, and GED."
                      ;; Print out the variable's value.
                      (CATCH 'LINE-OVERFLOW
                        (LOOP FOR CHOICE IN CHOICES-LEFT
-                             DO (PROGN 
+                             DO (PROGN
                                   (SETQ PVAL (IF GPVF (FUNCALL GPVF CHOICE) CHOICE)
                                         CVAL (IF GVVF (FUNCALL GVVF CHOICE) CHOICE))
                                   (SHEET-SET-FONT
@@ -2499,8 +2499,8 @@ and binding environment."
 VARIABLES is a list of elements, each describing one line of the display. These become
 text-scroll items.  Kinds of elements allowed are:
 
-string		Just displayed. Use as a header or for blank lines IN CONJUNCTION with 
-                  other items. Should not be used as the only item in a variable list. 
+string		Just displayed. Use as a header or for blank lines IN CONJUNCTION with
+                  other items. Should not be used as the only item in a variable list.
 symbol		value is printed, and if the user clicks on it with the mouse a
 		new value is read.
 dtp-locative	like special-variable but value is accessed by car and
@@ -2581,7 +2581,7 @@ FORCE-PERMANENT T means to make the CVV window a permanent window.
 					 (IF (ATOM X) NIL (CADR X))))
 			       MARGIN-CHOICES))
   ;; Handle variable sublists too.
-  (DOLIST (ITEM VARIABLES) 
+  (DOLIST (ITEM VARIABLES)
     ;; Make sure all variables are bound, while in caller's environment.
     (DOLIST (ELEM (IF (AND (CONSP ITEM) (CONSP (CAR ITEM))) ITEM (LIST ITEM)))
       (IF (CONSP ELEM)
@@ -2613,28 +2613,28 @@ FORCE-PERMANENT T means to make the CVV window a permanent window.
           (SEND WINDOW :SET-VALUE-TAB VALUE-TAB)
           (SEND WINDOW :SET-REVERSE-VIDEO-P REVERSE-VIDEO-P)
           (SEND WINDOW :SETUP VARIABLES LABEL FUNCTION MARGIN-CHOICES (OR WIDTH T) EXTRA-WIDTH)
-          
+
 	  ;; Make sure that we don't try to expose outside of our superior.
 
-          (SEND window :set-size   
+          (SEND window :set-size
 		(MIN (SEND superior :inside-width)  (SEND window :width))
-		(MIN (SEND superior :inside-height) (if height   
-							(max height (send window :height)) 
-							;;else 
+		(MIN (SEND superior :inside-height) (if height
+							(max height (send window :height))
+							;;else
 							(send window :height))))
 	  (when (color-system-p window)
 	    (send window :set-foreground-color foreground-color)
 	    (send window :set-background-color background-color)
 	    (send window :set-label-color label-color)
 	    (send window :set-label-background label-background)
-;	    (setf (label-font (send window :label))  fonts:cptfontb) ;; may 02/02/89 
+;	    (setf (label-font (send window :label))  fonts:cptfontb) ;; may 02/02/89
 	    )
           (UNWIND-PROTECT
               (PROGN
                 (CLEAR-INPUT WINDOW)
                 (DELAYING-SCREEN-MANAGEMENT
                   (EXPOSE-WINDOW-NEAR WINDOW NEAR-MODE)
-                  (SEND WINDOW :SELECT)  
+                  (SEND WINDOW :SELECT)
 		  (SEND current-window :send-if-handles :set-selection-substitute window))
                 (DO () (NIL)
 		  ;; Wait for something from the keyboard.
@@ -2648,7 +2648,7 @@ FORCE-PERMANENT T means to make the CVV window a permanent window.
               (AND OSW (SEND OSW :SELECT NIL)))))
       (DEALLOCATE-RESOURCE 'temporary-choose-variable-values-window window)
       (WHEN (EQ PROCESSED-MESSAGE 'ABORT)
-	;; The user did something funny.  Clear the resource so that subsequent CVV calls will still work. 
+	;; The user did something funny.  Clear the resource so that subsequent CVV calls will still work.
 	;; The NIL argument to CLEAR-RESOURCE says to not print any warning message.
 	(CLEAR-RESOURCE 'TEMPORARY-CHOOSE-VARIABLE-VALUES-WINDOW WINDOW NIL)))
     ;; Make sure that pressing the END key is the same as clicking on the DOIT box by
@@ -2828,7 +2828,7 @@ If direction is NIL, just move it to the nearest value."
                      (T (SETQ NEW-ITEM (NTH ITEM-NUMBER ENTRY)))))))
           ((FIRST LAST)
 	   ;; changed to not be an infinite loop with no items
-           (dotimes (count max-line (setq new-item nil)) 
+           (dotimes (count max-line (setq new-item nil))
              (WHEN (SETQ NEW-ITEM (AREF DISPLAYED-ITEMS LINE-NO))
                ;;Maybe we should do something fancier someday.
                (SETQ NEW-ITEM (IF (EQ DIRECTION 'FIRST)

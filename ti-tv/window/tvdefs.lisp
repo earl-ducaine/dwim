@@ -28,7 +28,7 @@
 ;;;  09/01/88 MAY  Moved defun of mouse-wakeup here. Dummy function below caused tv:sheet-expose
 ;;;                   (:method tv:sheet-expose) and (:method tv:select-mixin :select) to have disassembled code
 ;;;                   that did NOT contain "(mouse-wakeup)" during build process. Only code compiled after the defun
-;;;                   of mouse-wakeup had the correct definition. 
+;;;                   of mouse-wakeup had the correct definition.
 ;;;  07/18/88 KJF   Fix in with-mouse-grabbed-internal to also check for mouse-process being bound
 ;;;                    during window system build.
 ;;;  07/11/88 KJF   Fix to DRAW-CHAR-INTERNAL to not do prepare-color if WINDOW arg is an array.  Fixes
@@ -65,7 +65,7 @@
 ;;;   7/14/87  KWW      Added plane mask instance variable to sheet
 ;;;   7/14/87  KWW      Changed order of several system colors to give better mouse appearance
 ;;;   7/14/87  KWW      Changed default foreground and background to be set up for B&W rather than color
-;;;                             Also defined a function for changing the defaults to color 
+;;;                             Also defined a function for changing the defaults to color
 ;;;   5/29/87  KWW      Added color definitions
 ;;;   5/20/87  KWW      Modified prepare-sheet for color (load some registers) and xxx-gray ==> xxx-dense
 ;;;                         Since the gray arrays are now simple textures. Changes are marked with >>>
@@ -85,7 +85,7 @@
 ;;;   3/06/87  TWE	Defined the defsubst CHAR-CMSH-BITS as per Patrick Dussud's recommentation.  This
 ;;;			is just like CHAR-BITS except that it only gets the control, meta, super and hyper bits
 ;;;			and not the mouse or keypad bits.
-;;;  1/22/87    LGO 	Added *deselected-process-priority* 
+;;;  1/22/87    LGO 	Added *deselected-process-priority*
 ;;;  1/07/87    KDB	Added a MENU-PERMANENT flag DEFINE-SHEET-FLAGS to allow communication of
 ;;;                         value of :PERMANENT  in methods of W:MENU.
 ;;;  1/05/87   TWE	Changed the low-level macro redirect-array to not do any consing and to ignore its
@@ -105,7 +105,7 @@
 ;;; 11/21/86   GRH	Added the new With-clipping-rectangle macro to be used to implement clipping.
 ;;; 11/17/86   TWE	Changed *screen-standard-font-map* and *window-standard-font-map* to not evaluate
 ;;;			all of their fonts.
-;;; 11/03/86   LGO 	Added *selected-process-priority* 
+;;; 11/03/86   LGO 	Added *selected-process-priority*
 ;;; 11/03/86   TWE	Moved the gray constant stuff from SCRMAN to here.
 ;;; 10/29/86   TWE	Removed references to the V2 package, which is where %DRAW-SHADED-TRIANGLE
 ;;;			and friends used to be located.  They are now in the system package.
@@ -154,7 +154,7 @@
   "This is the screen on which windows are created by default.")
 (DEFVAR ALL-THE-SCREENS NIL
   "List of all screen objects.")
-;; may 04/25/89 
+;; may 04/25/89
 ;; Now that we have multiple screens, main-screen is NOT necessarily the "main"
 ;; screen. It is set to *initial-screen* in tv:initialize at boot time.
 ;; The reasons (now obscure) for having *initial-screen* instead of just using
@@ -188,7 +188,7 @@
 ;;; Naming Conventions
 ;;; *foo-STANDARD-MESSAGE* - a string to announce the occurence of FOO
 ;;;                       or to label the display of FOO.
-;;; *foo-STANDARD-FONT* - the font to use to display *foo-STANDARD-MESSAGE*   
+;;; *foo-STANDARD-FONT* - the font to use to display *foo-STANDARD-MESSAGE*
 ;;; *foo-STANDARD-BEEP* - the beep type to announce the display of
 ;;;                       *foo-STANDARD-MESSAGE*
 ;;;                       :SILENT   - no flash, no sound
@@ -211,7 +211,7 @@
 		(:MENU-STANDOUT . FONTS:HL12B)
 		(:MARGIN-CHOICE . FONTS:CPTFONT))
               "This is a pattern for creating the FONT-ALIST variables of screens.
-It maps standard FONT PURPOSES into names of fonts.") 
+It maps standard FONT PURPOSES into names of fonts.")
 
 ;;; We have a standard font map for screens which is different from
 ;;; *window-standard-font-map* because we want the window version to
@@ -357,7 +357,7 @@ selected window.")
 If the value at boot-up does not pass ACCEPTABLE-INITIAL-SCREEN-P, then another screen may
 be found or created which passes the test.")
 
-;; These 10 created by CJJ for Multiple Monitor (MMON) support.  08/15/88 KJF. ;; may 01/27/89 
+;; These 10 created by CJJ for Multiple Monitor (MMON) support.  08/15/88 KJF. ;; may 01/27/89
 (DEFVAR *unglitched-mouse-x* 0.
   "Set by MOUSE-INPUT.
 Used by MAYBE-CHANGE-MOUSE-SHEET to determine if and how much mouse moved off mouse sheet.")
@@ -499,7 +499,7 @@ in."
   "Area which blinkers are consed in.")
 
 ;;;
-;;; Color support 
+;;; Color support
 
 (DEFVAR *COLOR-SYSTEM* NIL
   "This variable is true if the system has been converted to run in color.")
@@ -539,7 +539,7 @@ in."
 ;;  values, but who cares.  They only get used when the window is color anyway.  02/21/88 KJF
 ;;; >>> these are now to be PROFILE variables, initially set for b&w system
 ;;; >>> the function reset-default-colors changes these so that they are good defaults for color
-;;; >>> They can also be change via the profile utility. 
+;;; >>> They can also be change via the profile utility.
 ;;; >>> change these to correct defaults for B&W
 
 ;;;  window values
@@ -588,8 +588,8 @@ in."
 
 ;; The following function could be used to set up defaults to a mostly white on black scheme.
 ;; I like this scheme better because it does not hurt my eyes as much.  GRH 8/12/88
-;; Note that these must be set early, since some windows have their colors defined even at 
-;; compile time.  Or to change defaults at run time a :restore-default-colors in a 
+;; Note that these must be set early, since some windows have their colors defined even at
+;; compile time.  Or to change defaults at run time a :restore-default-colors in a
 ;; (:method sheet :before :expose) ought to do the trick.
 (defun set-up-white-on-black-color-defaults ()
   "Set color defaults to alternate white on black scheme.  Note some existing FLAVORS may
@@ -605,7 +605,7 @@ in."
 	*default-menu-label-background* black
 	*default-status-foreground* 12%-gray-color
 	*default-status-background* black
-	*default-documentation-foreground* 12%-gray-color 
+	*default-documentation-foreground* 12%-gray-color
 	*default-documentation-background* black
 	*DEFAULT-SCROLL-BAR-COLOR* 25%-gray-color
 	;; We ought to obsolete this and define *DEFAULT-BLINKER-COLOR* instead.
@@ -712,7 +712,7 @@ an error.  See method :sheet-legal-for-superior.")
 
 (DEFFLAVOR SHEET
    ((SCREEN-ARRAY NIL)	;Array that output goes on.  Either a standard
-			; array or a section of the physical screen. 
+			; array or a section of the physical screen.
 			; May be null when deexposed if no BIT-ARRAY.
 			; (microcode use).
     LOCATIONS-PER-LINE	;Number of locations per raster line (initialization use).
@@ -728,33 +728,33 @@ an error.  See method :sheet-legal-for-superior.")
 
     (SUPERIOR DEFAULT-SCREEN) ;Null superior is top.
     (INFERIORS NIL)
-	    
+
     (EXPOSED-P NIL)	;T when exposed, NIL otherwise.  In this context
 			; "exposed" means that it is among the superior's
 			; exposed-inferiors and the superior either has a
 			; bit-array or is exposed.  T here does not
 			; necessarily mean it's visible on the screen.
     (EXPOSED-INFERIORS NIL)
-	    
+
     (X-OFFSET NIL)	;Position relative to position of superior.
     (Y-OFFSET NIL)
     (WIDTH NIL)		;Size of sheet.  Note that these determine the
     (HEIGHT NIL)	; part of the SCREEN-ARRAY that contains
 			; meaningful data.
-	    
+
     CURSOR-X		;Position at which to draw next character.
     CURSOR-Y
-	    
+
     MORE-VPOS		;Y passing here triggers MORE processing.
-	    
+
     (TOP-MARGIN-SIZE 0)	;Reserved region around outside of sheet (for
 			; borders, etc.).
     (BOTTOM-MARGIN-SIZE 0)
     (LEFT-MARGIN-SIZE   0)
     (RIGHT-MARGIN-SIZE  0)
-	    
+
     (FLAGS 0)		;A fixnum containing various flags
-	    
+
     ;;; Font information
     BASELINE		;# raster lines from top of char cell to baseline.
     FONT-MAP		;Map from font numbers to font arrays.
@@ -778,15 +778,15 @@ an error.  See method :sheet-legal-for-superior.")
     (TIME-STAMP NIL)
     (SELECTION-SUBSTITUTE NIL)
     ;; Color hooks.
-    (color-map nil)    ;;; was     (SCREEN-ARRAY-TEXT NIL)    
-    (plane-mask  *default-plane-mask*) ;;; added as per Keith's suggestion, was (SCREEN-ARRAY-GRAPHICS NIL) 
-    (color-reverse-video-state nil) ;;; added to support reverse video in color, was LOCATIONS-PER-LINE-TEXT     
+    (color-map nil)    ;;; was     (SCREEN-ARRAY-TEXT NIL)
+    (plane-mask  *default-plane-mask*) ;;; added as per Keith's suggestion, was (SCREEN-ARRAY-GRAPHICS NIL)
+    (color-reverse-video-state nil) ;;; added to support reverse video in color, was LOCATIONS-PER-LINE-TEXT
     (window-id nil) ;;; Add-in board support, was LOCATIONS-PER-LINE-GRAPHICS
-    UNUSED-RESERVED ;;; renamed to be a place holder, was BIT-ARRAY-GRAPHICS          
+    UNUSED-RESERVED ;;; renamed to be a place holder, was BIT-ARRAY-GRAPHICS
     (FOREGROUND-COLOR *DEFAULT-FOREGROUND*)
     (BACKGROUND-COLOR *DEFAULT-BACKGROUND*)
 
-    
+
     )
    ()
   :ORDERED-INSTANCE-VARIABLES
@@ -813,7 +813,7 @@ an error.  See method :sheet-legal-for-superior.")
                   ) ;;; 8/24/1987 removed un-needed keyword arguments as result of code reading
   (:INSTANCE-AREA-FUNCTION SHEET-INSTANCE-AREA-FUNCTION)
   (:DEFAULT-INIT-PLIST :TAB-NCHARS 8)
-  (:METHOD-COMBINATION (:OR :BASE-FLAVOR-LAST :NOTICE) 
+  (:METHOD-COMBINATION (:OR :BASE-FLAVOR-LAST :NOTICE)
 		       (:APPEND :BASE-FLAVOR-LAST :PROCESSES)
 		       (:PASS-ON (:BASE-FLAVOR-LAST LM TM RM BM)
                                  :COMPUTE-MARGINS)
@@ -851,8 +851,8 @@ This is the data structure known about by the microcode."))
    ;; for a screen.  Each screen has its own and we'll keep them separate.  02/22/88 KJF.
    ;; Cannot use name: previously-selected-windows since it is
    ;; a global, special variable.  Ditto screens-who-line-screen
-   (screens-previously-selected-windows nil) ;; was UNUSED-RESERVED-3  ;; WAS   (BITS-PER-PIXEL-GRAPHICS 8.) 
-   (screens-who-line-screen nil) ;; was UNUSED-RESERVED-4  ;; WAS  BUFFER-TEXT                  
+   (screens-previously-selected-windows nil) ;; was UNUSED-RESERVED-3  ;; WAS   (BITS-PER-PIXEL-GRAPHICS 8.)
+   (screens-who-line-screen nil) ;; was UNUSED-RESERVED-4  ;; WAS  BUFFER-TEXT
    UNUSED-RESERVED-5  ;; WAS  BUFFER-GRAPHICS
    )
   (SHEET)
@@ -896,8 +896,8 @@ each hardware display."))
 				    (&OPTIONAL SHEET)
 			    `(LDB ,',(CADR FLAG)
 				  ,(IF SHEET `(SHEET-FLAGS ,SHEET) 'FLAGS))))
-		     FLAGS)))  
-	    
+		     FLAGS)))
+
 (DEFINE-SHEET-FLAGS
   (EXCEPTIONS                     #o0203)  ;Reasons why typeout can't happen:
   (END-PAGE-FLAG                  #o0201)  ;Cursor is below bottom limit.
@@ -949,7 +949,7 @@ change the ordering of these fields.
    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   `----Menu abort on deexpose
    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
-   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   `--------Command Menu 
+   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   `--------Command Menu
    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   `---End of Page
    |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
@@ -970,9 +970,9 @@ change the ordering of these fields.
    |   |   |   |   |   |   |   |   |   |   |   |   |   |   `---Deexposed typein action :Notify
    |   |   |   |   |   |   |   |   |   |   |   |   |   |
    |   |   |   |   |   |   |   |   |   |   |   |   |   `-------Force save bits
-   |   |   |   |   |   |   6   5   4   3   2   1   0   
+   |   |   |   |   |   |   6   5   4   3   2   1   0
    |   |   |   |   |   |   `---`---`---`---`---`---`---Tab nchars
-   |   |   |   |   |   |     
+   |   |   |   |   |   |
    |   |   |   |   |   `---Dynamic menu
    |   |   |   |   |
    |   |   |   |   `-------Highlighting menu
@@ -983,12 +983,12 @@ change the ordering of these fields.
    |   |
    |   `-------Key-pad-enable
    |
-   `---------MENU-PERMANENT                 
+   `---------MENU-PERMANENT
 
 |#
 
 (DEFMACRO SHEET-INSIDE-WIDTH (&OPTIONAL SHEET)
-  "Return the distance between SHEET's left and right margins (or 
+  "Return the distance between SHEET's left and right margins (or
 SELF's, if no arg)."
   (IF SHEET
       `(- (SHEET-WIDTH ,SHEET) (SHEET-LEFT-MARGIN-SIZE ,SHEET)
@@ -1037,8 +1037,8 @@ The value is relative to the top edge of the sheet."
   "T if SHEET (or SELF, if no arg) is a temporary window. A
 temporary window is one which saves the bits of whatever is
 underneath it, when it is exposed."
-  `(NOT (NULL ,(IF SHEET 
-                   `(SHEET-TEMPORARY-BIT-ARRAY ,SHEET) 
+  `(NOT (NULL ,(IF SHEET
+                   `(SHEET-TEMPORARY-BIT-ARRAY ,SHEET)
 		 ;;ELSE
                  'TEMPORARY-BIT-ARRAY))))
 
@@ -1181,8 +1181,8 @@ change needs to be made."
 (DEFFLAVOR MOUSE-BLINKER-MIXIN ((X-OFFSET 0) (Y-OFFSET 0)) ()
   (:REQUIRED-FLAVORS BLINKER)
   :INITTABLE-INSTANCE-VARIABLES
-  (:DOCUMENTATION 
-   :MIXIN 
+  (:DOCUMENTATION
+   :MIXIN
    "Blinker that is capable of being MOUSE-BLINKER"))
 
 (DEFFLAVOR MOUSE-BLINKER-FAST-TRACKING-MIXIN () (MOUSE-BLINKER-MIXIN)
@@ -1199,7 +1199,7 @@ tracked by microcode."))
                                 ; the who line (moved to COLD.LISP).
 (DEFVAR WHO-LINE-LIST)		;List of WHO-LINE-ITEM's, see DEFSTRUCT below
 
-(DEFSTRUCT (WHO-LINE-ITEM (:type :LIST) (:CONSTRUCTOR NIL) (:CONC-NAME NIL) (:CALLABLE-CONSTRUCTORS NIL)
+(DEFSTRUCT (WHO-LINE-ITEM (:type :LIST) (:CONSTRUCTOR NIL) (:CONC-NAME NIL)
 			  (:ALTERANT ALTER-WHO-LINE-ITEM) (:PREDICATE NIL) (:COPIER NIL))
   ;; One for each field of the who-line
   WHO-LINE-ITEM-FUNCTION			;Function to be called, see WHO-LINE-UPDATE
@@ -1213,7 +1213,7 @@ tracked by microcode."))
 ;;; because it is looked at directly by microcode. Its array leader
 ;;; contains:
 (DEFSTRUCT (FONT :NAMED (:type :ARRAY-LEADER) (:SIZE-SYMBOL FONT-LEADER-SIZE) (:CONC-NAME NIL)
-  (:CALLABLE-CONSTRUCTORS NIL) (:ALTERANT ALTER-FONT) (:PREDICATE NIL) (:COPIER NIL))
+   (:ALTERANT ALTER-FONT) (:PREDICATE NIL) (:COPIER NIL))
 	FONT-FILL-POINTER	;1 plus highest character code defined in font.
 				;At present, must be at least 200.
 	FONT-NAME		;Name.  This is supposed to be the symbol in
@@ -1263,7 +1263,7 @@ tracked by microcode."))
   (CASE OP
     (:WHICH-OPERATIONS '(:PRINT-SELF))
     ((:PRINT-SELF) (PRINTING-RANDOM-OBJECT (SLF ARG1 :TYPEP) (PRINC (FONT-NAME SLF) ARG1)))
-    (OTHERWISE (FERROR () "~S unknown message to ~S" OP SLF)))) 
+    (OTHERWISE (FERROR () "~S unknown message to ~S" OP SLF))))
 
 ;;; Define a function which will return T when its argument is a font object.
 (PROCLAIM '(inline font-object-p))
@@ -1399,7 +1399,7 @@ off."
 ;;; Open up a sheet
 (DEFVAR PREPARED-SHEET NIL)
 (defvar *prepare-sheet-command-threshold* 5
-  "Prepare sheet will do a process wait if there is not room for this many commands in the display-io 
+  "Prepare sheet will do a process wait if there is not room for this many commands in the display-io
    queue on a microExplorer and interrupts were not turned off before entering.")
 
 (DEFMACRO PREPARE-SHEET ((SHEET) &BODY BODY)
@@ -1410,7 +1410,7 @@ output primitives output to the prepared sheet."
 
      ;; if this is a mx we should wait until it is likely there is room in the
      ;; queue for some number of commands (unless we are already in a no interrupts situation).  *BJ*
-     (unless (or (not (si:addin-p)) 
+     (unless (or (not (si:addin-p))
 		 old-inhibit-scheduling-flag)
        (add:wait-port-ready :prepare-sheet (add:find-channel 'display-io) *prepare-sheet-command-threshold*))
      (AND (OR (NEQ PREPARED-SHEET ,SHEET)
@@ -1467,14 +1467,14 @@ wholine next to the package prompt) while waiting for input from the keyboard.")
 
 (DEFPARAMETER initial-repeat-delay 30
 	      "60ths of a second before repeating starts.  Set this to 0 to shut off
-the repeat capability.") 
+the repeat capability.")
 
 (DEFPARAMETER continuous-repeat-delay 1. ;; may 03/27/89 was 2.
 	      "Number of 60ths of a second to delay before repeating again.")
 
 ;;; I/O buffer stuff
 (DEFSTRUCT (IO-BUFFER :ARRAY-LEADER :NAMED (:CONSTRUCTOR NIL) (:SIZE-SYMBOL IO-BUFFER-LEADER-SIZE)
-  (:CONC-NAME NIL) (:CALLABLE-CONSTRUCTORS NIL) (:ALTERANT ALTER-IO-BUFFER) (:PREDICATE NIL)
+  (:CONC-NAME NIL)  (:ALTERANT ALTER-IO-BUFFER) (:PREDICATE NIL)
   (:COPIER NIL))
   IO-BUFFER-FILL-POINTER	;Fill pointer, unused
   IO-BUFFER-SIZE		;Size of IO buffer (max index + 1)
@@ -1504,7 +1504,7 @@ the repeat capability.")
   )
 
 (DEFPARAMETER IO-BUFFER-RECORD-LENGTH 60
-              "Number of last input characters to record in each IO buffer.") 
+              "Number of last input characters to record in each IO buffer.")
 
 (DEFSUBST IO-BUFFER-RECORD-POINTER (INPUT-RECORD)
   "Index of last slot of INPUT-RECORD stored in."
@@ -1630,7 +1630,7 @@ window would have been selected."
 		"a selectable window.  The first argument to tv:window-call-with-selection-substitute must be an instantiation of a window flavor that includes select-mixin")
      (UNWIND-PROTECT
 	 (PROGN
-	   (SEND ,WINDOW :SELECT)  
+	   (SEND ,WINDOW :SELECT)
 	   (WHEN .CURRENT-WINDOW.
               (SEND .CURRENT-WINDOW. :SET-SELECTION-SUBSTITUTE ,WINDOW))
 	   . ,BODY)
@@ -1690,7 +1690,7 @@ MOUSE-SHEET.  Options are:
           (:INITIAL-COPIES (SETQ INITIAL-COPIES VALUE))
           (:CONSTRUCTOR (SETQ CONSTRUCTOR VALUE))
           ((:MAKE-WINDOW :WINDOW-CREATE);:WINDOW-CREATE obsolete old name.
-           
+
            (SETQ CONSTRUCTOR
                  `(MAKE-WINDOW ',(CAR VALUE) ,:SUPERIOR SUPERIOR
                     . ,(LOOP FOR (KEYWORD VALUE) ON (CDR VALUE) BY 'CDDR COLLECT `',KEYWORD
@@ -1718,7 +1718,7 @@ MOUSE-SHEET.  Options are:
                   . ,(IF (MEMBER '&OPTIONAL PARAMETERS :TEST #'EQ) '((SUPERIOR MOUSE-SHEET))
                        '(&OPTIONAL (SUPERIOR MOUSE-SHEET))))
                  ,:DEALLOCATOR CLEAN-OUT-IO-BUFFER
-                 ,:INITIAL-COPIES ,INITIAL-COPIES ,:CONSTRUCTOR ,CONSTRUCTOR ,:CHECKER ,CHECKER))) 
+                 ,:INITIAL-COPIES ,INITIAL-COPIES ,:CONSTRUCTOR ,CONSTRUCTOR ,:CHECKER ,CHECKER)))
 
 ;;; This gets a list of all window resources.
 ;;; so that :CHANGE-OF-DEFAULT-FONT can find the windows even when
@@ -1743,11 +1743,11 @@ MOUSE-SHEET.  Options are:
 
 (DEFUN CHECK-DEACTIVATED-WINDOW-RESOURCE (IGNORE WINDOW IN-USE-P &REST IGNORE)
   ;;;check the resource to insure it has the right attributes for the screen
-  ;;;it is going to be displayed on. 
+  ;;;it is going to be displayed on.
   (AND (NOT IN-USE-P)
-       (EQ tv:default-screen (tv:sheet-get-screen window))	
+       (EQ tv:default-screen (tv:sheet-get-screen window))
        (NOT (MEMBER WINDOW (SHEET-INFERIORS (SHEET-SUPERIOR WINDOW)) :TEST #'EQ))
-       (SHEET-CAN-GET-LOCK WINDOW))) 
+       (SHEET-CAN-GET-LOCK WINDOW)))
 
 ;;; Defintions for screen management
 (DEFMACRO RECT-SOURCE (R) `(FIRST  ,R))
@@ -1851,7 +1851,7 @@ must setthe mouse blinker right away, for example by
 	     (PROGN
 	       (WITH-MOUSE-GRABBED-INTERNAL T)
 	       . ,BODY)
-	   (without-interrupts 
+	   (without-interrupts
 	     (SETQ WINDOW-OWNING-MOUSE .OLD.VALUE.)
 	     (unless window-owning-mouse (setf *process-owning-mouse* nil))
 	     (SETQ MOUSE-RECONSIDER T)))))))
@@ -1903,10 +1903,10 @@ executed. BODY can track the mouse using TV:MOUSE-INPUT."
 		       rodent-window)
 	 ;;ELSE...
 	 (SETF mouse-reconsider nil
-	       mouse-window rodent-window))))) 
+	       mouse-window rodent-window)))))
 
 ;;; Server structure used by WHOLIN and PEEK.
-(DEFSTRUCT (SERVER-DESC (:TYPE :LIST) (:CONC-NAME SERVER-DESC-) (:callable-CONSTRUCTORS NIL)
+(DEFSTRUCT (SERVER-DESC (:TYPE :LIST) (:CONC-NAME SERVER-DESC-)
   (:ALTERANT ALTER-SERVER-DESC) (:PREDICATE NIL) (:COPIER NIL))
   CONNECTION
   HOST-NAME
@@ -1971,7 +1971,7 @@ for a BITBLT array."
       ;; When we put bits into an BIT array only the low order bit
       ;; gets saved.  The higher order bits are thrown away.
       (SETF (AREF GRAY H W) (LSH PAT (- (1+ (REM W WIDTH)) WIDTH)))))
-  GRAY) 
+  GRAY)
 
 ;;; Some common grays.
 ;;; These are used to draw gray onto the screen. They are initialized in
@@ -1986,8 +1986,8 @@ for a BITBLT array."
 ;;;         88%              75%              66%              50%
 ;;;    .-----------.    .-----------.     .--------.         .-----.
 ;;;    |  |XX|XX|XX|    |  |XX|XX|XX|     |  |XX|XX|         |  |XX|
-;;;    |--+--+--+--|    |--+--+--+--|     |--+--+--|         |--+--|    
-;;;    |XX|XX|XX|XX|    |XX|XX|  |XX|     |XX|  |XX|         |XX|  |    
+;;;    |--+--+--+--|    |--+--+--+--|     |--+--+--|         |--+--|
+;;;    |XX|XX|XX|XX|    |XX|XX|  |XX|     |XX|  |XX|         |XX|  |
 ;;;    |--+--+--+--|    |--+--+--+--|     |--+--+--|         `-----'
 ;;;    |XX|XX|  |XX|    |XX|  |XX|XX|     |XX|XX|  |
 ;;;    |--+--+--+--|    |--+--+--+--|     `--------'
@@ -2021,10 +2021,10 @@ for a BITBLT array."
  Microcode will not draw outside of the edges specified by the clipping rectangle."
   `(if (and (typep ,left 'fixnum) (typep ,top 'fixnum) (typep ,right 'fixnum) (typep ,bottom 'fixnum))
      (let
-       ((sys:clipping-rectangle-left-edge   ,left)
-	(sys:clipping-rectangle-top-edge    ,top)
-	(sys:clipping-rectangle-right-edge  ,right)
-	(sys:clipping-rectangle-bottom-edge ,bottom))
+       ((sys:*clipping-rectangle-left-edge*   ,left)
+	(sys:*clipping-rectangle-top-edge*    ,top)
+	(sys:*clipping-rectangle-right-edge*  ,right)
+	(sys:*clipping-rectangle-bottom-edge* ,bottom))
        . ,body)
      (ferror nil "One of the arguments to w:with-clipping-rectangle was not an integer.")))
 
@@ -2050,8 +2050,8 @@ for a BITBLT array."
 
 (DEFUN sys:%draw-char (font char x y alu window-or-array)
    "Draw CHAR from FONT at X, Y with ALU on WINDOW-OR-ARRAY.  Calls %draw-character with
- character's raster-width.  If this fails the character's real width is used.  This is so that the extra 
- pixels in a character's image beyond its width (as in italic fonts) don't get clipped except at the 
+ character's raster-width.  If this fails the character's real width is used.  This is so that the extra
+ pixels in a character's image beyond its width (as in italic fonts) don't get clipped except at the
  edge of a window.  Returns t if the character is successfully drawn, else nil."
   (IF (mac-window-p window-or-array)
       (send-draw-char font char x y alu window-or-array)
@@ -2093,7 +2093,7 @@ for a BITBLT array."
 	      (draw-char-internal-fit FONT CH X Y ALU WINDOW fit)
 	      (%DRAW-CHAR FONT CH X Y ALU WINDOW)))))
 
-   
+
 
 ;;; Define the obsolete miscops in lisp to call the new miscops.
 
@@ -2102,7 +2102,7 @@ for a BITBLT array."
 				   alu draw-first-edge draw-second-edge draw-third-edge
 				   shade window-or-array)
    left top right bottom	;; ignore
-   (%DRAW-SHADED-TRIANGLE x1 y1 x2 y2 x3 y3 
+   (%DRAW-SHADED-TRIANGLE x1 y1 x2 y2 x3 y3
 			  alu draw-first-edge draw-second-edge draw-third-edge
 			  shade window-or-array))
 
@@ -2124,7 +2124,7 @@ for a BITBLT array."
   `(LET ((*delay-compute-geometry* t))
      ,@body))
 
-;; may 01/27/89 
+;; may 01/27/89
 ;;; Added by KJF on 08/19/88 for CJJ during addition of Multiple Monitor (MMON) support.
 (DEFMACRO with-screens-previously-selected-windows
 	  ((sheet) &body body)

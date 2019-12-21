@@ -88,7 +88,7 @@ substituted.  |#
 (DEFSTRUCT (MARGIN-REGION
 	     (:CONSTRUCTOR           NIL)
 	     (:CONC-NAME             NIL)
-	     (:CALLABLE-CONSTRUCTORS NIL)
+
 	     (:ALTERANT              ALTER-MARGIN-REGION)
 	     (:PREDICATE             NIL)
 	     (:COPIER                NIL)
@@ -108,7 +108,7 @@ substituted.  |#
 	     (:INCLUDE               MARGIN-REGION)
 	     (:CONSTRUCTOR           NIL)
 	     (:CONC-NAME             NIL)
-	     (:CALLABLE-CONSTRUCTORS NIL)
+
 	     (:ALTERANT              ALTER-MARGIN-SCROLL-REGION)
 	     (:PREDICATE             NIL)
 	     (:COPIER                NIL)
@@ -217,7 +217,7 @@ has been incremented by SIZE."
 		  :MOUSE-MOVES X Y CURRENT-REGION))))
 
 
-				   
+
 (DEFMETHOD (MARGIN-REGION-MIXIN :MOUSE-CLICK) (BUTTON X Y)
   (COND ((AND CURRENT-REGION (NOT (= BUTTON #\MOUSE-R-2)))
 	 (FUNCALL (MARGIN-REGION-FUNCTION CURRENT-REGION) :MOUSE-CLICK X Y
@@ -242,7 +242,7 @@ has been incremented by SIZE."
 
 (DEFSTRUCT (CHOICE-BOX (:CONSTRUCTOR           NIL)
                        (:CONC-NAME             NIL)
-                       (:CALLABLE-CONSTRUCTORS NIL)
+
                        (:ALTERANT              ALTER-CHOICE-BOX)
                        (:PREDICATE             NIL)
                        (:COPIER                NIL)
@@ -411,11 +411,11 @@ Returns the (X,Y) coordinate of the upper right of the box as two values."
     (WHEN (TYPEP STRG-BOX-BLINKER TYPE)
       (RETURN STRG-BOX-BLINKER))))
 
-			    
+
 (DEFRESOURCE HOLLOW-STRING-BOX-BLINKER (WINDOW)
   :CONSTRUCTOR (MAKE-BLINKER  WINDOW
 			     'HOLLOW-margin-choice-BLINKER))
-			   
+
 (DEFRESOURCE STRING-BOX-BLINKER (WINDOW)
   :CONSTRUCTOR (MAKE-BLINKER WINDOW
 			     'RECTANGULAR-margin-choice-BLINKER))
@@ -451,7 +451,7 @@ Returns the (X,Y) coordinate of the upper right of the box as two values."
                         (T (RETURN "Any button to select choice.")))))))))
     (:REFRESH
      (let-if (mac-window-p self)
-	     ((*dont-clip-at-the-margins* t))	  
+	     ((*dont-clip-at-the-margins* t))
        (LET ((REGION ARG1)
 	     (ERASE-P ARG2)
 	     LEFT TOP RIGHT BOTTOM)
@@ -463,7 +463,7 @@ Returns the (X,Y) coordinate of the upper right of the box as two values."
 		       (%DRAW-RECTANGLE (- RIGHT LEFT)
 					(- BOTTOM TOP)
 					LEFT TOP ERASE-ALUF SELF))
-		  
+
 		  (%DRAW-RECTANGLE (- RIGHT LEFT) 1 LEFT TOP CHAR-ALUF SELF))
 		(SETQ TOP (+ TOP 2)) ;; provide 1 pixel margin between text and top line
 		(SETQ MARGIN-CHOICES (COPY-list MARGIN-CHOICES)) ;; may 9-14-88
@@ -492,7 +492,7 @@ Returns the (X,Y) coordinate of the upper right of the box as two values."
 		      (SETF (CHOICE-BOX-X1 CHOICE) STRG-BOX-STARTX)
 		      (SETF (CHOICE-BOX-X2 CHOICE) (SETQ STRG-BOX-ENDX (+ (SEND SELF :STRING-OUT-EXPLICIT
 										(string (CHOICE-BOX-NAME CHOICE))
-										STRG-BOX-STARTX 
+										STRG-BOX-STARTX
 										TOP RIGHT NIL FONT CHAR-ALUF 0 NIL NIL)
 									  BOX-AND-SPACE)))
 		      (SETQ X  STRG-BOX-ENDX )
@@ -533,7 +533,7 @@ Returns the (X,Y) coordinate of the upper right of the box as two values."
     (:MOUSE-LEAVES-REGION
      (IF *HOLLOW-M-CHOICE-BOX-P*
          (AND (SETQ STRG-BLINKER (GET-BLINKER-TYPE (SEND SELF :BLINKER-LIST) 'HOLLOW-margin-choice-BLINKER))
-              (SEND STRG-BLINKER  :SET-VISIBILITY :OFF)	
+              (SEND STRG-BLINKER  :SET-VISIBILITY :OFF)
               (DEALLOCATE-RESOURCE 'HOLLOW-STRING-BOX-BLINKER STRG-BLINKER))
          ;; ELSE
          (AND  (SETQ STRG-BLINKER  (GET-BLINKER-TYPE (SEND SELF :BLINKER-LIST) 'RECTANGULAR-margin-choice-BLINKER))
@@ -547,6 +547,3 @@ Returns the (X,Y) coordinate of the upper right of the box as two values."
 	   (Y ARG2)
 	   (REGION ARG3))
        (HANDLE-CHOICE-BUTTON MARGIN-CHOICES X Y REGION)))))
-
-
-

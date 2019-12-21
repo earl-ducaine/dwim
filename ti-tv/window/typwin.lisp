@@ -55,14 +55,14 @@
   (:DOCUMENTATION :MIXIN "Menu like operations for a typeout window."))
 
 ;;;Item typed out by :ITEM or :ITEM-LIST messages
-(DEFSTRUCT (TYPEOUT-ITEM :LIST (:CONSTRUCTOR NIL) (:CONC-NAME NIL) (:CALLABLE-CONSTRUCTORS NIL)
+(DEFSTRUCT (TYPEOUT-ITEM :LIST (:CONSTRUCTOR NIL) (:CONC-NAME NIL)
 			 (:ALTERANT ALTER-TYPEOUT-ITEM) (:PREDICATE NIL) (:COPIER NIL) (:TYPE :list))
   TYPEOUT-ITEM-TYPE				;For looking in ITEM-TYPE-ALIST
   TYPEOUT-ITEM-ITEM				;Identifier of item
   TYPEOUT-ITEM-LEFT				;Screen area occupied by item, relative to
   TYPEOUT-ITEM-TOP				;sheet, not to margins
   TYPEOUT-ITEM-RIGHT
-  TYPEOUT-ITEM-BOTTOM) 
+  TYPEOUT-ITEM-BOTTOM)
 
 (DEFMETHOD (BASIC-MOUSE-SENSITIVE-ITEMS :AFTER :INIT) (IGNORE)
   "Make a blinker for the menu type items."
@@ -85,7 +85,7 @@
   (COND
     ((SETQ TEM (MEMBER 'WRAPAROUND ITEM-LIST :TEST #'EQ))
      (RPLACD TEM NIL)
-     (MOUSE-WAKEUP)))) 
+     (MOUSE-WAKEUP))))
 
 (DEFMETHOD (BASIC-MOUSE-SENSITIVE-ITEMS :AFTER :EXPOSE-FOR-TYPEOUT)
     TYPEOUT-ITEM-WINDOW-REMOVE-ITEMS)
@@ -134,7 +134,7 @@ indexing into ITEM-TYPE-ALIST."
       (IF (= LINE-Y CURSOR-Y)
 	(RETURN)))
     (MOUSE-WAKEUP)
-    NIL)) 
+    NIL))
 
 (DEFMETHOD (BASIC-MOUSE-SENSITIVE-ITEMS :PRIMITIVE-ITEM)
            (TYPE ITEM LEFT TOP RIGHT BOTTOM)
@@ -202,7 +202,7 @@ without subtracting (SHEET-INSIDE-TOP)."
 	     (SEND SELF :TYO #\NEWLINE)
 	     (SETQ I 0))))))
   (MOUSE-WAKEUP)
-  NIL) 
+  NIL)
 
 (DEFMETHOD (BASIC-MOUSE-SENSITIVE-ITEMS :AFTER :HANDLE-MOUSE) ()
   "When mouse leaves the window, turn off the item blinker."
@@ -230,7 +230,7 @@ without subtracting (SHEET-INSIDE-TOP)."
        (BLINKER-SET-SIZE ITEM-BLINKER BWIDTH BHEIGHT)
        ;; Turn the blinker on.
        (BLINKER-SET-VISIBILITY ITEM-BLINKER T)))
-    (T (BLINKER-SET-VISIBILITY ITEM-BLINKER NIL)))) 
+    (T (BLINKER-SET-VISIBILITY ITEM-BLINKER NIL))))
 
 (DEFMETHOD (BASIC-MOUSE-SENSITIVE-ITEMS :MOUSE-CLICK) (BUTTON X Y &AUX ITEM)
   "Mouse-left selects the blinking item, mouse-right pops up a menu
@@ -280,7 +280,7 @@ SELF should be a BASIC-MOUSE-SENSITIVE-ITEMS instance."
 	       (< Y (TYPEOUT-ITEM-BOTTOM ITEM))
 	       (>= X (TYPEOUT-ITEM-LEFT ITEM))
 	       (< X (TYPEOUT-ITEM-RIGHT ITEM))
-	       (RETURN ITEM)))))) 
+	       (RETURN ITEM))))))
 
 (DEFMETHOD (BASIC-MOUSE-SENSITIVE-ITEMS :MOUSE-SENSITIVE-ITEM) (X Y)
   (TYPEOUT-MOUSE-ITEM X Y))
@@ -298,10 +298,10 @@ done by clicking left on the typeout-item, except that the operation
 which the user chose in the menu is supplied as the second element of
 the blip, which looks like:
 	(:TYPEOUT-EXECUTE operation item-information)."
-  (when ALIST ;; may 9-16-88 
+  (when ALIST ;; may 9-16-88
     (LET ((old-x mouse-x)			;PDC 12/10/85
 	  (old-y mouse-y))
-      (multiple-value-bind (x-off y-off) (w:sheet-calculate-offsets TYPEOUT-WINDOW nil) ;; may 02/24/89 
+      (multiple-value-bind (x-off y-off) (w:sheet-calculate-offsets TYPEOUT-WINDOW nil) ;; may 02/24/89
 	(LET ((CHOICE-RESULT (W:MENU-CHOOSE ALIST :LABEL (FORMAT NIL "~A" MENU-LABEL)
 					    :NEAR-MODE `(:RECTANGLE ,(+ (TYPEOUT-ITEM-LEFT   TYPEOUT-ITEM) x-off)
 								    ,(+ (TYPEOUT-ITEM-TOP    TYPEOUT-ITEM) y-off)
@@ -314,7 +314,7 @@ the blip, which looks like:
 	(SETQ mouse-x old-x			;PDC 12/10/85
 	      mouse-y old-y)
 	(SEND typeout-window :mouse-moves mouse-x mouse-y)))))
-  
+
 (DEFMACRO ADD-TYPEOUT-ITEM-TYPE (ALIST TYPE NAME-STRING FUNCTION
 				 &OPTIONAL DEFAULT-P DOCUMENTATION (menu-type :value) &rest options)
   "Add a new operation named NAME-STRING for typeout items of type TYPE.
@@ -347,7 +347,7 @@ options          Additional menu keyword options like :FONT or :COLOR"
 	;; Allow general menu type; :VALUE and :NO-SELECT are the only supported menu types
 	`(,menu-type ,FUNCTION :DOCUMENTATION ,DOCUMENTATION ,.args))
   (SETF (THIRD EL1) (MAKE-TYPEOUT-MOUSE-PROMPT (THIRD EL1) (SECOND EL1) (CDDDR EL1)))
-  ALIST) 
+  ALIST)
 
 (DEFMETHOD (BASIC-MOUSE-SENSITIVE-ITEMS :WHO-LINE-DOCUMENTATION-STRING)
  (&AUX ITEM ITEM-TYPE X Y)
@@ -361,7 +361,7 @@ options          Additional menu keyword options like :FONT or :COLOR"
        (COND
 	 ((STRINGP (THIRD ITEM-TYPE)) (THIRD ITEM-TYPE))
 	 ((CONSP
-	    (THIRD ITEM-TYPE)) (FUNCALL (CAR (THIRD ITEM-TYPE)) ITEM))))) 
+	    (THIRD ITEM-TYPE)) (FUNCALL (CAR (THIRD ITEM-TYPE)) ITEM)))))
 
 (DEFUN MAKE-TYPEOUT-MOUSE-PROMPT (STRING DEFAULT ALIST)
   (IF STRING
@@ -384,7 +384,7 @@ options          Additional menu keyword options like :FONT or :COLOR"
 	  (SETQ FIRST-P NIL)
 	  (FORMAT STRING ", "))
       (FORMAT STRING "~A" (CAAR L))))
-  STRING) 
+  STRING)
 
 ;;; Windows with typeout windows as inferiors.
 (DEFFLAVOR ESSENTIAL-WINDOW-WITH-TYPEOUT-MIXIN ((TYPEOUT-WINDOW NIL)) ()
@@ -397,7 +397,7 @@ options          Additional menu keyword options like :FONT or :COLOR"
 (DEFMETHOD (ESSENTIAL-WINDOW-WITH-TYPEOUT-MIXIN :AFTER :INIT) (IGNORE)
   (AND (CONSP TYPEOUT-WINDOW)
        (SETQ TYPEOUT-WINDOW
-	     (APPLY #'MAKE-WINDOW (CAR TYPEOUT-WINDOW) :SUPERIOR SELF (CDR TYPEOUT-WINDOW))))) 
+	     (APPLY #'MAKE-WINDOW (CAR TYPEOUT-WINDOW) :SUPERIOR SELF (CDR TYPEOUT-WINDOW)))))
 
 (DEFWRAPPER (ESSENTIAL-WINDOW-WITH-TYPEOUT-MIXIN :CHANGE-OF-SIZE-OR-MARGINS)
             (IGNORE . BODY)
@@ -453,7 +453,7 @@ options          Additional menu keyword options like :FONT or :COLOR"
 
 (DEFPARAMETER *ENABLE-TYPEOUT-WINDOW-BORDERS* T
    "Non-NIL enables the line below the occupied part of a typeout
-window to be drawn.") 
+window to be drawn.")
 
 ;;; Typeout windows themselves.
 (DEFFLAVOR BASIC-TYPEOUT-WINDOW
@@ -524,7 +524,7 @@ window to be drawn.")
 	       (Y (+ Y Y-OFFSET)))
 	   (SEND SUPERIOR :MOUSE-MOVES X Y)
 	   (THROW 'SUPERIOR-HANDLED-MOUSE
-		  T)))))) 
+		  T))))))
 
 (DEFMETHOD (BASIC-TYPEOUT-WINDOW :MOUSE-MOVES) MOUSE-SET-BLINKER-CURSORPOS)
 
@@ -537,7 +537,7 @@ window to be drawn.")
      (LET ((X (+ X X-OFFSET))
 	   (Y (+ Y Y-OFFSET)))
        (SEND SUPERIOR :MOUSE-BUTTONS BD X Y)
-       (THROW 'SUPERIOR-HANDLED-MOUSE T)))) 
+       (THROW 'SUPERIOR-HANDLED-MOUSE T))))
 
 (DEFUN HANDLE-MOUSE-P (X Y)
   "T if position X, Y is inside the part of SELF that has been output
@@ -672,7 +672,7 @@ to its bottom."
 (DEFMETHOD (BASIC-TYPEOUT-WINDOW :BEFORE :RUBOUT-HANDLER) (&REST IGNORE)
   (IF (OR (NOT BOTTOM-REACHED) (EQ BOTTOM-REACHED 0))
       (SEND SELF :CLEAR-EOL)))
-       
+
 (DEFMETHOD (BASIC-TYPEOUT-WINDOW :MAKE-COMPLETE) ()
   (SETQ INCOMPLETE-P NIL))
 
@@ -754,7 +754,7 @@ again."
 ;;; selected.  In fact, that should happen whenever we are exposed,
 ;;; but I am not confident of how to implement that.
 (DEFMETHOD (BASIC-TYPEOUT-WINDOW :AFTER :SELECT) (&REST IGNORE)
-  (TURN-OFF-SHEET-BLINKERS SUPERIOR))  
+  (TURN-OFF-SHEET-BLINKERS SUPERIOR))
 
 (DEFFLAVOR TYPEOUT-WINDOW ((LABEL NIL) (BORDERS NIL))
   (BASIC-TYPEOUT-WINDOW NOTIFICATION-MIXIN WINDOW))

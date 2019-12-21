@@ -31,14 +31,14 @@
 ;;;			of the fix to only have one entry in the system menu `create' window.
 ;;;   3/04/87  KDB	Fixed  MOUSE-CONFIRM to work even if mindless max-width arg passed in. Closed spr 3776
 ;;;   1/21/87  TWE	Set up for a compiler optimization in ADJUST-BY-INTERVAL.
-;;; 12/5/86    KDB        Fixed message wrap bug in Mouse-Confirm. 
+;;; 12/5/86    KDB        Fixed message wrap bug in Mouse-Confirm.
 ;;; 11/04/86   TWE	Fixed Plain Window in split screen to use WINDOW instead of nothing.  Added back
 ;;;			Lisp-listener there too.
 ;;; 10/30/86   TWE	Changed uses of REMAINDER and READLINE to REM and READ-LINE respectively.
 ;;; 10/28/86   GRH	Removed simple-lisp-listener from default create window types.
 ;;; 10/22/86   KDB	Commented out SELECTABLE-WINDOWS-MENU resource. No longer used.
-;;; 10/22/86   KDB        Fixed "Existing Windows" expose bug SYSTEM-MENU-SPLIT-SCREEN-VIA-MENUS. 
-;;; 10/21/86   KDB        Reimplemented SYSTEM-MENU-SELECT-WINDOW. Optimized. 
+;;; 10/22/86   KDB        Fixed "Existing Windows" expose bug SYSTEM-MENU-SPLIT-SCREEN-VIA-MENUS.
+;;; 10/21/86   KDB        Reimplemented SYSTEM-MENU-SELECT-WINDOW. Optimized.
 ;;; 09/22/86   KDB        Modified confirm-window :after :handle-mouse to return nil when mouse moves off
 ;;;                          Mouse-confirm, per consistency guides.
 ;;; 09/22/86   KDB        Integrated new Mouse-confirm. Users now have explicit yes/no choices, per
@@ -52,7 +52,7 @@
 ;;;			the simple-lisp-listener if it exists.
 ;;; 07/09/86   TWE	Fixed up the system menu by commenting out the Zwei version and fixing up the Lisp
 ;;;			Listener version to use the simple-lisp-listener if it exists.
-;;; 07/03/86   TWE	Removed an extraneous / from the "Change Layouts" menu item documentation.  This 
+;;; 07/03/86   TWE	Removed an extraneous / from the "Change Layouts" menu item documentation.  This
 ;;;			should have been removed during the Common Lisp conversion.
 ;;; 04/25/86   DLS	Fixed MOUSE-CONFIRM and ADJUST-BY-INTERVAL to take already
 ;;;			existing carriage returns into account when formatting the text strings.
@@ -60,14 +60,14 @@
 ;;;			blank padding.  Fixed up the system-menu resource use the item
 ;;;			alignment keyword better.
 
-(DEFSTRUCT (SYSTEM-MENU-ITEM (:TYPE :LIST) (:CONC-NAME SYSTEM-MENU-ITEM-) (:CALLABLE-CONSTRUCTORS NIL)
+(DEFSTRUCT (SYSTEM-MENU-ITEM (:TYPE :LIST) (:CONC-NAME SYSTEM-MENU-ITEM-)
   (:ALTERANT ALTER-SYSTEM-MENU-ITEM) (:PREDICATE NIL) (:COPIER NIL))
   "This structure defines the menu items in the system menu."
   NAME
   (KEYWORD :EVAL)
   FORM
   (DOCUMENTATION-KEYWORD :DOCUMENTATION);Not intended to be accessed
-  (DOCUMENTATION "This item is not documented.")) 
+  (DOCUMENTATION "This item is not documented."))
 
 
 (DEFSUBST COLUMN-TYPE-KEYWORD-TO-COLUMN-VARIABLE (COLUMN-TYPE-KEYWORD)
@@ -112,7 +112,7 @@ ADD-TO-SYSTEM-MENU-COLUMN function.")
            ("Create" :FUNCALL SYSTEM-MENU-CREATE-WINDOW
             :DOCUMENTATION
             (:MOUSE-ANY "Create a new window of a Flavor to be selected from a menu."))
-           ("Edit Attributes" :WINDOW-OP SYSTEM-MENU-EDIT-WINDOW-ATTRIBUTES 
+           ("Edit Attributes" :WINDOW-OP SYSTEM-MENU-EDIT-WINDOW-ATTRIBUTES
             :DOCUMENTATION
             (:MOUSE-ANY
 	      "View or change the attributes of the window that the mouse is over."))
@@ -230,7 +230,7 @@ AFTER can be one of four things:
 		  `(:MOUSE-ANY ,DOCUMENTATION)))))
 
     ;; Check to see if the item being added is already there.
-    (IF ALREADY-THERE 
+    (IF ALREADY-THERE
 	(PROGN
 	  (SETF (CAR ALREADY-THERE) (CAR NEW-ITEM))
 	  (SETF (CDR ALREADY-THERE) (CDR NEW-ITEM)))
@@ -274,7 +274,7 @@ NAME is a string which is displayed in the system menu."
 	 (OLD-NAME                  (SYSTEM-MENU-ITEM-NAME (ASSOC NAME SYSTEM-MENU-COLUMN :TEST #'STRING-EQUAL))))
     ;; Check to see if the item there.
     (WHEN OLD-NAME
-      (SETF SYSTEM-MENU-COLUMN (LOOP FOR ONE-SYSTEM-MENU-ITEM IN SYSTEM-MENU-COLUMN 
+      (SETF SYSTEM-MENU-COLUMN (LOOP FOR ONE-SYSTEM-MENU-ITEM IN SYSTEM-MENU-COLUMN
 				     WHEN (NOT (STRING-EQUAL (SYSTEM-MENU-ITEM-NAME ONE-SYSTEM-MENU-ITEM) OLD-NAME))
 				     COLLECT ONE-SYSTEM-MENU-ITEM))
       (SETF (SYMBOL-VALUE SYSTEM-MENU-COLUMN-SYMBOL) SYSTEM-MENU-COLUMN))))
@@ -374,12 +374,12 @@ DOCUMENTATION is displayed in the mouse documentation window."
 ;;; This function is redefined by the MMON system.
 ;;; If any change is made here, be sure to update the MMON version also.
 ;;; ********* Attention ! *********
-;;;  
+;;;
 (DEFUN SYSTEM-MENU-SELECT-WINDOW (&OPTIONAL (SUP MOUSE-SHEET) &aux s-able-windows)
   "Offer the user the Select menu and select a window if he says so.
 The menu contains the inferiors of SUP."
   (IF (setq s-able-windows (SELECTABLE-WINDOWS SUP))
-	  (let ((WINDOW (w:menu-choose s-able-windows 
+	  (let ((WINDOW (w:menu-choose s-able-windows
 					    :foreground-color *default-menu-foreground*
 					    :background-color *default-menu-background*
 					    :LABEL `(:string "Select a Window:"
@@ -395,7 +395,7 @@ The menu contains the inferiors of SUP."
 	(BEEP)
 	(POP-UP-MESSAGE "Error: There are no windows that can be selected."))))
 
-;;; old version. keep around for a while just in case. 
+;;; old version. keep around for a while just in case.
 ;(DEFUN SYSTEM-MENU-SELECT-WINDOW (&OPTIONAL (SUP MOUSE-SHEET))
 ;  "Offer the user the Select menu and select a window if he says so.
 ;The menu contains the inferiors of SUP."
@@ -414,7 +414,7 @@ The menu contains the inferiors of SUP."
 ;      (BEEP)
 ;      (POP-UP-MESSAGE "Error: There are no windows that can be selected."))))
 
-(DEFUN system-menu-select-screen ;; may 01/27/89 
+(DEFUN system-menu-select-screen ;; may 01/27/89
        ()
   "Offer the user a menu of screens.  Selecting a screen will expose it and make it the DEFAULT-SCREEN."
   (LET ((screen (w:menu-choose (LOOP FOR screen IN all-the-screens
@@ -461,7 +461,7 @@ means ask the user to specify the corners.  Returns a window or NIL."
 	    (WINDOW-TYPE
 	     (MOUSE-SET-SHEET SUP)
 	     (CREATE-WINDOW-WITH-MOUSE WINDOW-TYPE EDGES-FROM))))
-      (MOUSE-SET-SHEET MS)))) 
+      (MOUSE-SET-SHEET MS))))
 
 (DEFUN CREATE-WINDOW-WITH-MOUSE
        (FLAVOR-NAME &OPTIONAL (EDGES-FROM 'MOUSE) &AUX TEM)
@@ -490,7 +490,7 @@ use the mouse to get them."
 									(sheet-color-map tv:mouse-sheet))
 								   *default-color-map*))))))
        (SEND WINDOW :SELECT)
-       WINDOW))) 
+       WINDOW)))
 
 
 
@@ -511,8 +511,8 @@ Returns selected item or NIL if nothing was selected (i.e. user moved the mouse 
   (W:MENU-CHOOSE
     '((:no :value nil :DOCUMENTATION
 	  "Click mouse or press <END> to select NO.   Pressing <ABORT> or moving off menu will also select NO.")
-      (:yes :VALUE T :DOCUMENTATION		
-	   "Click mouse or press <END> to select YES.    Pressing <ABORT> or moving off menu will also select NO."))	
+      (:yes :VALUE T :DOCUMENTATION
+	   "Click mouse or press <END> to select YES.    Pressing <ABORT> or moving off menu will also select NO."))
      :LABEL `(:string ,message
 		      :color ,*default-menu-label-foreground*
 		      :background ,*default-menu-label-background*
@@ -526,7 +526,7 @@ Returns selected item or NIL if nothing was selected (i.e. user moved the mouse 
 	    STREAM-MIXIN
 	    BORDERS-MIXIN
 	    SELECT-MIXIN
-	    DELAY-NOTIFICATION-MIXIN 
+	    DELAY-NOTIFICATION-MIXIN
 	    MINIMUM-WINDOW)
   :INITTABLE-INSTANCE-VARIABLES
   (:DEFAULT-INIT-PLIST :BORDERS 3
@@ -578,7 +578,7 @@ made at word boundaries if possible."
 		  (SETQ end-ptr (1+ first-cut)))
 		 (t (STRING-NCONC result (SUBSEQ string start-ptr end-ptr) #\Return)))
 	FINALLY (RETURN (STRING-NCONC result (SUBSEQ string start-ptr)))))
- 
+
 
 (DEFUN COUNT-LINES (MESSAGE &AUX (LINE-COUNT 1) (LAST-MATCH 0))
   "Count the number of line of text that are in the MESSAGE."
@@ -589,7 +589,7 @@ made at word boundaries if possible."
 	  (SETQ LAST-MATCH (1+ LAST-MATCH))	; Skip over the RETURN character
 	  (SETQ LINE-COUNT (1+ LINE-COUNT)))	; Have another line
 	(RETURN NIL)))
-  LINE-COUNT) 
+  LINE-COUNT)
 
 
 (DEFUN MOUSE-CONFIRM (MESSAGE &OPTIONAL (WHAT-TO-DO "Click mouse, or press <END> if YES.
@@ -622,7 +622,7 @@ WINDOW-MAX-WIDTH	maximum number of pixels for the window width or
 				      (SEND window :string-length what-to-do
 					    0 nil nil what-to-do-font)
 				    max-what-to-do-x))))
-    (SETQ window-max-width (MIN window-max-width 
+    (SETQ window-max-width (MIN window-max-width
 				(- (sheet-inside-width (sheet-superior window))
 				   (sheet-left-margin-size window)
 				   (sheet-right-margin-size window))))
@@ -668,18 +668,18 @@ WINDOW-MAX-WIDTH	maximum number of pixels for the window width or
 	    (LOOP FOR input = (read-any window)
 		  DO (COND ((AND (CONSP input)
 				 (EQ :mouse-button (FIRST input)))	;
-			    
+
 			    (return t)) ;; user clicked on window
 			   ((eql input nil) ;; confirmation window :after :handle mouse now stuffs NIL instead of end when user
-			    
+
 			    (return nil))    ;; moves mouse off window!
 			   ((or (EQL input #\End) (eql input #\space))
-			    
+
 			    (return t ))
 			   ((or (EQL INPUT #\n) (eql input #\N))
 			    (return nil)))
 		  ))))
- 
+
 
 (DEFUN SYSTEM-MENU-KILL-WINDOW (WINDOW IGNORE IGNORE)
   (AND WINDOW
@@ -688,13 +688,13 @@ WINDOW-MAX-WIDTH	maximum number of pixels for the window width or
 		 (SHEET-NAME
 		   (SETQ WINDOW (OR (SEND WINDOW :ALIAS-FOR-SELECTED-WINDOWS)
 				    WINDOW)))))
-       (SEND WINDOW :KILL))) 
+       (SEND WINDOW :KILL)))
 
 (DEFUN SYSTEM-MENU-RESET-WINDOW (WINDOW IGNORE IGNORE &AUX P)
   (AND WINDOW
        (MOUSE-Y-OR-N-P (FORMAT NIL "Reset process in ~A" (SHEET-NAME WINDOW)))
        (SETQ P (SEND WINDOW :SEND-IF-HANDLES :PROCESS))
-       (SEND P :RESET))) 
+       (SEND P :RESET)))
 
 (DEFUN SYSTEM-MENU-BURY-WINDOW (WINDOW IGNORE IGNORE)
   (AND WINDOW
@@ -794,7 +794,7 @@ WINDOW-MAX-WIDTH	maximum number of pixels for the window width or
 (DEFWINDOW-RESOURCE
   SPLIT-SCREEN-CHOOSE-VALUES ()
   :WINDOW-CREATE
-  (TEMPORARY-CHOOSE-VARIABLE-VALUES-WINDOW 
+  (TEMPORARY-CHOOSE-VARIABLE-VALUES-WINDOW
     :NAME "Split Screen Choose Values"
     :LABEL `(:string "Frame characteristics:"
 		     :color ,*default-menu-label-foreground*
@@ -876,7 +876,7 @@ WINDOW-MAX-WIDTH	maximum number of pixels for the window width or
               ;; move the mouse cursor around in the split screen menu.
               (SETQ RES (IF (IO-BUFFER-EMPTY-P IO-BUFFER)
                             ;; Try to determine which window got the character.
-                            (LIST :MENU 
+                            (LIST :MENU
                                   (SEND SCVM-MENU :PROCESS-CHARACTER (READ-CHAR SCVM-MENU))
                                   NIL SCVM-MENU)
                             ;;ELSE
@@ -1030,7 +1030,7 @@ type TYPE, or NIL if we can't figure it out for some reason."
       ((SETQ TEM (GET ITEM :EVAL))
        (IF (EQ (EVAL TEM)
 	       TYPE)
-	   (RETURN (CAR ITEM))))))) 
+	   (RETURN (CAR ITEM)))))))
 
 ;;; We now have the list of windows, lay out the screen and set them up.
 ;;; The general rule for screen layout is that 2 or 3 windows stack
@@ -1110,7 +1110,7 @@ type TYPE, or NIL if we can't figure it out for some reason."
 	   (OR SEL (SETQ SEL WINDOW))))
 	(SEND WINDOW :EXPOSE))
       (AND SEL (SEND SEL :SELECT)))
-    SEL)) 
+    SEL))
 
 (DEFFLAVOR TRACE-OR-ERROR-WINDOW
 	((STREAM-VARIABLES NIL)
@@ -1200,7 +1200,7 @@ the list is selected as well."
 		   (CONS (CAR Y)
 			 (DELETE (CAR Y) (THE LIST (SHEET-INFERIORS MOUSE-SHEET)) :TEST #'EQ))))))
      (SEND (CAAR LAYOUT) :SELECT NIL)
-     (SEND MOUSE-SHEET :SCREEN-MANAGE) NIL))) 
+     (SEND MOUSE-SHEET :SCREEN-MANAGE) NIL)))
 
 ;;;relaced the following defun on 19 Dec 85 for GRH by GSM
 (DEFUN SAVE-THIS-SCREEN-LAYOUT (MENU)
@@ -1280,7 +1280,7 @@ Press the space bar to remove this message:  ")))
 
 (DEFUN POP-UP-FORMAT (CONTROL &REST ARGS)
   "Pop up a formatted message near the mouse."
-  (POP-UP-MESSAGE (APPLY #'FORMAT NIL CONTROL ARGS))) 
+  (POP-UP-MESSAGE (APPLY #'FORMAT NIL CONTROL ARGS)))
 
 (DEFUN GET-LINE-FROM-KEYBOARD
        (PROMPT &OPTIONAL (SUP MOUSE-SHEET) (FUNCTION #'READ-LINE) (POP-UP-NEAR '(:MOUSE)))
@@ -1292,7 +1292,7 @@ Press the space bar to remove this message:  ")))
      (EXPOSE-WINDOW-NEAR GET-LINE-FROM-KEYBOARD-WINDOW POP-UP-NEAR NIL)
      (WINDOW-CALL (GET-LINE-FROM-KEYBOARD-WINDOW :DEACTIVATE)
 	(FORMAT GET-LINE-FROM-KEYBOARD-WINDOW "~A:~%" PROMPT)
-	(FUNCALL FUNCTION GET-LINE-FROM-KEYBOARD-WINDOW)))) 
+	(FUNCALL FUNCTION GET-LINE-FROM-KEYBOARD-WINDOW))))
 
 (DEFUN GET-WINDOW-TYPE-FROM-KEYBOARD
        (&OPTIONAL (SUP MOUSE-SHEET) REQUIRED-INIT-OPTION (POP-UP-NEAR '(:MOUSE))
@@ -1311,7 +1311,7 @@ Press the space bar to remove this message:  ")))
 	      (NOT (FLAVOR-ALLOWS-INIT-KEYWORD-P WT REQUIRED-INIT-OPTION))))
      (BEEP)
      NIL)
-    (T WT))) 
+    (T WT)))
 
 ;;;Hack window for split screen
 (DEFFLAVOR DISPLAY-LAYOUT-WINDOW
@@ -1320,7 +1320,7 @@ Press the space bar to remove this message:  ")))
   (:INITABLE-INSTANCE-VARIABLES FROBS))
 
 (DEFMETHOD (DISPLAY-LAYOUT-WINDOW :BEFORE :INIT) (INIT-PAIRS)
-  (SETF (GET INIT-PAIRS :BLINKER-P) NIL)) 
+  (SETF (GET INIT-PAIRS :BLINKER-P) NIL))
 
 (DEFMETHOD (DISPLAY-LAYOUT-WINDOW :CLEAR-FROBS) ()
   (SETQ FROBS NIL)
@@ -1332,7 +1332,7 @@ Press the space bar to remove this message:  ")))
 	FROBS (NCONC FROBS (CONS FROB NIL)))
   (SHEET-FORCE-ACCESS (SELF)
     (DRAW-FROBS SELF FROBS N ERASE-ALUF)
-    (DRAW-FROBS SELF FROBS (1+ N) CHAR-ALUF))) 
+    (DRAW-FROBS SELF FROBS (1+ N) CHAR-ALUF)))
 
 (DEFMETHOD (DISPLAY-LAYOUT-WINDOW :REMOVE-LAST-FROB) ()
   (SETQ FROBS (NREVERSE (CDR (NREVERSE FROBS))))
@@ -1401,7 +1401,7 @@ Press the space bar to remove this message:  ")))
 		   (MIN 5 (MAX (truncate (- Y1 Y) 5)
 			       2)))
 	     (SETQ FROBS (CDR FROBS))
-	     (DRAW-LAYOUT-LABEL WINDOW (CAR FROBS) 2ND-LEFT Y1 WIDTH LHEIGHT ALU))))))) 
+	     (DRAW-LAYOUT-LABEL WINDOW (CAR FROBS) 2ND-LEFT Y1 WIDTH LHEIGHT ALU)))))))
 
 (DEFUN DRAW-LAYOUT-LABEL (WINDOW STRING FROM-X FROM-Y XLIM LHEIGHT ALU)
   ;;; hacked this to draw labels using inside coordinates   --mdm 12/17/84
@@ -1417,7 +1417,7 @@ Press the space bar to remove this message:  ")))
 	 (DRAW-LAYOUT-DOTS WINDOW STRING (1+ X) (- Y 2) XLIMIT ALU))
 	(T
 	 (SEND WINDOW :STRING-OUT-EXPLICIT (STRING-UPCASE STRING) (1+ X) (- Y 6) XLIMIT NIL
-	       (SEND (SHEET-GET-SCREEN WINDOW) :PARSE-FONT-DESCRIPTOR FONTS:|5X5|) ALU 0 NIL NIL)))))) 
+	       (SEND (SHEET-GET-SCREEN WINDOW) :PARSE-FONT-DESCRIPTOR FONTS:|5X5|) ALU 0 NIL NIL))))))
 
 (DEFUN DRAW-LAYOUT-DOTS (SHEET STRING X Y XLIM ALU)
   "For every non-blank character in STRING, set a bit in the

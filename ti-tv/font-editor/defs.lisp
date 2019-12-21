@@ -1,11 +1,11 @@
 ;;; -*- Mode:Common-Lisp; Package:FED; Base:10; Fonts:(CPTFONT HL10B TR10I CPTFONT HL10B) -*-
 
-;;;                                    RESTRICTED RIGHTS LEGEND 
+;;;                                    RESTRICTED RIGHTS LEGEND
 ;;; Use,  duplication, or  disclosure  by  the  Government is subject to restrictions
 ;;; as set forth in subdivision (c)(1)(ii) of the Rights in Technical Data and
-;;; Computer Software clause at 52.227-7013. 
+;;; Computer Software clause at 52.227-7013.
 ;;;
-;;; TEXAS INSTRUMENTS INCORPORATED, P.O. BOX 2909 AUSTIN, TEXAS 78769  
+;;; TEXAS INSTRUMENTS INCORPORATED, P.O. BOX 2909 AUSTIN, TEXAS 78769
 ;;; Copyright (C) 1986-1989 Texas Instruments Incorporated. All rights reserved.
 
 ;;; Some DEFS for the EXPLORER Font Editor
@@ -15,7 +15,7 @@
 (DEFVAR NUMERIC-ARG)			; Numeric argument to a command.
 (DEFVAR NUMERIC-ARG-P)			; Flag numeric argument tracking.
 (DEFVAR COMMAND-CHAR)			; Character that invoked this command.
-(DEFPARAMETER MIN-BOX-SIZE 6)		; If box size is smaller than this,  no grid is shown. 
+(DEFPARAMETER MIN-BOX-SIZE 6)		; If box size is smaller than this,  no grid is shown.
 (DEFPARAMETER DEFAULT-BOX-SIZE 14)	; How big to create box.
 (DEFPARAMETER GRID-POINT-SIZE 2)	; Size of a point on the grid.
 (DEFPARAMETER REDISPLAY-NONE 0)		; No redisplay needed.
@@ -26,11 +26,11 @@
 ;; ;  The elements of a FONT-DESCRIPTOR are either NIL or a CHAR-DESCRIPTOR.
 ;; ;  If NIL, then this character is not defined for this font.
 
-(DEFSTRUCT (font-descriptor (:type :ARRAY-LEADER) :NAMED (:CALLABLE-CONSTRUCTORS NIL) (:conc-name nil))
+(DEFSTRUCT (font-descriptor (:type :ARRAY-LEADER) :NAMED  (:conc-name nil))
 	   (FD-FILL-POINTER 0)
 	   FD-NAME
 	   FD-LINE-SPACING		;; ;  Vertical distance between baselines.
-	   FD-BASELINE			;; ;  Vertical distance from top of characters in this font.  
+	   FD-BASELINE			;; ;  Vertical distance from top of characters in this font.
 					;; ;  The baseline is what is aligned for different fonts.
 	   FD-BLINKER-HEIGHT		;; ;  Height of a "blinker" in this font.
 	   FD-BLINKER-WIDTH		;; ;  Width of a "blinker" in this font.
@@ -50,7 +50,7 @@
 ;; ;  A CHAR-DESCRIPTOR is a two dimensional array (with leader).
 ;; ;  The first dimension is the height of the character and the second is the width
 
-(DEFSTRUCT (CHAR-DESCRIPTOR (:type :ARRAY-LEADER) :NAMED (:CALLABLE-CONSTRUCTORS NIL) (:conc-name nil))
+(DEFSTRUCT (CHAR-DESCRIPTOR (:type :ARRAY-LEADER) :NAMED  (:conc-name nil))
 	   CD-FILL-POINTER
 	   CD-NAME
 	   CD-CHAR-WIDTH		;; ;  The horizontal distance taken by this character
@@ -70,7 +70,7 @@
 ;; ;  last character.
 ;;;  ----------------------------
 
-(DEFVAR PATHNAME-DEFAULTS) 
+(DEFVAR PATHNAME-DEFAULTS)
 
 (DEFUN PATHNAME-DEFAULTS ()
   "Return the pathname defaults for file i/o in FED."
@@ -84,21 +84,21 @@
 				:TYPE (SI:LOCAL-BINARY-FILE-TYPE)
 				:VERSION :NEWEST)
 			      PATHNAME-DEFAULTS)))
-  PATHNAME-DEFAULTS) 
+  PATHNAME-DEFAULTS)
 
 ;;;  These additional Plane functions are used in a couple of places and don't have
-;;;  a real home.  So they are getting stuck here. 
+;;;  a real home.  So they are getting stuck here.
 
 (DEFUN PLANE-ENSURE-EXISTS (PLANE X Y)
   "Make sure that location X, Y in PLANE is explicitly represented."
-  (PLANE-ASET (PLANE-AREF PLANE X Y) PLANE X Y)) 
+  (PLANE-ASET (PLANE-AREF PLANE X Y) PLANE X Y))
 
 
 (DEFUN PLANE-END (PLANE)
   "Return a list whose elements are the ends of the explicitly allocated index regions of PLANE.
 Each element corresponds to one dimension, and is one plus the highest
 value in that dimension for which storage in PLANE is allocated."
-  (MAPCAR '+ (PLANE-ORIGIN PLANE) (ARRAY-DIMENSIONS PLANE))) 
+  (MAPCAR '+ (PLANE-ORIGIN PLANE) (ARRAY-DIMENSIONS PLANE)))
 
 
 (DEFUN PLANE-EDGES (PLANE)
@@ -115,4 +115,4 @@ The elements of the list completely describe what coordinate ranges have actual 
 	  ((= J (FOURTH EDGES)))
 	(PRINC (PLANE-AREF PLANE I J)))
       (TERPRI))
-    (TERPRI))) 
+    (TERPRI)))

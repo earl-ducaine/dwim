@@ -25,8 +25,8 @@
 ;;;                         This makes CLOS recognize windows as belonging to STREAM class.
 ;;;			Before CLOS existed, the function STREAMP just kludged-in (type 'tv:sheet).
 ;;;  01/26/89  MAY       Change to (stream-mixin :after :kill) for build process.
-;;;  01/09/89  MAY	Corrected alu-transp cond clause in DRAW-CLIPPED-POINT. Spr 9064.	
-;;;  04/25/88  LG        Handle COLOR argument of the :draw-point, :draw-circle, and 
+;;;  01/09/89  MAY	Corrected alu-transp cond clause in DRAW-CLIPPED-POINT. Spr 9064.
+;;;  04/25/88  LG        Handle COLOR argument of the :draw-point, :draw-circle, and
 ;;; 		       :draw-filled-in-circle methods of the tv:graphics-mixin as a 0/1
 ;;;		       pixel value rather than a w:color value.
 ;;;  04/07/88  LG	    Handle :draw-line's COLOR argument correctly for the Mac.
@@ -120,9 +120,9 @@ window."))
 				  (:DEFAULT-POINTER RUBOUT-HANDLER-BUFFER)
 				  (:CONC-NAME RHB-)
 				  (:ALTERANT NIL)
-                                  (:CALLABLE-CONSTRUCTORS NIL)
+
 				  (:PREDICATE NIL)
-				  (:COPIER NIL))  
+				  (:COPIER NIL))
   (FILL-POINTER 0)      ;Index into buffer for the next character.
   (SCAN-POINTER 0)
   (TYPEIN-POINTER 0)
@@ -131,7 +131,7 @@ window."))
   (INITIAL-ENTRY NIL))  ;Set to T on entry to :RUBOUT-HANDLER stream op.
 
 (DEFMETHOD (STREAM-MIXIN :BEFORE :INIT) (INIT-PLIST)
- ;; Pre-create :WHICH-OPERATIONS, certainly going to be used. 
+ ;; Pre-create :WHICH-OPERATIONS, certainly going to be used.
   (SEND SELF :WHICH-OPERATIONS)
   (OR (TYPEP IO-BUFFER 'IO-BUFFER)
       ;; IO-BUFFER isn't an IO buffer.  Convert it from what it
@@ -157,7 +157,7 @@ window."))
 (defmethod (stream-mixin :after :kill) (&rest ignore &aux input-ring)
   (DECLARE (SPECIAL zwei:*histories-to-clear*)) ;; may 01/26/89 make build process cleaner
   (when (and ;;most of the following test are need for the bootstraping build  PMH
-	     (fboundp 'rh-input-ring)		
+	     (fboundp 'rh-input-ring)
 	     (boundp 'rubout-handler)
 	     (boundp 'rubout-handler-buffer)
 	     (fboundp 'zwei:clear-history)
@@ -165,16 +165,16 @@ window."))
 	     (setf input-ring (rh-input-ring)))
     (zwei:clear-history input-ring)
     (setf zwei:*histories-to-clear*
-	  (remove input-ring (the list zwei:*histories-to-clear*) :test #'eq )))) 
+	  (remove input-ring (the list zwei:*histories-to-clear*) :test #'eq ))))
 
 ;;; The :ASYNCHRONOUS-CHARACTERS property list contains:
 ;;;   (the-character a-function-to-call optional-arguments)
-(DEFMETHOD (STREAM-MIXIN :ADD-ASYNCHRONOUS-CHARACTER) (CHARACTER FUNCTION &REST ARGS) 
+(DEFMETHOD (STREAM-MIXIN :ADD-ASYNCHRONOUS-CHARACTER) (CHARACTER FUNCTION &REST ARGS)
   (CHECK-TYPE CHARACTER (OR FIXNUM CHARACTER))                      ;; character ??
   (CHECK-ARG FUNCTION FUNCTIONP "a function")
   (LET ((PLIST (LOCF (IO-BUFFER-PLIST IO-BUFFER))))
     (PUSH (LIST* CHARACTER FUNCTION (COPY-LIST ARGS))
-	  (GET PLIST :ASYNCHRONOUS-CHARACTERS)))) 
+	  (GET PLIST :ASYNCHRONOUS-CHARACTERS))))
 
 (DEFMETHOD (STREAM-MIXIN :ASYNCHRONOUS-CHARACTER-P) (CHARACTER)
   (LET* ((PLIST (LOCF (IO-BUFFER-PLIST IO-BUFFER)))
@@ -187,7 +187,7 @@ window."))
 	 TEM)
     (AND (SETQ TEM (ASSOC CHARACTER ALIST :TEST #'EQ))
 	 (APPLY (CADR TEM) (CAR TEM) SELF (CDDR TEM)))))
-  
+
 (DEFMETHOD (STREAM-MIXIN :REMOVE-ASYNCHRONOUS-CHARACTER) (CHARACTER)
   (LET* ((PLIST (LOCF (IO-BUFFER-PLIST IO-BUFFER)))
 	 (ALIST (GET PLIST :ASYNCHRONOUS-CHARACTERS)))
@@ -195,7 +195,7 @@ window."))
 	  (DELETE (ASSOC CHARACTER ALIST :TEST #'EQ) (THE LIST ALIST) :TEST #'EQ))))
 
 (DEFMETHOD (STREAM-MIXIN :DIRECTION) ()
-  :BIDIRECTIONAL) 
+  :BIDIRECTIONAL)
 
 (DEFMETHOD (STREAM-MIXIN :BEFORE :SELECT) (&REST IGNORE)
   (KBD-CLEAR-SELECTED-IO-BUFFER))
@@ -210,10 +210,10 @@ window."))
 
 (DEFMETHOD (STREAM-MIXIN :PUSH-INPUT) (INPUT)
   (IF (STRINGP INPUT)
-      (DO ((I (1- (LENGTH INPUT)) (1- I))) 
+      (DO ((I (1- (LENGTH INPUT)) (1- I)))
 	  ((MINUSP I))
 	(IO-BUFFER-PUSH IO-BUFFER (AREF INPUT I)))
-      (IO-BUFFER-PUSH IO-BUFFER INPUT))) 
+      (IO-BUFFER-PUSH IO-BUFFER INPUT)))
 
 (DEFMETHOD (STREAM-MIXIN :DRAW-RECTANGLE)
            (RECTANGLE-WIDTH RECTANGLE-HEIGHT X Y
@@ -245,7 +245,7 @@ window."))
             (IB (SHEET-INSIDE-BOTTOM))
 	    (abs-wid (abs wid))
 	    (abs-hei (abs hei)))
-  "Copy rectangle from self's screen-array at inside coordinates 
+  "Copy rectangle from self's screen-array at inside coordinates
  FROM-X, FROM-Y to a given array, clipping as necessary."
   (when (< from-x il)
     (setq abs-wid (- abs-wid (- il from-x))
@@ -271,10 +271,10 @@ window."))
             (IB (SHEET-INSIDE-BOTTOM))
 	    (abs-wid (abs wid))
 	    (abs-hei (abs hei)))
-  "Move rectangle on self's screen-array at inside coordinates 
+  "Move rectangle on self's screen-array at inside coordinates
  FROM-X, FROM-Y to TO-X, TO-Y, clipping as necessary."
   (SETQ FROM-X (+ IL FROM-X) FROM-Y (+ IT FROM-Y) ; may 04/14/89 Added in code lost in release 3
-	TO-X (+ IL TO-X) TO-Y (+ IT TO-Y))	  ; may 04/14/89 
+	TO-X (+ IL TO-X) TO-Y (+ IT TO-Y))	  ; may 04/14/89
   (when (< from-x il)
     (setq abs-wid (- abs-wid (- il from-x))
 	  from-x il))
@@ -322,7 +322,7 @@ window."))
 	    (>= from-y max-from-height))
     ; this assumes we want to wrap around, not clip
     (setq from-y (abs (rem from-y max-from-height))))
-  
+
   (cond ((not (plusp abs-width)))		;bitblt errs when w=h=0
 	((not (plusp abs-height)))		;and dims are out of bounds
 	(t
@@ -357,9 +357,9 @@ window."))
 ;;; 08/24/84 - Removed the direct call to kbd-process-main-loop-internal.
 ;;; The keyboard process handles this anyway.
 
-  (NOT (AND (<= (RHB-FILL-POINTER) (RHB-SCAN-POINTER))  
+  (NOT (AND (<= (RHB-FILL-POINTER) (RHB-SCAN-POINTER))
 	    (IO-BUFFER-EMPTY-P IO-BUFFER)
-	    (WITHOUT-INTERRUPTS 
+	    (WITHOUT-INTERRUPTS
 	      (IF (NEQ IO-BUFFER (KBD-GET-IO-BUFFER)) T
 ;;;;;;;;;;;;;;;;;;(AND (KBD-HARDWARE-CHAR-AVAILABLE)
 ;;;;;;;;;;;;;;;;;;;;;;;(KBD-PROCESS-MAIN-LOOP-INTERNAL))
@@ -369,14 +369,14 @@ window."))
 (DEFMETHOD (STREAM-MIXIN :WAIT-FOR-INPUT-WITH-TIMEOUT) (TIMEOUT)
   (KBD-WAIT-FOR-INPUT-WITH-TIMEOUT IO-BUFFER TIMEOUT))
 
-(DEFMETHOD (STREAM-MIXIN :CLEAR-INPUT) () 
+(DEFMETHOD (STREAM-MIXIN :CLEAR-INPUT) ()
   (SETF (RHB-FILL-POINTER) 0)
   (SETF (RHB-SCAN-POINTER) 0)
   (IO-BUFFER-CLEAR IO-BUFFER)
   (AND (EQ IO-BUFFER (KBD-GET-IO-BUFFER))
        (KBD-CLEAR-IO-BUFFER)))
 
-(DEFMETHOD (STREAM-MIXIN :TYI) (&OPTIONAL IGNORE)  
+(DEFMETHOD (STREAM-MIXIN :TYI) (&OPTIONAL IGNORE)
   (DO ((CH)) (NIL)
     (AND (NUMBERP (SETQ CH (SEND SELF :ANY-TYI)))
 	 (RETURN CH))
@@ -388,7 +388,7 @@ window."))
 	 (EQL (INT-CHAR (CADR CH)) #\MOUSE-3-1)	;used to be EQ PMH 7/1/87
 	 (MOUSE-CALL-SYSTEM-MENU))))
 
-(DEFMETHOD (STREAM-MIXIN :TYI-NO-HANG) (&OPTIONAL IGNORE) 
+(DEFMETHOD (STREAM-MIXIN :TYI-NO-HANG) (&OPTIONAL IGNORE)
   (DO ((CH)) (NIL)
     (AND (OR (NULL (SETQ CH (SEND SELF :ANY-TYI-NO-HANG)))
 	     (NUMBERP CH))
@@ -449,7 +449,7 @@ window."))
        (SETF (SECOND OBJECT) (INT-CHAR (SECOND OBJECT)))))
   OBJECT)
 
-(DEFMETHOD (STREAM-MIXIN :ANY-TYI-NO-HANG) (&OPTIONAL IGNORE &AUX ch)  
+(DEFMETHOD (STREAM-MIXIN :ANY-TYI-NO-HANG) (&OPTIONAL IGNORE &AUX ch)
   (COND ((NOT RUBOUT-HANDLER)
 	 (SETQ CH (KBD-IO-BUFFER-GET IO-BUFFER T))
 	 ;; When we have a keypad character and the keypad bit for the window is
@@ -502,7 +502,7 @@ input characters.  The (array-leader array 1) points at the last slot
 stored into."
   (IO-BUFFER-RECORD IO-BUFFER))
 
-(DEFMETHOD (STREAM-MIXIN :FORCE-KBD-INPUT) (CH-OR-STRING) 
+(DEFMETHOD (STREAM-MIXIN :FORCE-KBD-INPUT) (CH-OR-STRING)
   (COND  ((STRINGP CH-OR-STRING)
 	  (DOTIMES (N (LENGTH CH-OR-STRING))
 	    (IO-BUFFER-PUT IO-BUFFER (AREF CH-OR-STRING N))))
@@ -581,7 +581,7 @@ are gone.")
       (LET ((PROMPT-OPTION (ASSOC :PROMPT RUBOUT-HANDLER-OPTIONS :TEST #'EQ)))
 	(AND PROMPT-OPTION                     ;Prompt if desired
 	     (RUBOUT-HANDLER-PROMPT (CADR PROMPT-OPTION) SELF NIL)))
-      
+
       (MULTIPLE-VALUE-BIND
 	(RUBOUT-HANDLER-STARTING-X RUBOUT-HANDLER-STARTING-Y)
 	  (SEND SELF :READ-CURSORPOS)
@@ -609,7 +609,7 @@ are gone.")
 	     (RUBOUT-HANDLER-ACTIVATION-CHARACTER NIL))
 	    (NIL)
 	  (CATCH 'RUBOUT-HANDLER                           ;Throw here when rubbing out
-       	    (CONDITION-CASE-IF                                           
+       	    (CONDITION-CASE-IF
 	     (NULL (ASSOC :DONT-HANDLE-ERRORS RUBOUT-HANDLER-OPTIONS :TEST #'EQ)) (ERROR)
 			       (RETURN
 				(LET (LIST)
@@ -631,10 +631,10 @@ are gone.")
 				  ;; add rh-rescan-any-change  flag PMH 3/25
 				  (DO ((rh-rescan-any-change t))
 				      (NIL)
-;;;;;				  (SEND SELF :TYI)))))                
+;;;;;				  (SEND SELF :TYI)))))
 				    (READ-CHAR self))
-				  
-				))) 
+
+				)))
 	  ;;Maybe return when user rubs all the way back
 	  (AND (ZEROP (RHB-FILL-POINTER))
 	       ;; FULL-RUBOUT says we return if there isn't any input.
@@ -657,7 +657,7 @@ are gone.")
 (DEFMETHOD (STREAM-MIXIN :FORCE-RESCAN) ()
   (SETF (RHB-SCAN-POINTER) 0)
   (THROW 'T
-	 'RUBOUT-HANDLER))  
+	 'RUBOUT-HANDLER))
 
 (DEFMETHOD (STREAM-MIXIN :READ-BP) ()
   (RHB-SCAN-POINTER))
@@ -688,16 +688,16 @@ are gone.")
       (AND (EQ OLD-TYPEAHEAD T)
 	   (SETQ OLD-TYPEAHEAD NIL)))
     (AND (NOT (MEMBER FLAG '(:PREEMPTABLE :FULL-RUBOUT) :TEST #'EQ ))             ;Hogge 2-02-85
-	 
+
 	 (RETURN (VALUES RESULT FLAG)))                                   ;FORD  9-26-84
     ;; Determine whether a mouse character caused the full-rubout
-;;;    (SETQ RESULT (SEND SELF :ANY-TYI-NO-HANG))                             
+;;;    (SETQ RESULT (SEND SELF :ANY-TYI-NO-HANG))
     (SETQ RESULT (READ-ANY-NO-HANG self))
     (COND (RESULT
 ;;;	   (OR (NUMBERP RESULT)
 	   (OR (CHARACTERP RESULT)                                                  ;;;check needed  ??
 	       (RETURN (VALUES RESULT :MOUSE-CHAR)))
-;;;	   (SEND SELF :UNTYI RESULT)))                                        
+;;;	   (SEND SELF :UNTYI RESULT)))
            (UNREAD-ANY RESULT self)))
     (AND (SETQ FLAG (CADR (ASSOC :FULL-RUBOUT OPTIONS :TEST #'EQ )))
 	 (RETURN (VALUES NIL FLAG)))
@@ -706,13 +706,13 @@ are gone.")
     ;; notion of :PROMPT and :REPROMPT first though.
     (LET ((PROMPT (ASSOC :PROMPT OPTIONS :TEST #'EQ )))
       (COND (PROMPT
-	 (SETQ OPTIONS (REMOVE PROMPT (THE LIST OPTIONS) :TEST #'EQ))       
+	 (SETQ OPTIONS (REMOVE PROMPT (THE LIST OPTIONS) :TEST #'EQ))
 	 ;; This next condition may be unnecessary, but just in
 	 ;; case. --kmp
        	 (COND ((NOT (ASSOC :REPROMPT OPTIONS :TEST #'EQ))
 	    ;; make fake reprompt info. our old prompt should
 	    ;; still be there --kmp
-       	    (PUSH `(:REPROMPT . ,(CDR PROMPT)) OPTIONS))))))))  
+       	    (PUSH `(:REPROMPT . ,(CDR PROMPT)) OPTIONS))))))))
 
 ;;; The following function is an efficiency hack for the compiler.  The idea is
 ;;; to use member in a manner in which the compiler can generate efficient code.
@@ -781,11 +781,11 @@ RUBOUT-HANDLER on editing."
 			:COMMAND)))
 	      ;; Don't touch this character, just return it to caller.
 	      ((OR (MEMBER-CHAR CH EDITING-COMMAND)
-		   (SI:ASSQ-CAREFUL CH EDITING-COMMAND))                
+		   (SI:ASSQ-CAREFUL CH EDITING-COMMAND))
 	       ;; Cause rubout handler rescan next time the user does :TYI.
 	       (IF RUBBED-OUT-SOME
 		   (SETF (RHB-SCAN-POINTER) MOST-POSITIVE-FIXNUM))
-	       (RETURN CH))                
+	       (RETURN CH))
 	      ;; Is it an editing character?
 	      ((AND
 		 (NOT (OR (MEMBER-CHAR CH DO-NOT-ECHO)
@@ -870,7 +870,7 @@ RUBOUT-HANDLER on editing."
 		     (T
 		      (SETF (RHB-SCAN-POINTER) (RHB-FILL-POINTER))
 		      (SETQ RUBOUT-HANDLER-ACTIVATION-CHARACTER NIL)
-		      (RETURN CH))))))))                               
+		      (RETURN CH))))))))
 
 ;;; The following variable exists so that Zmacs can change it to use
 ;;; Zmac's word syntax table.  For those cases where Zmacs is not loaded
@@ -886,13 +886,13 @@ RUBOUT-HANDLER on editing."
        0)
     (IF (FUNCALL RUBOUT-HANDLER-ALPHA-CHAR-P (AREF STRING I))
 	(SETQ INSIDE-WORD T)
-	(AND INSIDE-WORD (RETURN (1+ I)))))) 
+	(AND INSIDE-WORD (RETURN (1+ I))))))
 
 (DEFUN RUBOUT-HANDLER-PROMPT (PROMPT-OPTION STREAM CH)
   (IF (STRINGP PROMPT-OPTION)
       (FUNCALL STREAM :STRING-OUT PROMPT-OPTION)
       (FUNCALL PROMPT-OPTION STREAM CH)))
-		
+
 (DEFMETHOD (STREAM-MIXIN :SAVE-RUBOUT-HANDLER-BUFFER) ()
   (WHEN RUBOUT-HANDLER-INSIDE
     ;; Give rubout handler function a chance to put its internal data
@@ -914,7 +914,7 @@ RUBOUT-HANDLER on editing."
   (SETF (RHB-SCAN-POINTER) 0)
   (SETF (RHB-INITIAL-ENTRY) :RESTORED)
   (THROW 'RUBOUT-HANDLER
-	 T)) 
+	 T))
 
 (DEFMETHOD (STREAM-MIXIN :REFRESH-RUBOUT-HANDLER)
 	   (&OPTIONAL DISCARD-LAST-CHARACTER)
@@ -930,7 +930,7 @@ RUBOUT-HANDLER on editing."
     (AND PROMPT (RUBOUT-HANDLER-PROMPT (CADR PROMPT) SELF #\DELETE)))
   (MULTIPLE-VALUE-SETQ (RUBOUT-HANDLER-STARTING-X RUBOUT-HANDLER-STARTING-Y)
     (SEND SELF :READ-CURSORPOS))
-  (SEND SELF :STRING-OUT RUBOUT-HANDLER-BUFFER)) 
+  (SEND SELF :STRING-OUT RUBOUT-HANDLER-BUFFER))
 
 (DEFFLAVOR LINE-TRUNCATING-MIXIN () ()
   (:REQUIRED-FLAVORS STREAM-MIXIN)
@@ -943,7 +943,7 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
 
 (DEFMETHOD (LINE-TRUNCATING-MIXIN :BEFORE :END-OF-LINE-EXCEPTION) ()
   (OR (ZEROP (SHEET-TRUNCATE-LINE-OUT-FLAG))
-      (THROW 'LINE-OVERFLOW T))) 
+      (THROW 'LINE-OVERFLOW T)))
 
 (DEFMETHOD (LINE-TRUNCATING-MIXIN :STRING-OUT)
 	   (STRING &OPTIONAL (START 0) END color)
@@ -957,7 +957,7 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
       (prepare-color (self color)
       (SHEET-STRING-OUT SELF STRING I (OR CR-IDX END))))
     (OR CR-IDX (RETURN NIL))
-    (SHEET-CRLF SELF))) 
+    (SHEET-CRLF SELF)))
 
 (DEFFLAVOR AUTOEXPOSING-MORE-MIXIN () ()
   (:REQUIRED-FLAVORS WINDOW)
@@ -965,7 +965,7 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
    "Makes a window expose itself if output on it stops at a **MORE**."))
 
 (DEFMETHOD (AUTOEXPOSING-MORE-MIXIN :BEFORE :MORE-EXCEPTION) ()
-  (SEND SELF :EXPOSE)) 
+  (SEND SELF :EXPOSE))
 
 ;;; Stream operations which all streams are required to support or
 ;;; ignore.  I'm afraid these will appear in the :WHICH-OPERATIONS even
@@ -989,11 +989,11 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
 
 (DEFMETHOD (STREAM-MIXIN :STRING-IN) (EOF &REST REST)
   (DECLARE (ARGLIST EOF STRING &OPTIONAL START END))
-  (STREAM-DEFAULT-HANDLER SELF :STRING-IN EOF REST)) 
+  (STREAM-DEFAULT-HANDLER SELF :STRING-IN EOF REST))
 
 (DEFMETHOD (STREAM-MIXIN :STRING-LINE-IN) (EOF &REST REST)
   (DECLARE (ARGLIST EOF STRING &OPTIONAL START END))
-  (STREAM-DEFAULT-HANDLER SELF :STRING-LINE-IN EOF REST)) 
+  (STREAM-DEFAULT-HANDLER SELF :STRING-LINE-IN EOF REST))
 
 (DEFFLAVOR GRAPHICS-MIXIN () ()
   ;; Explicit presence of SHEET helps init the
@@ -1033,8 +1033,8 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
      )
     )
   )
-) 
- 
+)
+
 (DEFMETHOD (GRAPHICS-MIXIN :DRAW-POINT) (X Y &OPTIONAL (ALU CHAR-ALUF)
 					 (color (sheet-foreground-color self)))
   ;;; -1 was the old optional value before color, preserve it for b&w operations.
@@ -1089,10 +1089,10 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
 ;;; located where the number is located.  For example, if the (X,Y)
 ;;; point were located to the left and down from the window then the
 ;;; mask returned would be 1001.
-;;; 
+;;;
 ;;;    0101                          0110
 ;;;                  0100
-;;; 
+;;;
 ;;;           .-----------------.
 ;;;           |                 |
 ;;;           |                 |
@@ -1102,7 +1102,7 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
 ;;;           |                 |
 ;;;           |                 |
 ;;;           `-----------------'
-;;; 
+;;;
 ;;;                  1000
 ;;;    1001                          1010
 ;;;
@@ -1115,7 +1115,7 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
 	((>= POINT-Y (SHEET-INSIDE-BOTTOM)) (LOGIOR 8 VISIBILITY))
 	(T VISIBILITY)))
 
-			       
+
 (DEFMETHOD (GRAPHICS-MIXIN :DRAW-LINE)
 	   (FROM-X FROM-Y TO-X TO-Y
 	    &OPTIONAL (ALU CHAR-ALUF) (DRAW-END-POINT T)
@@ -1184,7 +1184,7 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
 			       (TRUNCATE (* (- TO-X FROM-X)
 					    (- (SHEET-INSIDE-BOTTOM) FROM-Y 1))
 					 (- TO-Y FROM-Y)))
-		     FROM-Y (1- (SHEET-INSIDE-BOTTOM)))))))) 
+		     FROM-Y (1- (SHEET-INSIDE-BOTTOM))))))))
 
 ;;; This never draws any end points, thus it is good for making closed
 ;;; polygons.  Calls the :DRAW-LINE method to do the clipping.
@@ -1227,7 +1227,7 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
        	      (SETQ N-DASHES (FLOOR (+ DISTANCE (- DASH-SPACING DASH-LENGTH)) DASH-SPACING))
 	      ;; Get approximate number of dashes that will fit,
 	      ;; then change spacing to make them fit exactly.
-              (PROGN             
+              (PROGN
 	        (SETQ N-DASHES (ROUND (+ DISTANCE (- DASH-SPACING DASH-LENGTH)) DASH-SPACING))
 	        (IF (= N-DASHES 1)
 		    (SETQ REAL-DASH-SPACING DISTANCE REAL-DASH-LENGTH (- DISTANCE OFFSET OFFSET))
@@ -1245,8 +1245,8 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
 		       (< (1+ I) N-DASHES) color)
 	      (INCF X DX2)
 	      (INCF Y DY2))))))
-) 
-	
+)
+
 ;This clips in microcode
 ;;;patched on 17 Dec 85 for GRH by GSM
 (DEFMETHOD (GRAPHICS-MIXIN :DRAW-TRIANGLE)
@@ -1265,7 +1265,7 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
 )
 
 ;;; Very special kludgey macro for :DRAW-CIRCLE. In color, its even kludeier- do we really need this, i.e. why not
-;;;                                                      use :draw-point method?? Speed? 
+;;;                                                      use :draw-point method?? Speed?
 
 ;;; added color argument
 ;;; fixed to comprehend color alu operations
@@ -1362,7 +1362,7 @@ if the SHEET-TRUNCATE-LINE-OUT-FLAG in the window is set."))
     ;; else...
     (prepare-color (self color)
       (PREPARE-SHEET (SELF)
-	
+
 	(DO ((X 0)
 	     (F 0)						; F is just x^2. Don't use multiplication!
 	     (Y RADIUS))
@@ -1418,8 +1418,8 @@ portion of that octant which is actually drawn."
   ;;; hack alert- the function that called this function must make sure that the desired color is set on the
   ;;; window foreground-colore instance variable. Otherwise, we have no way to know what color to draw.
   ;;; Add a parameter, you say - look at that list already! - adding color at the end is a nightmare....
-  
-  (LET* ((color (if (color-system-p self) (sheet-foreground-color self) 1)) 
+
+  (LET* ((color (if (color-system-p self) (sheet-foreground-color self) 1))
          (IL (SHEET-INSIDE-LEFT))
 	 (IT (SHEET-INSIDE-TOP))
 	 (IR (SHEET-INSIDE-RIGHT))
@@ -1466,12 +1466,12 @@ portion of that octant which is actually drawn."
 			     (DRAW-CLIPPED-POINT (+ CENTER-X Y) (- CENTER-Y X) color alu))
 			 (IF (AND (< ANGLE BOTTOM-LEFT-END) (>= ANGLE BOTTOM-LEFT-START))
 			     (DRAW-CLIPPED-POINT (- CENTER-X Y) (+ CENTER-Y X) color alu))
-			 (COND ((= Y X) (RETURN)))))))) 
+			 (COND ((= Y X) (RETURN))))))))
 
 (DEFMETHOD (GRAPHICS-MIXIN :DRAW-CIRCULAR-ARC)
 	   (CENTER-X CENTER-Y RADIUS START-THETA END-THETA
 	    &OPTIONAL (ALU CHAR-ALUF)
-	    (color (if (color-system-p self)(sheet-foreground-color self) 1))	    
+	    (color (if (color-system-p self)(sheet-foreground-color self) 1))
 	    &AUX (PI/4 (/ 3.1416s0 4)))
   (LET* ( (save-fore (sheet-foreground-color self))
           (START-OCTANT
@@ -1484,7 +1484,7 @@ portion of that octant which is actually drawn."
 	    TEM))
 	 N-OCTANTS)
     ;;; hack alert - put the desired color on the sheet, for communication wioth the octant drawing function
-    
+
     (SETF (sheet-foreground-color self) color)
 
     (IF (= START-OCTANT END-OCTANT)
@@ -1520,7 +1520,7 @@ portion of that octant which is actually drawn."
 		    (FLOOR END-THETA PI/4)
 		  TEM)
 		PI/4)))
-    (setf (sheet-foreground-color self) save-fore))) 
+    (setf (sheet-foreground-color self) save-fore)))
 
 (DEFMETHOD (GRAPHICS-MIXIN :DRAW-FILLED-IN-SECTOR) (CENTER-X CENTER-Y RADIUS THETA-1 THETA-2 &OPTIONAL (ALU CHAR-ALUF)
 		   (color (sheet-foreground-color self)))
@@ -1546,16 +1546,16 @@ portion of that octant which is actually drawn."
        			(SETQ U1 (IF (= 0 CO-X0) 0 (TRUNCATE (* CO-Y0 Y) CO-X0))))
 		   (AND (PLUSP (- (* CO-Y0 Y) (* CO-X0 U0)))
 			(SETQ U0 (IF (= 0 CO-X0) 0 (TRUNCATE (* CO-Y0 Y) CO-X0))))
-		   
+
 		   (AND (MINUSP (- (* CO-Y1 Y) (* CO-X1 V1)))        ;Clip with second plane
        			(SETQ V1 (IF (= 0 CO-X1) 0 (TRUNCATE (* CO-Y1 Y) CO-X1))))
 		   (AND (MINUSP (- (* CO-Y1 Y) (* CO-X1 V0)))
 			(SETQ V0 (IF (= 0 CO-X1) 0 (TRUNCATE (* CO-Y1 Y) CO-X1))))
-		   
+
 		   ;; Ok, we have two lines, [U0 U1] and [V0 V1].
 		   ;; If the angle was greater than pi, then draw both of them,
 		   ;; otherwise draw their intersection
-		   
+
 		   (COND (FLAG
 			  (AND (> U1 U0)
 			       (SEND SELF :DRAW-LINE (+ CENTER-X U0) (+ CENTER-Y Y) (+ CENTER-X U1)
@@ -1568,7 +1568,7 @@ portion of that octant which is actually drawn."
 				(RIGHT (MIN U1 V1)))
 			    (AND (> RIGHT LEFT)
 				 (SEND SELF :DRAW-LINE (+ CENTER-X LEFT) (+ CENTER-Y Y)
-				       (+ CENTER-X RIGHT) (+ CENTER-Y Y) ALU T color)))))))) 
+				       (+ CENTER-X RIGHT) (+ CENTER-Y Y) ALU T color))))))))
 
 (DEFMETHOD (GRAPHICS-MIXIN :DRAW-REGULAR-POLYGON) (X1 Y1 X2 Y2 N &OPTIONAL (ALU CHAR-ALUF)
 		(color (sheet-foreground-color self))  &AUX THETA)
@@ -1607,12 +1607,12 @@ direction when N is positive."
 							 (+ (SHEET-INSIDE-TOP) (VALUES (FLOOR Y3))) ALU
 							 t t t nil self))
 			 (SETQ X1 X2 Y1 Y2 X2 X3 Y2 Y3)))
-                         )))) 
+                         ))))
 
 (DEFMETHOD (GRAPHICS-MIXIN :DRAW-CURVE) (PX PY &OPTIONAL END (ALU CHAR-ALUF) CLOSED-CURVE-P
 					 (color (sheet-foreground-color self)))
   "Display vectors of points."
-  
+
   (OR END (SETQ END (ARRAY-ACTIVE-LENGTH PX)))
   (LET ((X0)
 	(X1 (VALUES (FLOOR (AREF PX 0))))
@@ -1629,7 +1629,7 @@ direction when N is positive."
       (SETQ Y1 (VALUES (FLOOR Y1)))
       (FUNCALL METH NIL X0 Y0 X1 Y1 ALU NIL color))
     (WHEN CLOSED-CURVE-P
-      (FUNCALL METH NIL X1 Y1 (VALUES (FLOOR (AREF PX 0))) (VALUES (FLOOR (AREF PY 0))) ALU NIL color)))) 
+      (FUNCALL METH NIL X1 Y1 (VALUES (FLOOR (AREF PX 0))) (VALUES (FLOOR (AREF PY 0))) ALU NIL color))))
 
 (DEFMETHOD (GRAPHICS-MIXIN :DRAW-CLOSED-CURVE)
            (PX PY &OPTIONAL END (ALU CHAR-ALUF) (color (sheet-foreground-color self)))
@@ -1658,7 +1658,7 @@ to (cx,cy)."
 	  ((NOT (ZEROP LENGTH2))
 	   (VALUES (QUOTIENT (* HALF-THICKNESS (- DY2)) LENGTH2)
 		   (QUOTIENT (* HALF-THICKNESS DX2) LENGTH2)))
-	  (T (VALUES 0 0))))) 
+	  (T (VALUES 0 0)))))
 
 ;;;replaced the following defmethod on 18 Dec 85 for GRH by GSM
 (DEFMETHOD (GRAPHICS-MIXIN :DRAW-WIDE-CURVE)
@@ -1671,7 +1671,7 @@ to (cx,cy)."
   (IF (< THICKNESS 2)                                        ; this loses any specified gray-shade
       (SEND SELF :DRAW-CURVE X-POINTS Y-POINTS NUM-POINTS ALU CLOSED-P color)
       (LET ((X1) (Y1) (X2) (Y2) (X3) (Y3)
-	    
+
 	    ; these contain four coords to draw two triangles representing the
 	    ; wide line segements for points 1 & 2 above.
 	    (PX1) (PY1) (PX2) (PY2) (PX3) (PY3) (PX4) (PY4)
@@ -1679,7 +1679,7 @@ to (cx,cy)."
 	    ; these are used to obtain the triangle points from the line points.
        	    (DX) (DY)
 
-	    ; these define the clipping rectangle for %draw-filled-triangle 
+	    ; these define the clipping rectangle for %draw-filled-triangle
             (MAX-LEFT   (SHEET-INSIDE-LEFT))
  	    (MAX-TOP    (SHEET-INSIDE-TOP))
  	    (MAX-RIGHT  (SHEET-INSIDE-RIGHT))
@@ -1713,7 +1713,7 @@ to (cx,cy)."
 		PY2 (round (+ Y1 DY))
 		X3 (AREF X-POINTS TWO)
 		Y3 (AREF Y-POINTS TWO))
-        (prepare-color (self color)	  
+        (prepare-color (self color)
 	  (PREPARE-SHEET (SELF)
 	    (LOOP
 	      (MULTIPLE-VALUE-SETQ (DX DY)
@@ -1722,7 +1722,7 @@ to (cx,cy)."
 		    PY3 (round (- Y2 DY))
 		    PX4 (round (+ X2 DX))
 		    PY4 (round (+ Y2 DY)))	; draw a line segment via two triangles
-	      
+
               (with-clipping-rectangle (MAX-LEFT MAX-TOP MAX-RIGHT MAX-BOTTOM)
                                        (%DRAW-SHADED-TRIANGLE PX1 PY1 PX4 PY4 PX2 PY2
                                                               ALU t T T 100%-black
@@ -1738,7 +1738,7 @@ to (cx,cy)."
 			((AND CLOSED-P (= I (1+ NUM-POINTS)))
 			 (SETQ X3 (AREF X-POINTS 1) Y3 (AREF Y-POINTS 1)))
 			((RETURN NIL)))))
-	    )))))) 
+	    ))))))
 
 ;;; Cubic splines from Rogers and Adams, "Mathematical Elements for
 ;;; Computer Graphics".  This began as a translation from a BASIC
@@ -1787,10 +1787,10 @@ of active elements those arrays."
 	N-2 (1- N-1)
 	N-3 (1- N-2))
   (SETQ CLEN (+ N (* N-1 Z)))
-  
+
   ;; Create the arrays if they were not given them, or redimension them
   ;; if needed.
-  
+
   (COND ((NULL CX) (SETQ CX (MAKE-ARRAY CLEN)))
 	((< (ARRAY-TOTAL-SIZE CX) CLEN)
 	 (SETQ CX (ADJUST-ARRAY CX CLEN))))
@@ -1800,7 +1800,7 @@ of active elements those arrays."
   ;; Set up L to hold the approximate spline segment lengths.  The Nth
   ;; element of L holds the distance between the Nth and N+1st points of
   ;; PX,PY.  The last element of L is not used.
-  
+
   (SETQ L (MAKE-ARRAY N))
   (LOOP FOR J FROM 0 TO N-2
 	DO
@@ -1811,7 +1811,7 @@ of active elements those arrays."
 		    (EXPT (- (AREF PY (1+ J)) (AREF PY J)) 2))))))
   ;; Fill in the last element of L so that the next check will work
   ;; properly.
-  
+
   (SETF (AREF L (1- N)) -1.0s0)
   ;; Check L to make sure that none of the lengths are zero.  This will
   ;; happen when the caller has passed in two adjacent X,Y points which
@@ -1820,7 +1820,7 @@ of active elements those arrays."
   ;; zero-divide error later on.
   (LET ((NEW-INDEX 0))                                                 ; Place to store elements during copy operation
     (DOTIMES (INDEX N)
-      (WHEN (/= NEW-INDEX INDEX)                                       ; Don't move values to same location.  JEB	
+      (WHEN (/= NEW-INDEX INDEX)                                       ; Don't move values to same location.  JEB
 	(SETF (AREF L NEW-INDEX) (AREF L INDEX))
 	(SETF (AREF PX NEW-INDEX) (AREF PX INDEX))
 	(SETF (AREF PY NEW-INDEX) (AREF PY INDEX)))
@@ -1841,14 +1841,14 @@ of active elements those arrays."
   ;; The M matrix is tridiagonal for :RELAXED and :CLAMPED end conditions.
   ;; We represent it by storing M(I,I-1) in N1(I), M(I,I) in N2(I), and
   ;; M(I,I+1) in N3(I).  This means N1(0) and N3(N-1) are unused.
-  
+
   (SETQ N1 (MAKE-ARRAY N)
 	N2 (MAKE-ARRAY N)
 	N3 (MAKE-ARRAY N))
   ;; These quantities are meaningless, but they get referred to as part
   ;; of array bound conditions; these values just prevent errors from
   ;; happening.
-  
+
   (SETF (AREF N1 0) 0.0s0)
   (SETF (AREF N3 N-1) 0.0s0)
   (COND ((MEMBER C1 '(:CYCLIC :ANTI-CYCLIC) :TEST #'EQ)
@@ -1865,7 +1865,7 @@ of active elements those arrays."
 	((NOT (MEMBER C1 '(:RELAXED :CLAMPED) :TEST #'EQ))
 	 (FERROR NIL "~S is not known spline type" C1)))
   ;; B is just a column vector, represented normally.
-  
+
   (SETQ BX (MAKE-ARRAY N)
 	BY (MAKE-ARRAY N))
   ;; Set up the boundary conditions.  The 0th row of M and B are
@@ -1873,7 +1873,7 @@ of active elements those arrays."
   ;; determined by the final boundary condition.  Note that the 0th row
   ;; of M is implemented as the 0th element of N2, N3, and sometimes N4;
   ;; N1(0) is not used.  A similar thing is true of the N-1st row.
-  
+
   (CASE C1
     (:CLAMPED
      (SETF (AREF N2 0) 1.0s0)
@@ -1918,7 +1918,7 @@ of active elements those arrays."
     ;; column.
     )
   ;; Now fill in the insides of M and B arrays.
-  
+
   (LOOP FOR J FROM 1 TO N-2
 	AS L0  := (AREF L  0) THEN L1
 	AS L1  := (AREF L  1) THEN (AREF L J)
@@ -1947,7 +1947,7 @@ of active elements those arrays."
   ;; pivoting is not needed (Forsythe and Moler, p. 117, exercise
   ;; 23.10).  The first step is to make the matrix upper-triangular, by
   ;; making all of N1 be zero.
-  
+
   (LET ((Q (AREF N2 0)))                                            ;Normalize row 0.
     (SETF (AREF N3 0) (QUOTIENT (AREF N3 0) Q))
     (IF N4
@@ -1974,13 +1974,13 @@ of active elements those arrays."
 	;; Next normalize, by dividing row I through by M(I,I).
 	;; This leaves the center diagonal all 1.0s0, which the
 	;; back-solver in R&A doesn't take advantage of.
-	
+
 	(LET ((Q (AREF N2 I)))
 	   (SETF (AREF N3 I) (QUOTIENT (AREF N3 I) Q))
 	   (IF N4
 	       (SETF (AREF N4 I) (QUOTIENT (AREF N4 I) Q)))
 	   (SETF (AREF BX I) (QUOTIENT (AREF BX I) Q))
-	   (SETF (AREF BY I) (QUOTIENT (AREF BY I) Q))))            
+	   (SETF (AREF BY I) (QUOTIENT (AREF BY I) Q))))
 
   ;; Create the arrays to hold the answers.
   (SETQ UX (MAKE-ARRAY N)                                   ;Tangent vector matrix
@@ -2013,7 +2013,7 @@ of active elements those arrays."
 
   (MULTIPLE-VALUE-SETQ (CX CY)
     (CURGEN N PX PY Z CX CY L UX UY))                        ; Generate it
-  
+
   (RETURN-ARRAY UY)
   (RETURN-ARRAY UX)
   (RETURN-ARRAY BY)
@@ -2023,7 +2023,7 @@ of active elements those arrays."
   (RETURN-ARRAY N2)
   (RETURN-ARRAY N1)
   (RETURN-ARRAY L)
-  (VALUES CX CY CLEN)) 
+  (VALUES CX CY CLEN))
 
 ;;; Generate the spline curve points.
 ;;; This is a separate function because if it got merged, there would be
@@ -2053,7 +2053,7 @@ of active elements those arrays."
 	            (SETQ I (1+ I)))
 	FINALLY	(PROGN (SETF (AREF CX I) (SMALL-FLOAT (AREF PX (1- N))))
                (SETF (AREF CY I) (SMALL-FLOAT (AREF PY (1- N))))
-	       (RETURN CX CY)))) 
+	       (RETURN CX CY))))
 
 (DEFMETHOD (GRAPHICS-MIXIN :DRAW-CUBIC-SPLINE)
 	   (PX PY Z &OPTIONAL CURVE-WIDTH ALU (C1 :RELAXED) (C2 C1)
@@ -2071,5 +2071,4 @@ of active elements those arrays."
 	(SEND SELF :DRAW-CURVE CX CY I ALU nil	;NIL here means open curve PMH 3/9
 	      color)
 	(SEND SELF :DRAW-WIDE-CURVE CX CY CURVE-WIDTH I ALU nil ;NIL here means open curve PMH 3/9
-	      color)))) 
-
+	      color))))

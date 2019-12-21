@@ -1,14 +1,17 @@
 
 (asdf:defsystem :ti-window-mx
-    :depends-on (:asdf)
+    :depends-on (asdf zeta-lisp-compatability flavors)
     :components
     ((:module
       ti-tv/window-mx/
       :serial t
       :components
       ((:file package)
-       (:file definitions)
-       (:file variables)))))
+       (:file misc)
+
+       ;; (:file definitions)
+       ;; (:file variables)
+       ))))
 
 
 

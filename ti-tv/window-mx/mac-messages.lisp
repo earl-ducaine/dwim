@@ -85,13 +85,13 @@
 ;;;   			   Passed it on to the Mac using the new COLOR argument of
 ;;;   			   DrawLine.  Changed send-draw-point to pass its COLOR
 ;;;   			   argument on to send-draw-line.
-	
+
 (DEFUN give-a-window-an-id (window)
   "Allocates a new window id, puts it in WINDOW's foreground-color, and returns it."
   (LET (window-id (inhibit-scheduling-flag t))
     ;;Check if this window is the special local print window. 08-19-88
     (if (send window :send-if-handles  :printer-screen-p)  ;08-19-88 DAB
-	(progn 
+	(progn
 	  (SETF window-id 255.)
 	  (SETF (AREF *all-windows-and-screens* window-id) window)
 	  (SETF (AREF *has-the-Mac-forgotten-my-redirection?* window-id) nil)
@@ -104,7 +104,7 @@
 	(SETF (AREF *has-the-Mac-forgotten-my-redirection?* window-id) window)
 	(SETF (AREF *is-the-bit-array-Mac-resident?* window-id) 0)
 	(SETF (tv:Mac-explorer-window-id window) window-id)
-	) ;if 
+	) ;if
     ))
 
 ;;;##########################################################
@@ -134,7 +134,7 @@
 		 return (LIST (AREF acb-image16 (+ i16 5)) (AREF acb-image16 (+ i16 4))
 			      (AREF acb-image16 (+ i16 7)) (AREF acb-image16 (+ i16 6)))))
   (LIST 0 0 (tv:sheet-width window) (tv:sheet-height window)))
-  
+
 (DEFUN print-modified-rectangles (&optional dump-p (stream t))
   (LET* (nbytes-free-space acb-image16 acb-image32 start-of-free-space)
     (SETF nbytes-free-space (get-modified-rectangles))
@@ -153,7 +153,7 @@
 		(AREF acb-image32 (+ i32 2)) (AREF acb-image32 (+ i32 3)))
 	    finally (FORMAT t "~%")))
 
-    
+
     (FORMAT stream "~%(~d descriptors, ~d bytes of free space starting at ~d)"
 	    *n-descriptors* nbytes-free-space start-of-free-space)
     (LOOP for ii from 1 to *n-descriptors*
@@ -240,7 +240,7 @@
   ;;  *undisplaced-Mac-window-arrays* list, a deactivated bit-array/window pair
   ;;  on the tail of the *undisplaced-Mac-window-arrays*  list, first deleting
   ;;  any existing entry for this window...
-  (WITHOUT-INTERRUPTS 
+  (WITHOUT-INTERRUPTS
     (LET ((temp (DELETE window *undisplaced-Mac-window-arrays* :key 'REST :test 'EQ)))
       (SETF *undisplaced-Mac-window-arrays*
 	    (IF bit-array
@@ -307,7 +307,7 @@
 ;;;  			correctly.
 (DEFUN retrieve-a-bit-array-from-the-mac (window &optional modified-area-descriptor)
   (UNLESS (OR *ignore-commands-for-the-mac*
-	      (NULL window)	      
+	      (NULL window)
 	      (TYPEP window 'w:screen))
     (LET* ((window-id (tv:mac-explorer-window-id window))
 	   (bit-array (tv:sheet-bit-array window))
@@ -383,7 +383,7 @@
       (remember-call :bit-arrays screen window-id)
       window-id)))
 
-(DEFUN restore-A-screens-bit-array-to-the-Mac (screen screen-id 
+(DEFUN restore-A-screens-bit-array-to-the-Mac (screen screen-id
 					 &optional rebuild-p)
   (UNLESS *ignore-commands-for-the-Mac*
     (LET ((window-id (mac-window-p screen))
@@ -428,13 +428,13 @@
 	      FOR window = (AREF *all-windows-and-screens* wid)
 	      DO
 	      (retrieve-a-bit-array-from-the-Mac window))
-	
+
 	;;  We just flagged every window-id currently in use by setting the
 	;;  corresponding entry in the array *has-the-Mac-forgotten-my-redirection?*.
 	;;  This will cause make-bit-array-mac-resident to send the Mac a
 	;;  RedirectDrawing message to reestablish cognizance of the window's
 	;;  redirection by the Mac...
-	
+
 	;; Empty the Mac's bit-array cache by retrieving all screens' buffer-arrays, too...
 	(LOOP FOR screen IN screens
 	      WHEN (AND screen
@@ -442,7 +442,7 @@
 			     window-id-of-screen-not-to-retrieve))
 	      DO
 	      (retrieve-a-screens-bit-array-from-the-Mac screen))
-        
+
 	;;  Once the bit-array cache has been cleared out, the Mac loses all
 	;;  knowledge of redirections.  Each time a window is defined to the
 	;;  Mac by AdjustBitArray we must check whether or not the Mac knows
@@ -452,8 +452,8 @@
 	;;  another window's Mac-resident bitarray, and at this time there
 	;;  are no Mac-resident bitarrays.  Redirections are meaningful only
         ;;  within the context of the cacheing scheme.
-	
-	
+
+
 	;;  Now that bit array storage is cleaned out restore all the screens...
 	(UNLESS and-dont-restore-p
 	  (LOOP FOR i FROM 1 TO *largest-screen-id-ever-assigned*
@@ -461,11 +461,11 @@
 	        WHEN (AND screen
 			(NEQ (mac-window-p screen)
 			     window-id-of-screen-not-to-retrieve))
-	        DO (restore-a-screens-bit-array-to-the-Mac screen i))))      
+	        DO (restore-a-screens-bit-array-to-the-Mac screen i))))
       )))
 
 
-(DEFUN restore-all-bit-arrays-to-the-mac ()  
+(DEFUN restore-all-bit-arrays-to-the-mac ()
   (UNLESS *ignore-commands-for-the-mac*
     (LET (exposed-windows)
       ;; Get a list of all previously-visible windows...
@@ -496,15 +496,15 @@
 
 (DEFUN add-to-draw-char-cache (font char x y alu mac-window)
   (WHEN (GRAPHIC-CHAR-P char)
-    (WITHOUT-INTERRUPTS 
+    (WITHOUT-INTERRUPTS
       (LET* ((fwt (tv:font-char-width-table font))
 	     (wid (tv:font-char-width font))
 	     (char-width (IF fwt (AREF fwt (CHAR-CODE char)) wid)))
 	(WITH-STACK-LIST (new-state x mac-window y alu font
-				    sys:clipping-rectangle-top-edge
-				    sys:clipping-rectangle-bottom-edge
-				    sys:clipping-rectangle-left-edge
-				    sys:clipping-rectangle-right-edge
+				    sys:*clipping-rectangle-top-edge*
+				    sys:*clipping-rectangle-bottom-edge*
+				    sys:*clipping-rectangle-left-edge*
+				    sys:*clipping-rectangle-right-edge*
 				    *dont-clip-at-the-margins*)
 	  (UNLESS (EQUAL new-state (draw-char-cache-state))
 	    (dump-draw-char-cache)	   ; Cache may be empty
@@ -523,10 +523,10 @@
 	(SETF (draw-char-cache-state) nil
 	      (FILL-POINTER string) 0)
 	(DESTRUCTURING-BIND (w y alu font
-			       sys:clipping-rectangle-top-edge
-			       sys:clipping-rectangle-bottom-edge
-			       sys:clipping-rectangle-left-edge
-			       sys:clipping-rectangle-right-edge
+			       sys:*clipping-rectangle-top-edge*
+			       sys:*clipping-rectangle-bottom-edge*
+			       sys:*clipping-rectangle-left-edge*
+			       sys:*clipping-rectangle-right-edge*
 			       *dont-clip-at-the-margins*) (REST state)
 	  (send-draw-string-internal w
 				     string 0 nchars
@@ -601,12 +601,12 @@ Explorer resident bit array.  WINDOW's window-id is now reuseable."
     (make-bit-array-mac-resident window)
     window-id))
 
-			       
+
 ;;;  10-4-88  LG	5.15	When asked to handle a window with a null
 ;;;  			screen-array,  and the Mac knows about this window, just
 ;;;  			retrieve it from the Mac -- it is a deexposure of a window with
 ;;;  			no bit-array.
-			       
+
 (DEFUN send-redirect-drawing (window &optional contents-matter-p)
   (UNLESS *ignore-commands-for-the-mac*
     (LET* (w	  		       ; window-id to which we are redirected.
@@ -615,12 +615,12 @@ Explorer resident bit array.  WINDOW's window-id is now reuseable."
 	   (inhibit-scheduling-flag t)
 	   (add:*no-interrupt* inhibit-scheduling-flag))
       (dump-draw-char-cache)
-      
+
       ;;  Get specified window's id, handle redirection of a deactivated window...
       (SETF wid (tv:mac-explorer-window-id window))
       (WHEN (EQ t wid)
 	(SETF wid (give-a-window-an-id window)))
- 
+
       (IF (NULL (tv:sheet-screen-array window))
 	  (retrieve-a-bit-array-from-the-mac window)
 	;; else...
@@ -628,7 +628,7 @@ Explorer resident bit array.  WINDOW's window-id is now reuseable."
 	;; Mac-resident....
 	(MULTIPLE-VALUE-SETQ (w x-offset y-offset)
 	  (setup-this-window-on-the-mac (tv:sheet-screen-array window)))
-	
+
 	;;  If the window is redirected to an array as yet not associated with any Mac
 	;;  window,  handle this gracefully if the array is this window's bit array...
 	(WHEN (ARRAYP w)
@@ -645,16 +645,16 @@ Explorer resident bit array.  WINDOW's window-id is now reuseable."
 	      (setup-this-window-on-the-mac (tv:sheet-screen-array window)))
 	    (SETF (AREF *has-the-mac-forgotten-my-redirection?* w) nil)
 	    (SETF (AREF *is-the-bit-array-mac-resident?* w) 0)))
-	
+
 	;;  Refresh the Mac's knowledge of WINDOW's redirection iff necessary...
 	(LET ((window-containing-last-saved-image
 		(AREF *has-the-mac-forgotten-my-redirection?* wid)))
 	  (WHEN window-containing-last-saved-image
-	    
+
 	    ;;  Move the bit array containing this window as of the last cache flush...
 	    (move-a-windows-bit-array-to-the-mac
 	      window-containing-last-saved-image)
-	    
+
 	    ;;  Resize the graphport of the window being redirected if necessary...
 	    (UNLESS (AND (NULL (AREF *has-the-mac-forgotten-my-redirection?* wid))
 			 (OR (= wid w)
@@ -662,11 +662,11 @@ Explorer resident bit array.  WINDOW's window-id is now reuseable."
 				      window-containing-last-saved-image))))
 	      (resize-bit-array-and-handle-cache-overflow
 		window wid contents-matter-p))
-	    
+
 	    ;;  In case the resize-bit-array-... flushed the cache, make sure...
 	    (move-a-windows-bit-array-to-the-mac window-containing-last-saved-image)
 	    (move-a-windows-bit-array-to-the-mac window))
-	  
+
 	  ;;  Tell the Mac about the redirection...
 	  (SEND *mac* :redirectdrawing wid w x-offset y-offset)
 	  (SETF (AREF *has-the-mac-forgotten-my-redirection?* wid) nil)
@@ -683,7 +683,7 @@ the Explorer-resident window has one and the Mac-resident does not.  Signal a la
 of an Explorer-resident bit array by passing a negative width."
   (UNLESS *ignore-commands-for-the-mac*
     (dump-draw-char-cache)
-    (LET (bit-array)     
+    (LET (bit-array)
       (SETF bit-array (tv:sheet-bit-array window))
       ;;  If the specified window's bit-array is not Mac-resident then we need to
       ;;  make IT Mac-resident, not the bit-array being used as
@@ -758,7 +758,7 @@ OLD-WIDTH and OLD-HEIGHT are supplied only if called by tv:grow-bit-array."
 	    (CASE i
 	      (0 (reorganize-bit-array-cache size-of-new-bit-array))
 	      (:otherwise (CERROR "onward" "AdjScr tried to flush cache twice")))))))
-  
+
 
 (DEFUN send-select-window (window &optional hide-instead-of-select-p)
   "Tell the Mac to make the Macintosh window containing the specified Explorer WINDOW
@@ -1016,7 +1016,7 @@ documentation."
 Returns NIL if character is entirely outside the right edge of the clipping
 rectangle, else returns T.  Note that, as is, this routine cannot draw
 into the margins if the sheet's truncate-line-out flag is set."
-  
+
   (WHEN (AND (tv:sheet-screen-array Mac-window) (NOT *ignore-commands-for-the-Mac*))
     (LET (window-id (add:*no-interrupt* inhibit-scheduling-flag))
       (UNLESS (add-to-draw-char-cache font char x y alu Mac-window)
@@ -1024,7 +1024,7 @@ into the margins if the sheet's truncate-line-out flag is set."
         (remember-call :drawing window-id)
         (SETF font (convert-explorer-font-to-mac-font font))	  ;Make sure font has been translated
         (IF (ZEROP (w:sheet-truncate-line-out-flag Mac-window))
-	  (IF (>= (+ x (OR (AREF (tv:font-char-width-table font) char) 0))     
+	  (IF (>= (+ x (OR (AREF (tv:font-char-width-table font) char) 0))
 	          sys:clipping-rectangle-right-edge)
 	      nil
 	    ;;; else...
@@ -1066,7 +1066,7 @@ indexing table or font kern table."
 (DEFUN send-draw-string-internal (mac-window string index end x y font alu)
   (LET (window-id)
     (SETF window-id (make-bit-array-mac-resident mac-window))
-    (SETF font (convert-explorer-font-to-mac-font font))   ;Make sure font has been translated 
+    (SETF font (convert-explorer-font-to-mac-font font))   ;Make sure font has been translated
     (SEND *mac* :drawstring
 	    font
 	    string
@@ -1079,7 +1079,7 @@ indexing table or font kern table."
 	    window-id)))
 
 
-(DEFUN send-draw-string (Mac-window string index end x y font alu) 
+(DEFUN send-draw-string (Mac-window string index end x y font alu)
   "Mimics sys:%draw-string.  See mac:si-%draw-string for documentation.
 XLIM taken from sys:clipping-rectangle-right-edge."
   (DECLARE (self-flavor tv:sheet))
@@ -1121,7 +1121,7 @@ routine."
 	    height (ABS height)
 	    source-width width
 	    source-height height)
-      
+
       ;; find size of source to determine actual size for exp/mac transfer
       ;; if we have a source-array then we came from si:bitblt otherwise it
       ;; must be a bitarray cache handling problem
@@ -1129,25 +1129,25 @@ routine."
 	(SETF source-height (ARRAY-DIMENSION source-array 0))
 	(IF (FIXNUMP from-window-id-or-array)	       ; Mac-resident source
 	    (SETF source-width (tv:sheet-width (AREF *all-windows-and-screens*
-						     from-window-id-or-array))) 
+						     from-window-id-or-array)))
 	  (SETF source-width (ARRAY-DIMENSION source-array 1))))
-      
+
            ;; If bitblt is not mac-to-mac, then we need to check the size of the bitblt to insure
            ;; that it is not larger than our largest acb
       (UNLESS (AND (NUMBERP from-window-id-or-array)
 		   (NUMBERP to-window-id-or-array))
 	(LET (max-lines lines)
-	  
+
 	  (IF (OR (< (- source-height source-from-y) height) (< (- source-width source-from-x) width))
 	      (SETF replication t)
 	    ;; else
 	    (SETF source-height (MIN (- source-height source-from-y) height)
 		  source-width (MIN (- source-width source-from-x) width)))
-	  
+
 	  (SETF max-lines (TRUNCATE (/ (- *bitblt-max-size* (* copybits-parms 2) 32)
 				       (* (CEILING source-width 32.) 4))))
-	  
-	  
+
+
 	  (WHEN (> source-height max-lines)
 	    (LOOP
 	      until (< height max-lines)
@@ -1165,7 +1165,7 @@ routine."
 	    ;; now set source width, height so we don't scale the damn thing
 	    (SETF source-width width)
 	    (SETF source-height height))))
-           
+
       (IF (> height 0)
 	  (SEND *mac* :copybits
 		alu width height
@@ -1173,6 +1173,3 @@ routine."
 		to-window-id-or-array to-x to-y
 		source-width source-height replication nil
 		restoration-p)))))
-
-
-

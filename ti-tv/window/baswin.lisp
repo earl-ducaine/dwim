@@ -85,7 +85,7 @@
 ;;; 09/05/86 KDB	Added reverse-video labels to pop-up windows.
 ;;; 08/13/86 TWE	Changed (DECLARE (RETURN-LIST ...)) to (DECLARE (VALUES ...) for Common Lisp.
 ;;; 08/10/86 KDB	Added :after method to Pop-up-Text-Window flavor to avoid wedged state when user
-;;;			if user clicked mouse outside of window.                       
+;;;			if user clicked mouse outside of window.
 ;;; 08/06/86 TWE	Fixed the two defstructs for labels to not have the :alterant clause
 ;;;			included within the :constructor clause.
 ;;; 08/04/86 TWE	Changed type checks for font to use the FONT-OBJECT-P function.
@@ -111,7 +111,7 @@
 
 ;;; Label definitions.
 (DEFSTRUCT (ESSENTIAL-LABEL-MIXIN (:CONSTRUCTOR NIL) (:CONC-NAME NIL)
-				  (:CALLABLE-CONSTRUCTORS NIL) (:ALTERANT ALTER-ESSENTIAL-LABEL-MIXIN) (:PREDICATE NIL)
+				   (:ALTERANT ALTER-ESSENTIAL-LABEL-MIXIN) (:PREDICATE NIL)
 				  (:COPIER NIL) (:TYPE :LIST))
   LABEL-LEFT					;Coordinates of the label, all relative to the
   LABEL-TOP					;edges of the window
@@ -119,7 +119,7 @@
   LABEL-BOTTOM)
 
 (DEFSTRUCT (LABEL-MIXIN (:INCLUDE ESSENTIAL-LABEL-MIXIN) (:CONSTRUCTOR NIL)
-			(:SIZE-SYMBOL LABEL-DEFSTRUCT-SIZE) (:CONC-NAME NIL) (:CALLABLE-CONSTRUCTORS NIL)
+			(:SIZE-SYMBOL LABEL-DEFSTRUCT-SIZE) (:CONC-NAME NIL)
 			(:ALTERANT ALTER-LABEL-MIXIN) (:PREDICATE NIL) (:COPIER NIL) (:TYPE :LIST))
   LABEL-FONT
   LABEL-STRING
@@ -157,7 +157,7 @@ are declared properly."))
 	 (KBD-SNARF-INPUT BUF))))
 
 (DEFMETHOD (ESSENTIAL-WINDOW :MOUSE-SELECT) (&REST ARGS)
-  (APPLY (SEND SELF :ALIAS-FOR-SELECTED-WINDOWS) :SELECT ARGS))  
+  (APPLY (SEND SELF :ALIAS-FOR-SELECTED-WINDOWS) :SELECT ARGS))
 
 (DEFMETHOD (ESSENTIAL-WINDOW :LISP-LISTENER-P) () NIL)
 
@@ -213,7 +213,7 @@ use as a menu item-list."
 	 (OR (GET INIT-PLIST :INSIDE-HEIGHT)
 	     (SECOND (GET INIT-PLIST :INSIDE-SIZE)))))
     (AND INSIDE-WIDTH (SETQ WIDTH (+ INSIDE-WIDTH LEFT-MARGIN-SIZE RIGHT-MARGIN-SIZE)))
-    (AND INSIDE-HEIGHT (SETQ HEIGHT (+ INSIDE-HEIGHT TOP-MARGIN-SIZE BOTTOM-MARGIN-SIZE)))))  
+    (AND INSIDE-HEIGHT (SETQ HEIGHT (+ INSIDE-HEIGHT TOP-MARGIN-SIZE BOTTOM-MARGIN-SIZE)))))
 
 (DEFFLAVOR MINIMUM-WINDOW () (ESSENTIAL-EXPOSE ESSENTIAL-ACTIVATE ESSENTIAL-SET-EDGES
 			      ESSENTIAL-MOUSE ESSENTIAL-WINDOW)
@@ -287,7 +287,7 @@ Also provides for the :STATUS and :SET-STATUS messages (q.v.)."))
 	       (n (ARRAY-TOTAL-SIZE previously-selected-windows)))
 	      ((>= i n)
 	       (add-to-previously-selected-windows w t))
-	    (AND (EQ (AREF previously-selected-windows i) w) (RETURN ()))))))) 
+	    (AND (EQ (AREF previously-selected-windows i) w) (RETURN ())))))))
 
 (DEFMETHOD (ESSENTIAL-ACTIVATE :AFTER :DEACTIVATE) ()
   ;; Put this window in the correct place, in case it's not on DEFAULT-SCREEN.  CJJ 06/02/88.
@@ -314,7 +314,7 @@ Also provides for the :STATUS and :SET-STATUS messages (q.v.)."))
 	(INFS (RPLACD (LAST (SETQ INFS (COPY-LIST INFS))) (CONS WINDOW ())))
 	(T (SETQ INFS (CONS WINDOW ())))))
      (SETF (SHEET-INFERIORS SUP) INFS) (SETQ INHIBIT-SCHEDULING-FLAG ())
-     (SCREEN-CONFIGURATION-HAS-CHANGED WINDOW)))) 
+     (SCREEN-CONFIGURATION-HAS-CHANGED WINDOW))))
 
 (DEFMETHOD (ESSENTIAL-ACTIVATE :STATUS) ()
   (COND
@@ -327,11 +327,11 @@ Also provides for the :STATUS and :SET-STATUS messages (q.v.)."))
     ((AND SUPERIOR (MEMBER SELF (SHEET-EXPOSED-INFERIORS SUPERIOR) :TEST #'EQ))
      :EXPOSED-IN-SUPERIOR)			;Would be exposed if superior was
     ((OR (NULL SUPERIOR) (MEMBER SELF (SHEET-INFERIORS SUPERIOR) :TEST #'EQ)) :DEEXPOSED)
-    (T :DEACTIVATED))) 
+    (T :DEACTIVATED)))
 
 (DEFMETHOD (ESSENTIAL-ACTIVATE :ACTIVE-P) ()
   (OR (NULL SUPERIOR)
-      (MEMBER SELF (SHEET-INFERIORS SUPERIOR) :TEST #'EQ))) 
+      (MEMBER SELF (SHEET-INFERIORS SUPERIOR) :TEST #'EQ)))
 
 (DEFMETHOD (ESSENTIAL-ACTIVATE :SET-STATUS) (NEW-STATUS)
   (CASE NEW-STATUS
@@ -352,7 +352,7 @@ Also provides for the :STATUS and :SET-STATUS messages (q.v.)."))
      (AND (MEMBER SELF (SHEET-INFERIORS SUPERIOR) :TEST #'EQ)
 	  (SEND SELF :DEACTIVATE)))
     (OTHERWISE
-     (FERROR () "~S not one of :DEACTIVATED, :DEEXPOSED, :EXPOSED, :SELECTED" NEW-STATUS)))) 
+     (FERROR () "~S not one of :DEACTIVATED, :DEEXPOSED, :EXPOSED, :SELECTED" NEW-STATUS))))
 
 ;; This must come here to prevent lossage defining SELECT-MIXIN
 ;; The methods come later.
@@ -381,7 +381,7 @@ to handle these messages, and should probably include this flavor somewhere."))
 	  (SETQ LABEL (LABEL-STRING LABEL)))
       (AND (POSITION #\SPACE (THE STRING (STRING LABEL)) :TEST-NOT #'CHAR-EQUAL)
 	   LABEL)))
-   NAME)) 
+   NAME))
 
 (DEFMETHOD (SELECT-MIXIN :PROCESS) ()
   (IO-BUFFER-LAST-OUTPUT-PROCESS IO-BUFFER))
@@ -399,7 +399,7 @@ to handle these messages, and should probably include this flavor somewhere."))
   (LET ((LAST-PROCESS (SEND SELF :PROCESS)))
     (AND LAST-PROCESS (SEND LAST-PROCESS :ARREST-REASON :CALL)))
   (SETQ WINDOW
-	(IF (EQ (SEND SELF :LISP-LISTENER-P) :IDLE)		 
+	(IF (EQ (SEND SELF :LISP-LISTENER-P) :IDLE)
 	    SELF
 	    (KBD-DEFAULT-CALL-WINDOW SUPERIOR)))
   (SHEET-FREE-TEMPORARY-LOCKS WINDOW)
@@ -430,7 +430,7 @@ to handle these messages, and should probably include this flavor somewhere."))
      ;;  Remember this screen's last-selected window if on the Mac...
      (when (mac-window-p self)
        (remember-this-screens-last-selected-window self))))
-  T) 
+  T)
 
 (DEFVAR *selected-process* nil "The process associated with the currently selected window")
 (DEFVAR *selected-process-previous-priority* nil) ;; Previous priority of the selected process
@@ -514,7 +514,7 @@ window, as well as failing if the window is not fully within its superior."
 	 ;; Put this window in the correct place, in case it's not on DEFAULT-SCREEN.  CJJ 06/02/88.
 	 ;;; Added by KJF on 08/19/88 for CJJ during addition of Multiple Monitor (MMON) support.
 	 (with-screens-previously-selected-windows (osw)
-	   (ADD-TO-PREVIOUSLY-SELECTED-WINDOWS OSW))))) 
+	   (ADD-TO-PREVIOUSLY-SELECTED-WINDOWS OSW)))))
 
 ;; Added ASSERT to try to recover from error of NIL being passed in.  04/10/88 KJF.
 (DEFUN GET-SCREEN (WINDOW)
@@ -532,7 +532,7 @@ window, as well as failing if the window is not fully within its superior."
 	FINALLY (RETURN nil)))
 
 (DEFMETHOD (SELECT-MIXIN :AFTER :SELECT) (&REST IGNORE)
-  "This version will set the mouse to the proper screen if the mouse process 
+  "This version will set the mouse to the proper screen if the mouse process
 is running and tv:*set-mouse-to-selected-screen* is non-nil."
   (when (mac-system-p)
     (send-select-window self))
@@ -580,7 +580,7 @@ is running and tv:*set-mouse-to-selected-screen* is non-nil."
 	 ;; Put this window in the correct place, in case it's not on DEFAULT-SCREEN.  CJJ 06/02/88.
 	 ;;; Added by KJF on 08/19/88 for CJJ during addition of Multiple Monitor (MMON) support.
 	 (with-screens-previously-selected-windows (self)
-	   (ADD-TO-PREVIOUSLY-SELECTED-WINDOWS SELF))))))) 
+	   (ADD-TO-PREVIOUSLY-SELECTED-WINDOWS SELF)))))))
 
 (DEFMETHOD (SELECT-MIXIN :AFTER :DESELECT) (&REST IGNORE)
   (KBD-CLEAR-SELECTED-IO-BUFFER))
@@ -724,7 +724,7 @@ and its inferiors are all included under it for selection"))
 	  ((OR (NOT AT-END) (NULL TEM))
 	   (SETF (AREF PREVIOUSLY-SELECTED-WINDOWS I) WINDOW)
 	   (SETQ WINDOW TEM)))))
-    ())) 
+    ()))
 
 (DEFUN REMOVE-FROM-PREVIOUSLY-SELECTED-WINDOWS (WINDOW)
   (WITHOUT-INTERRUPTS
@@ -810,7 +810,7 @@ same screen as window ~s." from-window to-window))))))
       (WINDOW (SHEET-FREE-TEMPORARY-LOCKS WINDOW)
 	      (SEND WINDOW :SELECT)))
     NIL)
-  WINDOW) 
+  WINDOW)
 
 (DEFUN DESELECT-AND-MAYBE-BURY-WINDOW (WINDOW &OPTIONAL (DESELECT-MODE :LAST))
   "Reselect previously selected window and bury WINDOW if that leaves it deexposed.
@@ -886,7 +886,7 @@ and :CENTER-AROUND."))
 				       (= NEW-HEIGHT HEIGHT)
                                        (= NEW-LEFT X-OFFSET)
 				       (= NEW-TOP Y-OFFSET))
-                                  ;;Not changing size or position, just return T (we do the verify 
+                                  ;;Not changing size or position, just return T (we do the verify
                                   ;; anyway in case something in the environment has made the current
                                   ;; size no longer "ok", such as having the size of the
                                   ;; superior change.)
@@ -937,7 +937,7 @@ and :CENTER-AROUND."))
 				      (WITH-SHEET-DEEXPOSED (SELF)
 					(AND BIT-ARRAY
 					     (PAGE-IN-PIXEL-ARRAY BIT-ARRAY () (LIST WIDTH HEIGHT)))
-					(SEND SELF :CHANGE-OF-SIZE-OR-MARGINS 
+					(SEND SELF :CHANGE-OF-SIZE-OR-MARGINS
 					      :LEFT NEW-LEFT :TOP NEW-TOP :WIDTH
 					      NEW-WIDTH :HEIGHT NEW-HEIGHT)
 					(SHEET-FORCE-ACCESS (SELF :NO-PREPARE)
@@ -949,7 +949,7 @@ and :CENTER-AROUND."))
                          (SETQ DONE T))))
      (IF DONE
 	 (RETURN RESULT ERROR)
-	 (SEND WINDOW-TO-BE-DEEXPOSED :DEEXPOSE))))) 
+	 (SEND WINDOW-TO-BE-DEEXPOSED :DEEXPOSE)))))
 
 (DEFMETHOD (ESSENTIAL-SET-EDGES :SET-EDGES) (&REST ARGS) (APPLY #'SYSTEM-SET-EDGES ARGS))
 
@@ -1042,7 +1042,7 @@ Move the mouse to the window unless WARP-MOUSE-P is NIL."
   (AND EXPOSE-P
        (SEND WINDOW :EXPOSE))
   (AND WARP-MOUSE-P
-       (SEND WINDOW :SET-MOUSE-POSITION (TRUNCATE WIDTH 2) (TRUNCATE HEIGHT 2)))) 
+       (SEND WINDOW :SET-MOUSE-POSITION (TRUNCATE WIDTH 2) (TRUNCATE HEIGHT 2))))
 
 ; (compiler:make-obsolete EXPOSE-WINDOW-NEAR "use the :EXPOSE-NEAR operation.")
 (DEFUN EXPOSE-WINDOW-NEAR (WINDOW MODE &OPTIONAL (WARP-MOUSE-P T) (EXPOSE-P T))
@@ -1105,7 +1105,7 @@ Move the mouse to the window unless WARP-MOUSE-P is NIL."
 ;;;that is their pre-daemons should be called first.
 
 (COMMENT
-;Here is what you write to make a mixin define something that uses up margin space:  
+;Here is what you write to make a mixin define something that uses up margin space:
 
 ;; This links this mixin into the computation of how much margin space is used.
 ;; :PASS-ON method combination is used, so actually four values are expected
@@ -1115,7 +1115,7 @@ Move the mouse to the window unless WARP-MOUSE-P is NIL."
 
 ;This method returns updated values of LM, TM, RM and BM that are made
 ;larger as appropriate, to take account of the space used up by the "mumbles".
-;It should also record 
+;It should also record
 ;:RECALCULATE-MUMBLE-MARGINS is a separate operation so that mixins
 ;can modify where the mumbles go in the margins by redefining it.
 (DEFMETHOD (MUMBLE-MARGIN-MIXIN :RECALCULATE-MUMBLE-MARGINS) (LM TM RM BM)
@@ -1182,7 +1182,7 @@ Move the mouse to the window unless WARP-MOUSE-P is NIL."
 
 (DEFMETHOD (ESSENTIAL-SET-EDGES :BEFORE :INIT) (IGNORE)
   (MULTIPLE-VALUE-SETQ (LEFT-MARGIN-SIZE TOP-MARGIN-SIZE RIGHT-MARGIN-SIZE BOTTOM-MARGIN-SIZE)
-    (SEND SELF :COMPUTE-MARGINS 0 0 0 0))) 
+    (SEND SELF :COMPUTE-MARGINS 0 0 0 0)))
 
 (DEFMETHOD (ESSENTIAL-SET-EDGES :DEFAULT :COMPUTE-MARGINS) (LM TM RM BM)
   (VALUES LM TM RM BM))
@@ -1221,7 +1221,7 @@ variable.  The border is drawn using border color."))
 (DEFMETHOD (BORDERS-MIXIN :SET-BORDERS-INTERNAL) (SPEC LM TM RM BM)
   (MULTIPLE-VALUE-SETQ (BORDERS LM TM RM BM)
     (PARSE-BORDERS-SPEC SPEC LM TM RM BM 'DRAW-RECTANGULAR-BORDER))
-  (VALUES LM TM RM BM)) 
+  (VALUES LM TM RM BM))
 
 ;;;This handles the actual drawing of the borders
 (DEFUN DRAW-BORDERS (ALU)
@@ -1241,7 +1241,7 @@ variable.  The border is drawn using border color."))
 			(IF (MINUSP TOP) (+ TOP HEIGHT) TOP)
 			(IF (PLUSP RIGHT) RIGHT (+ RIGHT WIDTH))
 			(IF (PLUSP BOTTOM) BOTTOM (+ BOTTOM HEIGHT))))))))
-  )  
+  )
 )
 
 ;;;This is called with the new border specification and the current (relative to this
@@ -1357,7 +1357,7 @@ variable.  The border is drawn using border color."))
 
   ;;Now allocate the border margin areas.
    (send self :compute-border-margin-area-margins spec lm tm rm bm))
-   
+
 (defmethod (borders-mixin :compute-border-margin-area-margins) (spec lm tm rm bm)
   "Allocate space for the border margin area.  Scroll-bar-mixin wraps around
  this method to allocate its space between the border and border margin area."
@@ -1396,7 +1396,7 @@ variable.  The border is drawn using border color."))
     ((NULL SPACE) (SETQ SPACE '(0 0 0 0)))
     ((EQ SPACE T) (SETQ SPACE '(1 1 1 1)))
     ((INTEGERP SPACE) (SETQ SPACE (MAKE-LIST 4 :INITIAL-ELEMENT SPACE)))
-    ((ATOM SPACE) (SETQ SPACE '(0 0 0 0))))) 
+    ((ATOM SPACE) (SETQ SPACE '(0 0 0 0)))))
 
 (DEFMETHOD (MARGIN-SPACE-MIXIN :SET-SPACE) (NEW-SPACE)
   (COND
@@ -1405,7 +1405,7 @@ variable.  The border is drawn using border color."))
     ((INTEGERP NEW-SPACE) (SETQ SPACE (MAKE-LIST 4 :INITIAL-ELEMENT NEW-SPACE)))
     ((ATOM NEW-SPACE) (SETQ SPACE '(0 0 0 0)))
     (T (SETQ SPACE NEW-SPACE)))
-  (SEND SELF :REDEFINE-MARGINS)) 
+  (SEND SELF :REDEFINE-MARGINS))
 
 (DEFMETHOD (MARGIN-SPACE-MIXIN :COMPUTE-MARGINS) (LM TM RM BM)
   (VALUES (+ LM (FIRST SPACE)) (+ TM (SECOND SPACE))
@@ -1434,7 +1434,7 @@ Mix this with a special type of label mixin to get the simplest usable case of t
   (LET ((saveb (sheet-background-color self))
 	(newcolor (label-background label))
         (color-system (color-system-p self)))
-    (UNWIND-PROTECT 
+    (UNWIND-PROTECT
 	(when LABEL
 	  (when color-system (SEND self :set-background-color (IF newcolor newcolor saveb)))
 	  (SHEET-FORCE-ACCESS (SELF)
@@ -1458,7 +1458,7 @@ Mix this with a special type of label mixin to get the simplest usable case of t
 (DEFUN DRAW-LABEL (&REST IGNORE)
   (DECLARE (:SELF-FLAVOR ESSENTIAL-LABEL-MIXIN))
   (let-if (mac-system-p)
-     ((*dont-clip-at-the-margins* t))	  
+     ((*dont-clip-at-the-margins* t))
   (AND LABEL
        (SHEET-FORCE-ACCESS (SELF)
 	 (MULTIPLE-VALUE-BIND (LEFT TOP RIGHT BOTTOM)
@@ -1503,7 +1503,7 @@ These are relative to the top left corner of SELF."
 (DEFMETHOD (ESSENTIAL-LABEL-MIXIN :COMPUTE-MARGINS) (LM TM RM BM)
   (MULTIPLE-VALUE-SETQ (LABEL LM TM RM BM)
     (SEND SELF :PARSE-LABEL-SPEC LABEL LM TM RM BM))
-  (VALUES LM TM RM BM)) 
+  (VALUES LM TM RM BM))
 
 (DEFFLAVOR LABEL-MIXIN () (ESSENTIAL-LABEL-MIXIN)
   (:DOCUMENTATION :MIXIN "Normal LABEL handling.
@@ -1602,7 +1602,7 @@ in an arbitrary font."))
 	      (:BOTTOM (SETQ TOP-P ()))
 	      (OTHERWISE (FERROR () "~S is not a recognized keyword" (CAR LIST)))))))
       ((FONT-OBJECT-P spec) (SETQ font spec))
-      ((STRINGP spec) (SETQ lstring spec)) 
+      ((STRINGP spec) (SETQ lstring spec))
       ((EQ spec :top) (SETQ top-p t))
       ((EQ spec :bottom) (SETQ top-p nil))
       ((EQ spec :centered) (SETQ centered t)) ;; If :top and :bottom are allowed, :centered belongs also
@@ -1792,7 +1792,7 @@ When combined with BORDERS-MIXIN, the label will be surrounded by a box."))
 If the label is a string or defaults to the name, it is at the bottom.
 When combined with BORDERS-MIXIN, the label will be surrounded by a box."))
 
-;;; Flavor that allows you to change the name of the window, and 
+;;; Flavor that allows you to change the name of the window, and
 ;;; if the label is the same as the name, changes the label, too.
 (DEFFLAVOR CHANGEABLE-NAME-MIXIN () ()
   (:REQUIRED-FLAVORS LABEL-MIXIN)
@@ -1845,7 +1845,7 @@ Also changes the label if it happens to be the same."))
       (DO ((SHEET SHEET (SHEET-SUPERIOR SHEET)))
 	  ((NULL SHEET)
 	   NIL)
-	(AND (GET-HANDLER-FOR SHEET OPERATION) (RETURN SHEET))))) 
+	(AND (GET-HANDLER-FOR SHEET OPERATION) (RETURN SHEET)))))
 
 (DEFFLAVOR TEMPORARY-WINDOW-MIXIN () ()
   (:REQUIRED-FLAVORS ESSENTIAL-WINDOW)
@@ -1915,7 +1915,7 @@ Temporary-Window-Mixin.")
   (Setq shadow-draw-function new-function-name)
   (Shadow-Borders-Redefine-Margins self)
   )
-	   
+
 (DefMethod (Shadow-Borders-Mixin :Compute-Margins) (lm tm rm bm)
   (Multiple-Value-Bind (my-borders lm tm rm bm)
       (Send Self :Set-Shadow-Border-Internal
@@ -1982,13 +1982,13 @@ Temporary-Window-Mixin.")
       ;; system menu for example), the window is created fully but not
       ;; exposed, hence it is a temporary window but has no
       ;; temporary-bit-array. ( until it is actually exposed - may 04/06/89 )
-      
+
       ;; may 04/06/89 This does NOT work right on color
       ;; sheets, especially in dual-monitor-p mode since the
       ;; information in the temporary-bit-array contains bits
       ;; from ALL planes. Rearranged order of bitblts to make this work for color
       ;; and for b&w.
-      (WHEN (ARRAYP TEMP-ARRAY)  ;; may 04/06/89 
+      (WHEN (ARRAYP TEMP-ARRAY)  ;; may 04/06/89
 	;; Make the existing screen contents bleed through the shadow
 	(BITBLT ALU ;; this had better be alu-seta or what will happen is beyond me !
 		(- RIGHT LEFT WIDTH-OFFSET)	; Width
@@ -2004,9 +2004,9 @@ Temporary-Window-Mixin.")
       (BITBLT alu-transp (- RIGHT LEFT WIDTH-OFFSET) (- BOTTOM TOP HEIGHT-OFFSET) GRAY-LEVEL
 	      (REM (+ LEFT WIDTH-OFFSET) (ARRAY-DIMENSION GRAY-LEVEL 1))
 	      (REM (+ TOP HEIGHT-OFFSET) (ARRAY-DIMENSION GRAY-LEVEL 0))
-	      WINDOW-SCREEN-ARRAY (+ LEFT WIDTH-OFFSET) (+ TOP HEIGHT-OFFSET))      
-      
-      (when (arrayp temp-array) ;; may 04/06/89 
+	      WINDOW-SCREEN-ARRAY (+ LEFT WIDTH-OFFSET) (+ TOP HEIGHT-OFFSET))
+
+      (when (arrayp temp-array) ;; may 04/06/89
 	;; Show the existing screen contents in the part of the temporary
 	;; window which has the corners.
 	(BITBLT ALU-seta (IF (= 0 WIDTH-OFFSET)			;; Width
@@ -2021,7 +2021,7 @@ Temporary-Window-Mixin.")
 		WINDOW-SCREEN-ARRAY				;; To-array
 		LEFT						;; To-X
 		TOP						;; To-Y
-		))))) 
+		)))))
 
 (Defun-Method DRAW-SHADOW-BORDERS Shadow-Borders-Mixin (alu)
   (Sheet-Force-Access (self)
@@ -2076,11 +2076,11 @@ are immediately recognizable."))
   (SETQ *FULL-SCREEN-WINDOWS-HAVE-BORDERS* (NOT FLUSH))
   (MAPC #'(LAMBDA (WINDOW)
 	    (SEND WINDOW :ADJUST-MARGINS))
-	*FULL-SCREEN-HACKING-WINDOWS*)) 
+	*FULL-SCREEN-HACKING-WINDOWS*))
 
 (DEFMETHOD (FULL-SCREEN-HACK-MIXIN :BEFORE :KILL) ()
   (SETQ *FULL-SCREEN-HACKING-WINDOWS*
-	(DELETE SELF (THE LIST *FULL-SCREEN-HACKING-WINDOWS*) :TEST #'EQ))) 
+	(DELETE SELF (THE LIST *FULL-SCREEN-HACKING-WINDOWS*) :TEST #'EQ)))
 
 ;;;This unfortunately has to redefine the sheet, since the width and
 ;;;height are not known at (:BEFORE :INIT) time.
@@ -2246,7 +2246,7 @@ Use this when you want to be visible to the SYSTEM L key."))
 		       :DEEXPOSED-TYPEIN-ACTION :NOTIFY))
 
 (DEFMETHOD (BACKGROUND-LISP-INTERACTOR :BEFORE :INIT) (PLIST)
-  (SETF (GET PLIST :SAVE-BITS) T)) 
+  (SETF (GET PLIST :SAVE-BITS) T))
 
 (DEFMETHOD (BACKGROUND-LISP-INTERACTOR :SET-PROCESS) (NP)
   (SETF (IO-BUFFER-LAST-OUTPUT-PROCESS IO-BUFFER) NP)
@@ -2256,13 +2256,13 @@ Use this when you want to be visible to the SYSTEM L key."))
   (WITHOUT-INTERRUPTS
    (SETQ BACKGROUND-INTERESTING-WINDOWS
 	 (DELETE (ASSOC SELF BACKGROUND-INTERESTING-WINDOWS :TEST #'EQ)
-		 (THE LIST BACKGROUND-INTERESTING-WINDOWS) :TEST #'EQ)))) 
+		 (THE LIST BACKGROUND-INTERESTING-WINDOWS) :TEST #'EQ))))
 
 (DEFMETHOD (BACKGROUND-LISP-INTERACTOR :AFTER :DEACTIVATE) (&REST IGNORE)
   (WITHOUT-INTERRUPTS
    (SETQ BACKGROUND-INTERESTING-WINDOWS
 	 (DELETE (ASSOC SELF BACKGROUND-INTERESTING-WINDOWS :TEST #'EQ)
-		 (THE LIST BACKGROUND-INTERESTING-WINDOWS) :TEST #'EQ)))) 
+		 (THE LIST BACKGROUND-INTERESTING-WINDOWS) :TEST #'EQ))))
 
 (DEFMETHOD (BACKGROUND-LISP-INTERACTOR :WAIT-UNTIL-SEEN) ()
   ;; If we have typed out since we were selected last, then wait until we get seen
@@ -2274,7 +2274,7 @@ Use this when you want to be visible to the SYSTEM L key."))
     ;; Then wait until we are deselected
     (PROCESS-WAIT "No Longer Seen" #'(LAMBDA (S)
 				       (NEQ S SELECTED-WINDOW))
-		  SELF))) 
+		  SELF)))
 
 (DEFVAR BACKGROUND-STREAM-WHICH-OPERATIONS)
 
@@ -2299,7 +2299,7 @@ the process wants the terminal."
 			    BACKGROUND-STREAM-WHICH-OPERATIONS)))
 	     BACKGROUND-STREAM-WHICH-OPERATIONS)
 	    ;; If the stream hasn't changed since the process was started, do default action
-	    
+
 	    (:SEND-IF-HANDLES
 	     (when (MEMBER (CAR ARGS) (BACKGROUND-STREAM :WHICH-OPERATIONS) :TEST #'EQ)
 	       (APPLY 'BACKGROUND-STREAM ARGS)))
@@ -2325,7 +2325,7 @@ the process wants the terminal."
 	     (APPLY *TERMINAL-IO* OP ARGS)))
 	  (PROGN
 	    (SETQ *TERMINAL-IO* DEFAULT-BACKGROUND-STREAM)
-	    (APPLY *TERMINAL-IO* OP ARGS))))) 
+	    (APPLY *TERMINAL-IO* OP ARGS)))))
 
 (DEFFLAVOR POP-UP-TEXT-WINDOW () (Temporary-Shadow-Borders-Window-Mixin WINDOW)
   (:DOCUMENTATION :COMBINATION "A simple temporary window for stream type output
@@ -2404,7 +2404,7 @@ This mixin also interacts with the rubout-handler of STREAM-MIXIN."))
    ;; We are too small to print this notification.  Use a pop-up-window.
    (SEND 'POP-UP-NOTIFY :PRINT-NOTIFICATION TIME STRING WINDOW-OF-INTEREST)
    ;; We can print this notification on the seleted window, so do it.
-   (SEND SELF :PRINT-NOTIFICATION-ON-SELF TIME STRING WINDOW-OF-INTEREST))) 
+   (SEND SELF :PRINT-NOTIFICATION-ON-SELF TIME STRING WINDOW-OF-INTEREST)))
 
 ;Execute the body and then redisplay any rubout handler input that is on the window
 ;below what was printed by the body.
@@ -2451,7 +2451,7 @@ This mixin also interacts with the rubout-handler of STREAM-MIXIN."))
 		    (1- END)
 		    END))))
        (SEND SELF :TYO #\])
-       (SEND SELF :TYO #\NEWLINE)))) 
+       (SEND SELF :TYO #\NEWLINE))))
 
 (DEFFLAVOR POP-UP-NOTIFICATION-MIXIN () (DELAY-NOTIFICATION-MIXIN)
   :ALIAS-FLAVOR)
@@ -2473,7 +2473,7 @@ When this is non-NIL, who-line announces notifications.")
 (DEFVAR DEFERRED-NOTIFICATIONS NIL
   "Like PENDING-NOTIFICATIONS, but these don't make who-line blink.")
 (DEFPARAMETER WAIT-FOR-NOTIFICATIONS-FLAG ()
-   "Non-NIL means wait for user to switch windows rather than pop up a notification window.") 
+   "Non-NIL means wait for user to switch windows rather than pop up a notification window.")
 
 (DEFMETHOD (DELAY-NOTIFICATION-MIXIN :PRINT-NOTIFICATION) POP-UP-NOTIFY)
 
@@ -2545,12 +2545,12 @@ When this is non-NIL, who-line announces notifications.")
                    (SEND NOTE-WINDOW :STRING-OUT PROMPT-STRING))
 		 (SEND NOTE-WINDOW :ANY-TYI))))
 	   ;;cause the previous seleted window to be re-selected  PMH 11/30/87
-	   (send note-window :deselect)		
+	   (send note-window :deselect)
 	   (SEND NOTE-WINDOW :DEACTIVATE))
        TIME STRING WINDOW-OF-INTEREST SELF
        (START-UNEXPECTED-SELECT)
        (ALLOCATE-RESOURCE 'POP-UP-NOTIFICATION-WINDOW
-			  (SHEET-GET-SCREEN SELF))))) 
+			  (SHEET-GET-SCREEN SELF)))))
 
 ;;;Wait until selected window changes, then print this notification
 ;;;if it is then possible, or else wait again.
@@ -2592,7 +2592,7 @@ When this is non-NIL, who-line announces notifications.")
 	     (APPLY SW :PRINT-NOTIFICATION (POP PENDING-NOTIFICATIONS))))))
     ;; If could not print them, wait for another window-switch.
     (OR PENDING-NOTIFICATIONS
-	DEFERRED-NOTIFICATIONS (RETURN)))) 
+	DEFERRED-NOTIFICATIONS (RETURN))))
 
 ;;; These two functions are for unexpected pop-up selectable windows
 ;;; They give the user a chance to get his typing straightened out
@@ -2614,7 +2614,7 @@ When this is non-NIL, who-line announces notifications.")
   (WITHOUT-INTERRUPTS
    (AND OLD-SELECTED-WINDOW
 	(SETQ BUF (SEND OLD-SELECTED-WINDOW :IO-BUFFER))
-	(KBD-SNARF-INPUT BUF)))) 
+	(KBD-SNARF-INPUT BUF))))
 
 (DEFFLAVOR POP-UP-NOTIFICATION-WINDOW
 	((WINDOW-OF-INTEREST NIL))
@@ -2635,7 +2635,7 @@ pop-up type window."))
   (SETQ WINDOW-OF-INTEREST WINDOW)
   (LET ((TEM (ASSOC WINDOW BACKGROUND-INTERESTING-WINDOWS :TEST #'EQ)))
     (AND TEM
-	 (SETF (CDR TEM) SELF)))) 
+	 (SETF (CDR TEM) SELF))))
 
 ;;; When clicked on, always send a :MOUSE-SELECT message, even if already selected
 ;;; so that WINDOW-OF-INTEREST will get selected.
@@ -2649,7 +2649,7 @@ pop-up type window."))
 notifying about."
   (SEND SELF :DEEXPOSE)				;This will also deactivate us
   (AND WINDOW-OF-INTEREST
-       (APPLY WINDOW-OF-INTEREST :MOUSE-SELECT ARGS))) 
+       (APPLY WINDOW-OF-INTEREST :MOUSE-SELECT ARGS)))
 
 ;This wakes up the process which is sitting around waiting for the user
 ;to type something to flush the notification window.  It will deactivate us.

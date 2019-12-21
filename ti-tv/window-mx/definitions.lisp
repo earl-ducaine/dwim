@@ -1,16 +1,17 @@
 
-;;;                           RESTRICTED RIGHTS LEGEND
+;;; Restricted rights legend
 
-;;;Use, duplication, or disclosure by the Government is subject to
-;;;restrictions as set forth in subdivision (c)(1)(ii) of the Rights in
-;;;Technical Data and Computer Software clause at 52.227-7013.
+;;; Use, duplication, or disclosure by the Government is subject to
+;;; restrictions as set forth in subdivision (c)(1)(ii) of the Rights
+;;; in Technical Data and Computer Software clause at 52.227-7013.
 ;;;
 ;;;                     TEXAS INSTRUMENTS INCORPORATED.
 ;;;                              P.O. BOX 2909
 ;;;                           AUSTIN, TEXAS 78769
 ;;;                                 MS 2151
 ;;;
-;;; Copyright (C) 1987-1989 Texas Instruments Incorporated. All rights reserved.
+;;; Copyright (C) 1987-1989 Texas Instruments Incorporated. All rights
+;;; reserved.
 
 
 ;;; This file contains structure definitions, macros, and functions
@@ -35,6 +36,7 @@
 
 (in-package :mac-windows)
 
+(proclaim '(function report-all-frames))
 
 (defmacro tv::mac-explorer-window-id (window)
   `(tv:sheet-window-id ,window))
@@ -42,10 +44,10 @@
 (defsetf tv::mac-explorer-window-id (window) (x)
   `(setf (tv:sheet-window-id ,window) ,x))
 
-(DEFSTRUCT (cbuffer (:conc-name cbuffer-)
-		      (:type :array-leader) (:callable-constructors nil)
-		      (:default-pointer *processing-a-debug-dump*)
-		      (:make-array '(:dimensions 8192 :type art-32b)))
+(defstruct (cbuffer (:conc-name cbuffer-)
+		    (:type (vector art-32b))
+		    ;; (:make-array '(:dimensions 8192 :type art-32b))
+		    )
   n-segments-rcvd
   n-segments-total
   n-words-per-segment
@@ -53,55 +55,57 @@
   start-bchain
   time-rcvd)
 
-(DEFUN syz2 (arg-names-and-values to-a-depth-of)
-  (DECLARE (SPECIAL *calls*))
-  (RPLACA *calls* (CONS (time:get-universal-time)
-			(CONS arg-names-and-values (report-all-frames nil to-a-depth-of))))
-  (SETF *calls* (REST *calls*)))
+(defun syz2 (arg-names-and-values to-a-depth-of)
+  (rplaca *calls* (cons (time:get-universal-time)
+			(cons arg-names-and-values
+			      (report-all-frames nil to-a-depth-of))))
+  (setf *calls* (rest *calls*)))
 
-(DEFMACRO remember-call (&rest args)
-  "Maintains the list *calls* as a circular history of the stack and the values of
-ARGS as of its calls.  ARGS must all be symbols; their names and values will be
-remembered.  If the first of ARGS is an integer, then it is used as a limit on the stack
-depth remembered, otherwise all levels are remembered."
-  (DECLARE (SPECIAL *default-stack-depth-to-record* *all-debugging-classes*))
-  (LET ((to-a-depth-of *default-stack-depth-to-record*) (debugging-class t)
-	(default-cons-area sys:background-cons-area) arg-names)
-    ;;  If 1st arg is a number use it as the depth to which the stack is to be reported...
-    (WHEN (AND (> (LENGTH args) 0) (INTEGERP (FIRST args)))
-      (SETF to-a-depth-of (FIRST args))
-      (SETF args (REST args)))
-    ;;  If 1st arg is a keyword then it specifies this call's debugging class.  Add it to the list of legal
-    ;;  debugging classes.
-    (WHEN (AND (> (LENGTH args) 0)
-	       (SYMBOLP (FIRST args))
-	       (KEYWORDP (FIRST args)))
-      (SETF debugging-class (FIRST args))
-      (SETF args (REST args))
-      (UNLESS (MEMBER debugging-class *all-debugging-classes*)
-	(PUSH debugging-class *all-debugging-classes*)))
-    (IF args
-	(PROGN
-	  (SETF arg-names (LOOP for arg in args
-				collecting (FORMAT nil "~s=" arg)
+(defmacro remember-call (&rest args)
+  "Maintains the list *calls* as a circular history of the stack and
+   the values of ARGS as of its calls.  ARGS must all be symbols;
+   their names and values will be remembered.  If the first of ARGS is
+   an integer, then it is used as a limit on the stack depth
+   remembered, otherwise all levels are remembered."
+  (let ((to-a-depth-of *default-stack-depth-to-record*)
+	(debugging-class t)
+	 arg-names)
+    ;;  If 1st arg is a number use it as the depth to which the stack
+    ;;  is to be reported...
+    (when (and (> (length args) 0) (integerp (first args)))
+      (setf to-a-depth-of (first args))
+      (setf args (rest args)))
+    ;; If 1st arg is a keyword then it specifies this call's debugging
+    ;; class.  Add it to the list of legal debugging classes.
+    (when (and (> (length args) 0)
+	       (symbolp (first args))
+	       (keywordp (first args)))
+      (setf debugging-class (first args))
+      (setf args (rest args))
+      (unless (member debugging-class *all-debugging-classes*)
+	(push debugging-class *all-debugging-classes*)))
+    (if args
+	(progn
+	  (setf arg-names (loop for arg in args
+				collecting (format nil "~s=" arg)
 				collecting arg))
-	  `(WITHOUT-INTERRUPTS
-	     (UNLESS (OR *tracing-off* (suppress-tracing-p ,debugging-class))
-	       (LET ((%v% (LIST ,@arg-names)))
-		 (LOOP FOR arg-tail first (CDR %v%)
-		       then (CDDR arg-tail)
+	  `(without-interrupts
+	     (unless (or *tracing-off* (suppress-tracing-p ,debugging-class))
+	       (let ((%v% (list ,@arg-names)))
+		 (loop for arg-tail first (cdr %v%)
+		       then (cddr arg-tail)
 		       while arg-tail
-		       do (SETF (FIRST arg-tail)
-				(TYPECASE (FIRST arg-tail)
-				  (symbol (SYMBOL-VALUE (FIRST arg-tail)))
-				  (CONS (IF (FUNCTIONP (FIRST (FIRST arg-tail)))
-					    (EVAL (FIRST arg-tail))
-					  (FIRST arg-tail)))
-				  (t (FIRST arg-tail)))))
+		       do (setf (first arg-tail)
+				(typecase (first arg-tail)
+				  (symbol (symbol-value (first arg-tail)))
+				  (cons (if (functionp (first (first arg-tail)))
+					    (eval (first arg-tail))
+					  (first arg-tail)))
+				  (t (first arg-tail)))))
 		 (syz2 %v% ,to-a-depth-of)))))
       ;; else...
-      `(WITHOUT-INTERRUPTS
-	 (UNLESS (OR *tracing-off* (suppress-tracing-p ,debugging-class))
+      `(without-interrupts
+	 (unless (or *tracing-off* (suppress-tracing-p ,debugging-class))
 	   (syz2 nil ,to-a-depth-of))))))
 
 (DEFVAR remember-call-regardless nil)
@@ -127,27 +131,25 @@ depth remembered, otherwise all levels are remembered."
        (SETF *calls* (REST *calls*))
        (VECTOR-PUSH-EXTEND (NREVERSE image-list) *images*))))
 
-
-;;;
+
 ;;;   Use the right definition for the Mac stuff at least...
-;;;
 (DEFMACRO with-clipping-rectangle ((left top right bottom) &body body)
-  "Execute BODY with the clipping rectangle bound to the intersection of the
-current clipping rectangle and the clipping rectangle specified by left, top, right,
-and bottom, which should all be integers.  Microcode will not draw outside of the
-edges specified by the clipping rectangle."
-  `(LET
-     ((sys:clipping-rectangle-left-edge
-	(MAX sys:clipping-rectangle-left-edge ,left))
-      (sys:clipping-rectangle-top-edge
-	(MAX sys:clipping-rectangle-top-edge ,top))
-      (sys:clipping-rectangle-right-edge
-	(MIN sys:clipping-rectangle-right-edge ,right))
-      (sys:clipping-rectangle-bottom-edge
-	(MIN sys:clipping-rectangle-bottom-edge ,bottom)))
+  "Execute body with the clipping rectangle bound to the intersection
+   of the current clipping rectangle and the clipping rectangle
+   specified by left, top, right, and bottom, which should all be
+   integers. Microcode will not draw outside of the edges specified
+   by the clipping rectangle."
+  `(let
+     ((sys:*clipping-rectangle-left-edge*
+	(max sys:*clipping-rectangle-left-edge* ,left))
+      (sys:*clipping-rectangle-top-edge*
+	(max sys:*clipping-rectangle-top-edge* ,top))
+      (sys:*clipping-rectangle-right-edge*
+	(min sys:*clipping-rectangle-right-edge* ,right))
+      (sys:*clipping-rectangle-bottom-edge*
+	(min sys:*clipping-rectangle-bottom-edge* ,bottom)))
      . ,body))
 
-
 (DEFUN make-bit-array-Mac-resident (window &optional contents-matter-p)
   ;;  Note that the following two statements are equivalent:
   ;;     1. The bit array being drawn to by window W1's is not Mac resident.
@@ -200,7 +202,7 @@ edges specified by the clipping rectangle."
 
 
 
-(DEFFLAVOR Mac-screen
+(defflavor mac-screen
 	   ()
 	   (tv:standard-screen)
   :settable-instance-variables)

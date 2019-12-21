@@ -48,14 +48,14 @@
 ;;;   3-28-88    LG     5-36       Handle all alu's in :draw-line like other microExplorer
 ;;;   		      drawing methods do.  This corrects KEE's problems with
 ;;;		          strange looking arrows caused by us drawing black
-;;;		          lines when they specified w:alu-setz.  
+;;;		          lines when they specified w:alu-setz.
 ;;;   3-17-88       KED       5.22      Allow multiple character mapping tables.
 ;;; 3-16-88     BJ     5.20    Add without-interrupts to set-mouse-blinker and copybits.
 
 
 (DEFMETHOD (mac-flavor :mouse-position) ()
   "Returns the X and Y values of the mouse position and a button-event
-if one occured.  A button-event has the bit format #b0000 0000 00UT DLMR 
+if one occured.  A button-event has the bit format #b0000 0000 00UT DLMR
 where:
   U = 1 means a mouse button up excursion occured,
   T = 1 means a mouse tripple click occured,
@@ -64,7 +64,7 @@ where:
   M = 1 means it was a mouse middle button,
   R = 1 means it was a mouse right button.
 Negative X/Y values indicate special events on the Mac.  The
-x-coord and screen id  are converted from the 16-bit positive value 
+x-coord and screen id  are converted from the 16-bit positive value
 an art-16b array returns to a 16-bit signed value."
   (DECLARE (SPECIAL si:%driver-data-start))
   (LET ((mouse-x (si:%nubus-read-16b
@@ -83,15 +83,15 @@ an art-16b array returns to a 16-bit signed value."
 		       si:*addin-memory-slot*
 		       (+ si:%driver-data-start si:%dd-mouse-valid)))
 	mouse-screen-descriptor)
-    
+
     (WHEN (> mouse-valid 0)
       (si:%nubus-write-8b si:*addin-memory-slot*
 			  (+ si:%driver-data-start si:%dd-mouse-valid)
 			  0))
-    
+
     (WHEN (> mouse-x #x7fff)
       (SETF mouse-x (- -1 (LOGXOR mouse-x #xffff))))
-    
+
     (WHEN (> mouse-y #x7fff)			;Added 3/3/87 KED
       (SETF mouse-y (- -1 (LOGXOR mouse-y #xffff))))
 
@@ -100,7 +100,7 @@ an art-16b array returns to a 16-bit signed value."
 
     (SETF mouse-screen-descriptor
 	  (AREF *mac-resident-explorer-screens* (ABS mouse-screen-id)))
-    
+
     ;;  If mouse-button is negative, then it's a fake mouse click for the screen's selected
     ;;  window.  Calculate mouse coordinates equal to the lower-right corner of
     ;;  the screen's selected window, change screen and selected window if
@@ -117,7 +117,7 @@ an art-16b array returns to a 16-bit signed value."
 	(PROCESS-RUN-FUNCTION "Select Screen" #'FUNCALL
 			      (the-last-selected-window mouse-screen-descriptor) :select-screen))
       (SETF mouse-button 0))
-    
+
     (WHEN (AND (EQ tv:default-screen (the-screen mouse-screen-descriptor))
 	       (NEQ tv:default-screen tv:mouse-sheet))
       ;; then we are not changing screens but in order to return mouse coordinates relative to the
@@ -153,7 +153,7 @@ this value before sending it to the Mac.")
   (LET ((acb (add:get-acb-fast 144)))
     (COND ((NOT (ZEROP character))		       ; Send just the resource number if specified.
 	   (add:load-parms acb 16 (+ mac-mouse-cursor-offset character) 0))
-	  
+
 	  (t
 	   (WITHOUT-INTERRUPTS
 	     ;; else send a zero resource number, the glyph, the mask, and the hot spot...
@@ -237,20 +237,20 @@ height are zero then the graphport will have no bit array."
 						       ;(BREAK " :AdjustBitArray")
   (LET (return-value
 	(acb (add:get-acb-fast 8)))
-    
+
     (add:load-parms acb 16
 		    (Mac-window-id window)
 		    width
 		    height
 		    (IF contents-matter 1 0))
-    
+
     (SETF (add:opcode acb) #x10)
     (add:transmit-packet-and-wait acb channel)
-    
+
     (SETF return-value (NOT (ZEROP (ADD:PARM-16B acb 0))))
     (add:return-acb acb t)
     return-value))
-		
+
 (DEFMETHOD (MAC-flavor :RedirectDrawing)	       ;
 	   (window-being-redirected bitmap-redirected-to x y &aux (add:*no-interrupt* inhibit-scheduling-flag))
   "Updates the drawing indirection table maintained on the Mac. Drawing
@@ -275,7 +275,7 @@ If (Mac-window-id window-directed-to) is zero then drawing goes to the screen."
 associated with this window."
   (LET ((acb (add:get-acb-fast 2)))
     (remember-call :selection self)
-    (SETF (add:opcode acb) #x12) 
+    (SETF (add:opcode acb) #x12)
     (add:load-parms acb 16 (Mac-window-id window))
     (SETF (add:requestor-complete acb) t)
     (add:transmit-packet acb channel)))
@@ -288,8 +288,8 @@ ACB/command opcode for this minor command."
   (LET ((add:*no-interrupt* inhibit-scheduling-flag)
 	(acb (add:get-acb-fast 10))
 	return-value)
-    
-    (SETF (add:opcode acb) #x13)    
+
+    (SETF (add:opcode acb) #x13)
     (add:load-parms acb 16 0 0 0 0 4)
     (add:transmit-packet-and-wait acb channel)
     (SETF return-value (ADD:PARM-32B acb 0))
@@ -306,7 +306,7 @@ ACB/command opcode for this minor command."
     (SETF (add:opcode acb) #x13)
     ;;(BREAK " :AdjustScreenSize")
     (add:load-parms acb 16
-		    Explorer-screen-ID Explorer-window-ID width height 
+		    Explorer-screen-ID Explorer-window-ID width height
 		    (TYPECASE visibility
 		      (symbol (IF visibility 1 0))
 		      (fixnum visibility)))
@@ -375,12 +375,12 @@ top-most Mac window so the user can see it."
 			line-width line-width	       ;simple way out for now
 			(transfer-mode alu)
 			(Mac-window-id window)
-			w:clipping-rectangle-left-edge
-			w:clipping-rectangle-top-edge
-			(MIN #X3FFF W:CLIPPING-RECTANGLE-RIGHT-EDGE)
-			(MIN #X3FFF W:CLIPPING-RECTANGLE-BOTTOM-EDGE))
+			w:*clipping-rectangle-left-edge*
+			w:*clipping-rectangle-top-edge*
+			(MIN #X3FFF W:*CLIPPING-RECTANGLE-RIGHT-EDGE*)
+			(MIN #X3FFF W:*CLIPPING-RECTANGLE-BOTTOM-EDGE*))
 	(add:transmit-packet acb channel)))))
-    
+
 (DEFMETHOD (mac-flavor :Nop)
 	   (&aux (add:*no-interrupt* inhibit-scheduling-flag))
   "This sends a nil command to the Mac. Mostly for timing purposes. This requires
@@ -419,10 +419,10 @@ font baseline is assumed to be size."
 		      x (+ y (OR size current-mac-font-baseline))
 		      (transfer-mode alu)
 		      (Mac-window-id window)
-		      w:clipping-rectangle-left-edge
-		      w:clipping-rectangle-top-edge
-		      (MIN #X3FFF W:CLIPPING-RECTANGLE-RIGHT-EDGE)
-		      (MIN #X3FFF W:CLIPPING-RECTANGLE-BOTTOM-EDGE))
+		      w:*clipping-rectangle-left-edge*
+		      w:*clipping-rectangle-top-edge*
+		      (MIN #X3FFF W:*CLIPPING-RECTANGLE-RIGHT-EDGE*)
+		      (MIN #X3FFF W:*CLIPPING-RECTANGLE-BOTTOM-EDGE*))
       (add:transmit-packet acb channel))))
 
 
@@ -435,13 +435,13 @@ font baseline is assumed to be size."
 	ch
 	(index-of-first-char-to-not-draw index)
 	(xpos-to-stop-at xpos)
-	(limit (OR xlim w:clipping-rectangle-right-edge))
+	(limit (OR xlim w:*clipping-rectangle-right-edge*))
 	(acb (add:get-acb-fast (+ (* 2 DrawString-parms) DrawString-max-size))))
-    
+
     (SETF (add:opcode acb) #x3)
-    
+
     (font-cache font)
-    
+
     ;;Calculate length of string that fits in the clipping rectangle and stuff translated characters into the ACB.
     (DOTIMES (j (1- drawstring-max-size))
       (UNLESS (< index-of-first-char-to-not-draw end)
@@ -451,32 +451,32 @@ font baseline is assumed to be size."
 	(RETURN))			   ; non printing char
       (IF (< limit (INCF xpos-to-stop-at (AREF fwt ch)))
 	  (PROGN (DECF xpos-to-stop-at (AREF fwt ch))	   ; this character goes too far
-		 (RETURN))	   
+		 (RETURN))
 	  ;; else
 	  (SETF (add:parm-8b acb (+ (* 2 Drawstring-Parms) j))
-		(AREF char-mapping-table ch)) 
+		(AREF char-mapping-table ch))
 	  (INCF index-of-first-char-to-not-draw)))
-    
+
     (remember-call :drawing window xpos-to-stop-at index-of-first-char-to-not-draw)
-    
+
     (add:load-parms-16b
       acb
       current-mac-font
-      current-mac-font-style 
-      current-mac-font-size 
+      current-mac-font-style
+      current-mac-font-size
       (transfer-mode alu)
       0
       (- index-of-first-char-to-not-draw index)
       xpos (+ ypos current-mac-font-baseline)
-      xpos-to-stop-at 
+      xpos-to-stop-at
       (Mac-window-id window)
-      w:clipping-rectangle-left-edge
-      w:clipping-rectangle-top-edge
-      (MIN #x3FFF w:clipping-rectangle-right-edge)
-      (MIN #x3FFF w:clipping-rectangle-bottom-edge))
+      w:*clipping-rectangle-left-edge*
+      w:*clipping-rectangle-top-edge*
+      (MIN #x3FFF w:*clipping-rectangle-right-edge*)
+      (MIN #x3FFF w:*clipping-rectangle-bottom-edge*))
     (SETF (add:requestor-complete acb) t)
     (add:transmit-packet acb channel)
-    
+
     (DPB (- index-of-first-char-to-not-draw index)
 	 (BYTE 12. 12.)
 	 xpos-to-stop-at)))
@@ -489,7 +489,7 @@ fixed point values for the width the routine rounds off the fractional
 part and returns an array of integers. Note that kerning information is
 not returned."
   (font-cache font)
-  
+
   (LET ((acb (add:get-acb-fast 1050))
 	ascent
 	descent
@@ -499,21 +499,21 @@ not returned."
 	vScale
 	hScale
 	width-table)
-    
+
     (add:load-parms acb 16
 		    current-mac-font
 		    current-mac-font-style
 		    current-mac-font-size)
     (SETF (add:opcode acb) #xd)
     (add:transmit-packet-and-wait acb channel)
-    
+
     (SETF ascent (read-fix-32 (add:parm-16b acb 0)     ;Integer part
-			      (add:parm-16b acb 1)))   ;Fractional part 
-    (SETF descent (read-fix-32 (add:parm-16b acb 2)  
+			      (add:parm-16b acb 1)))   ;Fractional part
+    (SETF descent (read-fix-32 (add:parm-16b acb 2)
 			       (add:parm-16b acb 3)))
-    (SETF leading (read-fix-32 (add:parm-16b acb 4)  
+    (SETF leading (read-fix-32 (add:parm-16b acb 4)
 			       (add:parm-16b acb 5)))
-    (SETF widMax (read-fix-32 (add:parm-16b acb 6)  
+    (SETF widMax (read-fix-32 (add:parm-16b acb 6)
 			      (add:parm-16b acb 7)))
     (SETF width-table-length 256)
     (SETF vScale (* (read-fix-16 (add:parm-16b acb
@@ -524,13 +524,13 @@ not returned."
 					       (+ 9  (* 2 width-table-length))))
 		    (read-fix-16 (add:parm-16b acb
 					       (+ 11 (* 2 width-table-length))))))
-    
+
     (SETF vScale 1.0)				       ;Mac IV-41 says VFactor is not used. KED 3/1/88
-    (SETF width-table (MAKE-ARRAY width-table-length  
+    (SETF width-table (MAKE-ARRAY width-table-length
 				  :fill-pointer #xFF
 				  :leader-length 6
-				  :leader-list	   
-				  `(0		       ;Space for fill-pointer (unused) 
+				  :leader-list
+				  `(0		       ;Space for fill-pointer (unused)
 				     ,(ROUND (* widMax hScale))	       ; See below.
 				     ,(ROUND (* (+ ascent descent) vScale)) ;;height
 				     ,(ROUND (* ascent vScale))
@@ -566,7 +566,7 @@ not returned."
 (DEFUN adjust-source-pattern (alu source-pattern)
   (SELECTOR alu EQL
     ((12 15) w:black)
-    ((w:alu-setz 3) w:white)    
+    ((w:alu-setz 3) w:white)
     (t source-pattern)))
 
 (DEFMETHOD (mac-flavor :DrawTriangle)
@@ -590,10 +590,10 @@ For now edges are always drawn."
 			x0 y0 x1 y1 x2 y2
 			(transfer-mode alu)
 			(Mac-window-id window)
-			w:clipping-rectangle-left-edge
-			w:clipping-rectangle-top-edge
-			(MIN #x3FFF w:clipping-rectangle-right-edge)
-			(MIN #x3FFF w:clipping-rectangle-bottom-edge))
+			w:*clipping-rectangle-left-edge*
+			w:*clipping-rectangle-top-edge*
+			(MIN #x3FFF w:*clipping-rectangle-right-edge*)
+			(MIN #x3FFF w:*clipping-rectangle-bottom-edge*))
 	(add:transmit-packet acb channel)))))
 
 (DEFMETHOD (mac-flavor :DrawFilledPolygon)
@@ -613,10 +613,10 @@ screen. For now edges are always drawn."
 			(transfer-mode alu)
 			(Mac-window-id window)
 			n-vertices 0
-			w:clipping-rectangle-left-edge
-			w:clipping-rectangle-top-edge
-			(MIN #x3FFF w:clipping-rectangle-right-edge)
-			(MIN #x3FFF w:clipping-rectangle-bottom-edge))
+			w:*clipping-rectangle-left-edge*
+			w:*clipping-rectangle-top-edge*
+			(MIN #x3FFF w:*clipping-rectangle-right-edge*)
+			(MIN #x3FFF w:*clipping-rectangle-bottom-edge*))
 	(LOOP for i from 32
 	      for x-y-coord in vertices
 	      do (SETF (AREF acb i) x-y-coord))
@@ -624,7 +624,7 @@ screen. For now edges are always drawn."
 
 (DEFMETHOD (mac-flavor :DrawRectangle)
 	   (x y width height color alu window &aux (add:*no-interrupt* inhibit-scheduling-flag))
-  "Like si:%draw-rectangle but draws it on the Mac screen." 
+  "Like si:%draw-rectangle but draws it on the Mac screen."
   (MULTIPLE-VALUE-BIND (p1 p2 p3 p4)
       (mac-pattern (adjust-source-pattern alu color))
 						       ;(BREAK " :DrawRectangle")
@@ -637,22 +637,22 @@ screen. For now edges are always drawn."
 		      (+ x width) (+ y height)
 		      (transfer-mode alu)
 		      (Mac-window-id window)
-		      w:clipping-rectangle-left-edge
-		      w:clipping-rectangle-top-edge
-		      (MIN #x3FFF w:clipping-rectangle-right-edge)
-		      (MIN #x3FFF w:clipping-rectangle-bottom-edge))
+		      w:*clipping-rectangle-left-edge*
+		      w:*clipping-rectangle-top-edge*
+		      (MIN #x3FFF w:*clipping-rectangle-right-edge*)
+		      (MIN #x3FFF w:*clipping-rectangle-bottom-edge*))
       (add:transmit-packet acb channel))))
 
 (DEFMETHOD (mac-flavor :DrawHollowRectangle)
 	   (x y width height thickness color alu window &aux (add:*no-interrupt* inhibit-scheduling-flag))
-  "Like si:%draw-rectangle but draws a hollow rectangle on the Mac screen." 
+  "Like si:%draw-rectangle but draws a hollow rectangle on the Mac screen."
   (MULTIPLE-VALUE-BIND (p1 p2 p3 p4)
       (mac-pattern (adjust-source-pattern alu color))
 						       ;(BREAK " :DrawHollowRectangle")
     (LET ((acb (add:get-acb-fast 32)))
       (SETF (add:opcode acb) #xa)
       (SETF (add:requestor-complete acb) t)
-      
+
       (add:load-parms acb 16
 		      p1 p2 p3 p4
 		      x y
@@ -660,10 +660,10 @@ screen. For now edges are always drawn."
 		      (transfer-mode alu)
 		      thickness thickness
 		      (Mac-window-id window)
-		      w:clipping-rectangle-left-edge
-		      w:clipping-rectangle-top-edge
-		      (MIN #x3FFF w:clipping-rectangle-right-edge)
-		      (MIN #x3FFF w:clipping-rectangle-bottom-edge))
+		      w:*clipping-rectangle-left-edge*
+		      w:*clipping-rectangle-top-edge*
+		      (MIN #x3FFF w:*clipping-rectangle-right-edge*)
+		      (MIN #x3FFF w:*clipping-rectangle-bottom-edge*))
       (add:transmit-packet acb channel))))
 
 (DEFMETHOD (mac-flavor :DrawCircle)
@@ -683,17 +683,17 @@ Like the graphics mixin :draw-filled-circle."
       (LET ((acb (add:get-acb-fast 28)))
 	(SETF (add:opcode acb) #xb)
 	(SETF (add:requestor-complete acb) t)
-	
+
 	(add:load-parms acb 16
 			p1 p2 p3 p4
 			(- x r) (- y r)
 			(+ x r) (+ y r)
 			(transfer-mode alu)
 			(Mac-window-id window)
-			w:clipping-rectangle-left-edge
-			w:clipping-rectangle-top-edge
-			(MIN #X3FFF W:CLIPPING-RECTANGLE-RIGHT-EDGE)
-			(MIN #X3FFF W:CLIPPING-RECTANGLE-BOTTOM-EDGE))
+			w:*clipping-rectangle-left-edge*
+			w:*clipping-rectangle-top-edge*
+			(MIN #X3FFF W:*CLIPPING-RECTANGLE-RIGHT-EDGE*)
+			(MIN #X3FFF W:*CLIPPING-RECTANGLE-BOTTOM-EDGE*))
 	(add:transmit-packet acb channel)))))
 
 (DEFMETHOD (mac-flavor :DrawHollowCircle)
@@ -705,16 +705,16 @@ Like the graphics mixin :draw-filled-circle."
 	    (num-points 29) window)
   "This draws a filled oval just inside the rectangle specified by left, top, right, and bottom.
 Like the graphics mixin :draw-circle."
-  (DECLARE (IGNORE num-points)) 
+  (DECLARE (IGNORE num-points))
   (LET ((add:*no-interrupt* inhibit-scheduling-flag))
     (MULTIPLE-VALUE-BIND (p1 p2 p3 p4)
 	(mac-pattern (adjust-source-pattern alu color))
       ;;(BREAK " :DrawHollowCircle")
-      
+
       (LET ((acb (add:get-acb-fast 32)))
 	(SETF (add:opcode acb) #xc)
 	(SETF (add:requestor-complete acb) t)
-	
+
 	(add:load-parms acb 16
 			p1 p2 p3 p4
 			(- x radius) (- y radius)
@@ -722,11 +722,11 @@ Like the graphics mixin :draw-circle."
 			(transfer-mode alu)
 			thickness thickness
 			(Mac-window-id window)
-			w:clipping-rectangle-left-edge
-			w:clipping-rectangle-top-edge
-			(MIN #X3FFF W:CLIPPING-RECTANGLE-RIGHT-EDGE)
-			(MIN #X3FFF W:CLIPPING-RECTANGLE-BOTTOM-EDGE))
-	
+			w:*clipping-rectangle-left-edge*
+			w:*clipping-rectangle-top-edge*
+			(MIN #X3FFF W:*CLIPPING-RECTANGLE-RIGHT-EDGE*)
+			(MIN #X3FFF W:*CLIPPING-RECTANGLE-BOTTOM-EDGE*))
+
 	(add:transmit-packet acb channel)))))
 
 
@@ -748,7 +748,7 @@ Like the graphics mixin :draw-circle."
 	    &optional (source-width width) (source-height height) replication delay-updates
 	    restoration-p
 	    &aux (add:*no-interrupt* inhibit-scheduling-flag) (add:*wait-error* nil))
-  "Copies the from array to an intermediate physical array and then to the to array. 
+  "Copies the from array to an intermediate physical array and then to the to array.
 The purpose of the intermediate array is to word align it (adjust for source bitwise misalignment) and to
 linearize it in physical memory.
     The source and destination are controlled by the type of from-array and to-array:
@@ -764,15 +764,15 @@ LISPM."
   (LET (word-width)
     (SETF width (ABS width)
           height (ABS height))
-    
+
     (UNLESS source-width
       (SETF source-width width))
 
     (UNLESS source-height
       (SETF source-height height))
-    
+
     (COND
-      ((AND (NUMBERP from-array) (NUMBERP to-array))	   ;Mac to Mac case	     
+      ((AND (NUMBERP from-array) (NUMBERP to-array))	   ;Mac to Mac case
        ;(BREAK " :CopyBits Mac-to-Mac")
        (LET ((acb (add:get-acb-fast (* 2 (force-even CopyBits-parms)))))
 	 (SETF (add:opcode acb) #x0)
@@ -780,7 +780,7 @@ LISPM."
 	 (add:load-parms acb 16
 			 1
 			 (transfer-mode alu)	       ;Mac sets srcMode
-			 width height		   
+			 width height
 			 from-array
 			 to-array
 			 from-x from-y
@@ -790,7 +790,7 @@ LISPM."
 			 (IF delay-updates 1 0)
 			 (IF restoration-p 1 0))
 	 (add:transmit-packet acb channel)))
-      
+
       ((AND (ARRAYP from-array)	(NUMBERP to-array))	   ;LISPM to Mac case
        (WHEN replication
          (IF (AND (<= source-width 32) (< (* source-width 4) width))
@@ -798,15 +798,15 @@ LISPM."
          (IF (AND (<= source-height 32) (< (* source-height 4) height))
 	 (SETF source-height (* source-height 4))))
        (SETF word-width
-	     (TRUNCATE 32. (ARRAY-ELEMENT-SIZE from-array))) 
-       (quick-change-of-two-dimension-indirect-arrays-dimensions 
+	     (TRUNCATE 32. (ARRAY-ELEMENT-SIZE from-array)))
+       (quick-change-of-two-dimension-indirect-arrays-dimensions
 	 *bitblt-intermediate-array*
 	 source-height (* word-width (CEILING source-width word-width)))
-       
+
        ;(BREAK " :CopyBits Exp-to-Mac")
        (LET ((acb (add:get-acb-fast (+ (* (CEILING source-width 32) 4 source-height)
 				       (* 2 (force-even CopyBits-parms))))))
-	 
+
 	 (si:change-physical-array *bitblt-intermediate-array*
 				   (+ (add:address acb)
 				      add:*acb-overhead-bytes*
@@ -818,9 +818,9 @@ LISPM."
 	      source-width source-height
 	      from-array from-x from-y
 	      *bitblt-intermediate-array* 0 0)
-	 
+
 	 (add:load-parms acb 16
-	   (ARRAY-ELEMENT-SIZE from-array)	       ;type of the array   
+	   (ARRAY-ELEMENT-SIZE from-array)	       ;type of the array
 	   (transfer-mode alu)			       ;Mac sets srcMode
 	   width height
 	   -1					       ;negative tells Mac blt is comming from LISPM
@@ -836,7 +836,7 @@ LISPM."
       ((AND (NUMBERP from-array) (ARRAYP to-array))	   ;Mac to LISPM
        (SETF word-width
 	     (TRUNCATE 32. (ARRAY-ELEMENT-SIZE to-array)))
-       (quick-change-of-two-dimension-indirect-arrays-dimensions 
+       (quick-change-of-two-dimension-indirect-arrays-dimensions
 	 *bitblt-intermediate-array*
 	 source-height (* word-width (CEILING source-width word-width)))
 
@@ -864,14 +864,14 @@ LISPM."
 	 (add:transmit-packet-and-wait acb channel)
 					   ;Bit image from Mac should be ready now.
 	 (si-BITBLT alu			   ;Move it from the intermediate array to LISPM virtual memory
-		    width height 
+		    width height
 		    *bitblt-intermediate-array*
 		    (IF replication from-x 0) (IF replication from-y 0)
 		    to-array to-x to-y)
 	 (SETF (add:requestor-complete acb) t)
 	 (add:return-acb-fast acb)
 	 ))
-      
+
       (t (si-BITBLT alu			   ;LISPM to LISPM case - Mac not involved
 		    width height
 		    from-array from-x from-y
@@ -902,7 +902,7 @@ LISPM."
 
 
 
-(DEFMETHOD (MAC-FLAVOR :OPEN-RUBBER-BAND) (anchor-x anchor-y &optional (direction :from) (pattern :solid) (window tv:selected-window))  
+(DEFMETHOD (MAC-FLAVOR :OPEN-RUBBER-BAND) (anchor-x anchor-y &optional (direction :from) (pattern :solid) (window tv:selected-window))
   (LET ((acb (add:get-acb-fast 36))
 	clip-x1 clip-x2 clip-y1 clip-y2)
 
@@ -925,7 +925,7 @@ LISPM."
     (add:transmit-packet acb mac:channel)))
 
 (DEFMETHOD (mac:MAC-FLAVOR :CLOSE-RUBBER-BAND) (&optional leave-line-drawn)
-  "Turns off rubber-banding. If leave-line-drawn is non nil the final line is left drawn and its location returned. 
+  "Turns off rubber-banding. If leave-line-drawn is non nil the final line is left drawn and its location returned.
    Otherwise the return value has no meaning."
   (LET ((acb (add:get-acb-fast 20)))
     (SETF (add:opcode acb) 24)
@@ -938,7 +938,7 @@ LISPM."
 	   (add:load-parms acb 16 0)
 	   (SETF (add:requestor-complete acb) 0)
 	   (add:transmit-packet acb mac:channel)))
-	   
+
 
     (VALUES (add:parm-16b acb 1) (add:parm-16b acb 2) (add:parm-16b acb 3) (add:parm-16b acb 4))
 
@@ -987,13 +987,13 @@ LISPM."
 	(add:load-parms acb 16
 			p1 p2 p3 p4
 			x0 y0 x1 y1
-			thickness thickness 
+			thickness thickness
 			(transfer-mode alu)
 			(Mac-window-id window)
 			dash-spacing (IF space-literally-p 1 0)
 			offset dash-length
-			w:clipping-rectangle-left-edge
-			w:clipping-rectangle-top-edge
-			(MIN #X3FFF W:CLIPPING-RECTANGLE-RIGHT-EDGE)
-			(MIN #X3FFF W:CLIPPING-RECTANGLE-BOTTOM-EDGE))
+			w:*clipping-rectangle-left-edge*
+			w:*clipping-rectangle-top-edge*
+			(MIN #X3FFF W:*CLIPPING-RECTANGLE-RIGHT-EDGE*)
+			(MIN #X3FFF W:*CLIPPING-RECTANGLE-BOTTOM-EDGE*))
 	(add:transmit-packet acb channel)))))

@@ -72,7 +72,7 @@
   (ESSENTIAL-EXPOSE ESSENTIAL-ACTIVATE ESSENTIAL-SET-EDGES POP-UP-NOTIFICATION-MIXIN
    ESSENTIAL-WINDOW)
   (:REQUIRED-METHODS :INFERIOR-SET-EDGES)
-  (:INIT-KEYWORDS :SELECTED-PANE)		;PMH 11/17/87 Added this support 
+  (:INIT-KEYWORDS :SELECTED-PANE)		;PMH 11/17/87 Added this support
   (:DEFAULT-INIT-PLIST :BLINKER-P NIL :MORE-P NIL)
   (:DOCUMENTATION :LOWLEVEL-MIXIN "Pane handling messages used by most frames"))
 
@@ -108,14 +108,14 @@
   (OR (MEMBER PANE INFERIORS :TEST #'EQ)
       (NULL PANE)
       (FERROR NIL "Cannot select ~S, which is not a pane of ~S" PANE SELF))
-  (SEND SELF :SET-SELECTION-SUBSTITUTE PANE))  
+  (SEND SELF :SET-SELECTION-SUBSTITUTE PANE))
 
 (DEFMETHOD (BASIC-FRAME :NAME-FOR-SELECTION) ()
   (AND SELECTION-SUBSTITUTE (FUNCALL SELECTION-SUBSTITUTE :NAME-FOR-SELECTION)))
 
 ;;This is a bad way to do things, and will get flushed
 ;;once the system is verified to work without it.
-(DEFPARAMETER FLUSH-BASIC-FRAME-STATUS-METHOD NIL) 
+(DEFPARAMETER FLUSH-BASIC-FRAME-STATUS-METHOD NIL)
 
 (DEFWRAPPER (BASIC-FRAME :STATUS) (IGNORE . BODY)
   `(COND ((AND SELECTION-SUBSTITUTE
@@ -129,7 +129,7 @@
     ;; Give it a chance to put itself in previously-selected-windows.
     (SEND I :ACTIVATE)))
 
-;; may 01/27/89 
+;; may 01/27/89
 (DEFMETHOD (BASIC-FRAME :AFTER :DEACTIVATE) (&REST IGNORE)
   ;; Make sure that none of our inferiors are remembered as selectable
   ;; Put these windows in the correct place, in case they're not on DEFAULT-SCREEN.  CJJ 06/02/88.
@@ -164,7 +164,7 @@
                        RS)
                  (SETQ RECTS (DELETE R (THE LIST RECTS) :TEST #'EQ)))))
         (SCREEN-MANAGE-SHEET SELF RS ARRAY-TO-DRAW-ON (+ X X-OFFSET) (+ Y Y-OFFSET) ALU)
-        RECTS))) 
+        RECTS)))
 
 ;; I think these are no longer relevant.
 
@@ -211,7 +211,7 @@ to frame is desired."))
     (LET-GLOBALLY ((RECURSION T))
       ;; :SET-EDGES can deexpose and reexpose the pane;
       ;; avoid forwarding that to the frame.
-      (LEXPR-SEND PANE :SET-EDGES ARGS))))  
+      (LEXPR-SEND PANE :SET-EDGES ARGS))))
 
 (DEFWRAPPER (FRAME-FORWARDING-MIXIN :SCREEN-MANAGE-AUTOEXPOSE-INFERIORS) (IGNORE . BODY)
   `(LET-GLOBALLY ((RECURSION T))
@@ -228,14 +228,14 @@ to frame is desired."))
 
 (DEFMETHOD (SPLIT-SCREEN-FRAME :NAME-FOR-SELECTION) () NAME)
 
-;; may 01/27/89 
+;; may 01/27/89
 (DEFMETHOD (SPLIT-SCREEN-FRAME :AFTER :EXPOSE) (&REST IGNORE)
   ;; Put this window in the correct place, in case it's not on DEFAULT-SCREEN.  CJJ 06/02/88.
   ;;; Added by KJF on 08/19/88 for CJJ during addition of Multiple Monitor (MMON) support.
   (with-screens-previously-selected-windows (self)
     (REMOVE-FROM-PREVIOUSLY-SELECTED-WINDOWS SELF)))
 
-;; may 01/27/89 
+;; may 01/27/89
 (DEFMETHOD (SPLIT-SCREEN-FRAME :AFTER :ACTIVATE) (&REST IGNORE)
   ;; Put this window in the correct place, in case it's not on DEFAULT-SCREEN.  CJJ 06/02/88.
   ;;; Added by KJF on 08/19/88 for CJJ during addition of Multiple Monitor (MMON) support.
@@ -244,7 +244,7 @@ to frame is desired."))
 
 (DEFMETHOD (SPLIT-SCREEN-FRAME :SELECT) (&REST ARGS)
   (SEND SELF :SET-SELECTION-SUBSTITUTE (FIRST EXPOSED-INFERIORS))
-  (LEXPR-SEND (FIRST EXPOSED-INFERIORS) :SELECT ARGS)) 
+  (LEXPR-SEND (FIRST EXPOSED-INFERIORS) :SELECT ARGS))
 
 ;;; Constraint frames -- these frames maintain their panes based on a set
 ;;;  of constraints.  These frames are the right thing for most frame applications.
@@ -310,7 +310,7 @@ messages such as :EXPOSE."))
   (:DOCUMENTATION :COMBINATION "Maintains uniform borders around panes"))
 
 (DEFSTRUCT (CONSTRAINT-NODE (:CONC-NAME             NIL)
-                            (:CALLABLE-CONSTRUCTORS NIL)
+
                             (:ALTERANT              ALTER-CONSTRAINT-NODE)
                             (:PREDICATE             NIL)
                             (:COPIER                NIL)
@@ -333,7 +333,7 @@ messages such as :EXPOSE."))
   (CONSTRAINT-PH 0)			;Proposed height
   (CONSTRAINT-PX 0)			;Proposed X
   (CONSTRAINT-PY 0)			;Proposed Y
-  )  
+  )
 
 (DEFUN CONSTRAINT-FRAME-PROCESS-CONSTRAINTS (&REST IGNORE)
   "CONSTRAINTS contains a list of unprocessed constraints.  Process them.  Entries
@@ -371,7 +371,7 @@ look like:
 
     :FIXED - Only for a window: never change the window's size
 
-    For :FUNCALL the first arg is the node.  
+    For :FUNCALL the first arg is the node.
     For :EVAL, **CONSTRAINT-NODE** is bound to the node.
 
       The first five arguments given to the method are as follows:
@@ -418,7 +418,7 @@ look like:
   (AND SELECTION-SUBSTITUTE
        (SYMBOLP SELECTION-SUBSTITUTE)
        (SETQ SELECTION-SUBSTITUTE (SEND SELF :GET-PANE SELECTION-SUBSTITUTE)))
-  (CONSTRAINT-FRAME-RECOMPUTE-CONFIGURATION))  
+  (CONSTRAINT-FRAME-RECOMPUTE-CONFIGURATION))
 
 (DEFUN CONSTRAINT-FRAME-DRAW-BLANK-SPACE (&OPTIONAL (CONSTRS INTERNAL-CONSTRAINTS))
   "Map over the constraint data structure, and draw all blank area."
@@ -444,19 +444,19 @@ look like:
     (LET ((PANE (CDR ELT)))
       (OR (MEMBER PANE INFERIORS :TEST #'EQ)
 	  (NOT (TYPEP PANE 'INSTANCE))
-	  (FUNCALL PANE :CHANGE-OF-DEFAULT-FONT OLD-FONT NEW-FONT))))) 
+	  (FUNCALL PANE :CHANGE-OF-DEFAULT-FONT OLD-FONT NEW-FONT)))))
 
 ;;; Stuff for dealing with panes by name
 
 (DEFMETHOD (BASIC-CONSTRAINT-FRAME :GET-PANE) (PANE-NAME)
   "Returns the pane with specified name or NIL if not found"
-  (CDR (ASSOC PANE-NAME INTERNAL-PANES :TEST #'EQ))) 
+  (CDR (ASSOC PANE-NAME INTERNAL-PANES :TEST #'EQ)))
 
 (DEFMETHOD (BASIC-CONSTRAINT-FRAME :SEND-PANE) (PANE-NAME MESSAGE &REST ARGS &AUX W)
   "Send a message to the pane with specified name (error if not found)"
   (IF (SETQ W (CDR (ASSOC PANE-NAME INTERNAL-PANES :TEST #'EQ)))
       (APPLY W MESSAGE ARGS)
-      (FERROR NIL "No pane named ~S in this frame" PANE-NAME))) 
+      (FERROR NIL "No pane named ~S in this frame" PANE-NAME)))
 
 (DEFMETHOD (BASIC-CONSTRAINT-FRAME :SEND-ALL-PANES) (MESSAGE &REST ARGS)
   "Send a message to all panes, including non-exposed ones"
@@ -467,7 +467,7 @@ look like:
   "Send a message to all exposed panes"
   (DOLIST (X INTERNAL-PANES)
     (AND (MEMBER (CDR X) EXPOSED-INFERIORS :TEST #'EQ)
-	 (APPLY (CDR X) MESSAGE ARGS)))) 
+	 (APPLY (CDR X) MESSAGE ARGS))))
 
 (DEFMETHOD (BASIC-CONSTRAINT-FRAME :PANE-NAME) (PANE)
   "Given a pane, this returns the name for that pane the user gave in his alist.
@@ -504,7 +504,7 @@ look like:
 	  INTERNAL-CONSTRAINTS (CDR CONFIG)
 	  BLANK-RECTANGLES     NIL))
   (CONSTRAINT-FRAME-CLEAR-CURRENT-POSITION INTERNAL-CONSTRAINTS)
-  (CONSTRAINT-FRAME-RECOMPUTE-CONFIGURATION)) 
+  (CONSTRAINT-FRAME-RECOMPUTE-CONFIGURATION))
 
 (DEFUN CONSTRAINT-FRAME-CLEAR-CURRENT-POSITION (CONSTRS &AUX NODE)
   (DOLIST (AENTRY (FIRST CONSTRS))
@@ -571,7 +571,7 @@ look like:
       (SHEET-FORCE-ACCESS (SELF :NO-PREPARE)
 	(CONSTRAINT-FRAME-DRAW-BLANK-SPACE))
       (OR (MEMBER SELECTION-SUBSTITUTE EXPOSED-INFERIORS :TEST #'EQ)
-	  (SETQ SELECTION-SUBSTITUTE NIL))))) 
+	  (SETQ SELECTION-SUBSTITUTE NIL)))))
 
 ;;; When the inside-size changes, rethink the constraints and panes' edges
 (DEFMETHOD (BASIC-CONSTRAINT-FRAME :AFTER :CHANGE-OF-SIZE-OR-MARGINS) (&REST IGNORE)
@@ -637,7 +637,7 @@ the appropriate swatches of 'blankness'"
                           (CONSTRAINT-FRAME-MAKE-BLANK-RECTANGLES (CONSTRAINT-DATA NODE))))))))
   RECTS)
 
-(DEFVAR CONSTRAINT-FRAME-DEFAULT-STACKING :VERTICAL) 
+(DEFVAR CONSTRAINT-FRAME-DEFAULT-STACKING :VERTICAL)
 
 (DEFUN CONSTRAINT-FRAME-SET-EDGES (CONSTRS OPTION &AUX X Y R)
   "Loop over all panes and hack the edges as specified by the option."
@@ -664,7 +664,7 @@ the appropriate swatches of 'blankness'"
               (:IF (FERROR NIL ":IF is unimplemented option"))
               (OTHERWISE (SETQ R T)))
 	(IF (EQ OPTION :VERIFY)
-	    
+
 	    ;; If verifying, return right away if didn't verify
 	    (OR R (RETURN T))
             ;;ELSE
@@ -682,10 +682,10 @@ the appropriate swatches of 'blankness'"
 		    (CDR DESC)
 		    (APPLY SELF :CREATE-PANE DESC)))
 	  PARSED))
-  PARSED) 
+  PARSED)
 
 (DEFMETHOD (BASIC-CONSTRAINT-FRAME :CREATE-PANE) (IGNORE FLAVOR &REST OPTIONS)
-  (APPLY #'MAKE-WINDOW FLAVOR :SUPERIOR SELF OPTIONS)) 
+  (APPLY #'MAKE-WINDOW FLAVOR :SUPERIOR SELF OPTIONS))
 
 (DEFFLAVOR CONSTRAINT-FRAME-WITH-SHARED-IO-BUFFER ((IO-BUFFER NIL)) (BASIC-CONSTRAINT-FRAME)
   (:INITABLE-INSTANCE-VARIABLES IO-BUFFER))
@@ -695,7 +695,7 @@ the appropriate swatches of 'blankness'"
   (OR IO-BUFFER (SETQ IO-BUFFER (MAKE-DEFAULT-IO-BUFFER))))
 
 (DEFMETHOD (CONSTRAINT-FRAME-WITH-SHARED-IO-BUFFER :CREATE-PANE) (IGNORE FLAVOR &REST OPTIONS)
-  (APPLY #'MAKE-WINDOW FLAVOR :SUPERIOR SELF :IO-BUFFER IO-BUFFER OPTIONS)) 
+  (APPLY #'MAKE-WINDOW FLAVOR :SUPERIOR SELF :IO-BUFFER IO-BUFFER OPTIONS))
 
 (DEFFLAVOR BORDERED-CONSTRAINT-FRAME-WITH-SHARED-IO-BUFFER ()
   (CONSTRAINT-FRAME-WITH-SHARED-IO-BUFFER CONSTRAINT-FRAME-FORWARDING-MIXIN
@@ -735,7 +735,7 @@ the appropriate swatches of 'blankness'"
 	 (INTERNAL-DESC-GROUP NIL NIL)
 	 (EVEN-P NIL NIL)
 	 (LAST-GROUP-P))
-	((NULL DESC-GROUPS))	 
+	((NULL DESC-GROUPS))
       ;; Process each descriptor group
       (SETQ LAST-GROUP-P (NULL (CDR DESC-GROUPS)))
       (DOLIST (DESC (CONSTRAINT-FRAME-SUBSTITUTION (CAR DESC-GROUPS)))
@@ -755,7 +755,7 @@ the appropriate swatches of 'blankness'"
 		 (MULTIPLE-VALUE-BIND (CONSTR MIN MAX TEM)
 		     (PARSE-CONSTRAINT (CDR DESC) PANES WOS LAST-GROUP-P EVEN-P)
 		   (SETQ EVEN-P TEM)
-		   (PUSH (MAKE-CONSTRAINT-NODE CONSTRAINT-NAME (SYMBOL-NAME NAME) 
+		   (PUSH (MAKE-CONSTRAINT-NODE CONSTRAINT-NAME (SYMBOL-NAME NAME)
 					       CONSTRAINT-TYPE :WINDOW
 					       CONSTRAINT-CONSTRAINT CONSTR
 					       CONSTRAINT-DATA WOS
@@ -771,7 +771,7 @@ the appropriate swatches of 'blankness'"
 		     (PARSE-CONSTRAINT (THIRD DESC) PANES NIL LAST-GROUP-P EVEN-P)
 		   (SETQ EVEN-P TEM)
 		   (PUSH (MAKE-CONSTRAINT-NODE
-			   CONSTRAINT-NAME (SYMBOL-NAME NAME) 
+			   CONSTRAINT-NAME (SYMBOL-NAME NAME)
 			   CONSTRAINT-TYPE :STACKING
 			   CONSTRAINT-CONSTRAINT CONSTR
 			   CONSTRAINT-DATA
@@ -788,7 +788,7 @@ the appropriate swatches of 'blankness'"
 		     (PARSE-CONSTRAINT (CDDDR DESC) PANES NIL LAST-GROUP-P EVEN-P)
 		   (SETQ EVEN-P TEM)
 		   (PUSH (MAKE-CONSTRAINT-NODE
-			   CONSTRAINT-NAME (SYMBOL-NAME NAME) 
+			   CONSTRAINT-NAME (SYMBOL-NAME NAME)
 			   CONSTRAINT-TYPE :BLANK
 			   CONSTRAINT-CONSTRAINT CONSTR
 			   CONSTRAINT-DATA (CASE (THIRD DESC)
@@ -881,7 +881,7 @@ of the constraint, as well as the limits if specified."
 (DEFUN PARSE-CONSTRAINT-GET-PANE (PANE-NAME PANES)
   (AND PANE-NAME
        (OR (CDR (ASSOC PANE-NAME PANES :TEST #'EQ))
-	   (FERROR NIL "Unknown pane name ~A" PANE-NAME)))) 
+	   (FERROR NIL "Unknown pane name ~A" PANE-NAME))))
 
 (DEFUN CONSTRAINT-FRAME-DO-CONSTRAINTS (FRAME CONSTRS
 					&OPTIONAL (W (SHEET-INSIDE-WIDTH FRAME))
@@ -894,7 +894,7 @@ of the constraint, as well as the limits if specified."
 		 (CONSTRAINT-FRAME-DO-POSITIONS CONSTRS CONSTRAINT-FRAME-DEFAULT-STACKING
 						(SHEET-LEFT-MARGIN-SIZE FRAME)
 						(SHEET-TOP-MARGIN-SIZE  FRAME)))
-	T))))   
+	T))))
 
 (DEFUN CONSTRAINT-FRAME-DO-SIZES (WIDTH HEIGHT CONSTRS
 				   &OPTIONAL (STACKING CONSTRAINT-FRAME-DEFAULT-STACKING))
@@ -923,7 +923,7 @@ and size for each node.  Constraints are assumed parsed and valid."
 	(SETQ WIDTH  (- WIDTH  WIDTH-USED)
 	      HEIGHT (- HEIGHT HEIGHT-USED))
 	(AND (OR (< WIDTH 0) (< HEIGHT 0))
-	     (THROW STACKING NIL)))))) 
+	     (THROW STACKING NIL))))))
 
 (DEFUN CONSTRAINT-FRAME-DO-SIZES-INTERNAL (DESC-GROUP WIDTH HEIGHT AV-WIDTH AV-HEIGHT STACKING
 					   &AUX (WIDTH-USED 0) (HEIGHT-USED 0) W H)
@@ -962,15 +962,15 @@ and size for each node.  Constraints are assumed parsed and valid."
        (SETQ WIDTH-USED (+ WIDTH-USED W))
        (AND (> WIDTH-USED WIDTH)
 	    (THROW :HORIZONTAL NIL)))))
-  (VALUES WIDTH-USED HEIGHT-USED)) 
+  (VALUES WIDTH-USED HEIGHT-USED))
 
 
-(DEFVAR **CONSTRAINT-NODE**) 
-(DEFVAR **CONSTRAINT-REMAINING-WIDTH**) 
-(DEFVAR **CONSTRAINT-REMAINING-HEIGHT**) 
-(DEFVAR **CONSTRAINT-TOTAL-WIDTH**) 
-(DEFVAR **CONSTRAINT-TOTAL-HEIGHT**) 
-(DEFVAR **CONSTRAINT-CURRENT-STACKING**) 
+(DEFVAR **CONSTRAINT-NODE**)
+(DEFVAR **CONSTRAINT-REMAINING-WIDTH**)
+(DEFVAR **CONSTRAINT-REMAINING-HEIGHT**)
+(DEFVAR **CONSTRAINT-TOTAL-WIDTH**)
+(DEFVAR **CONSTRAINT-TOTAL-HEIGHT**)
+(DEFVAR **CONSTRAINT-CURRENT-STACKING**)
 
 (DEFUN CONSTRAINT-FRAME-DO-A-CONSTRAINT
         (NODE AV-W AV-H W H STACKING DESCRIPTION-GROUP &AUX AMOUNT CON)
@@ -1059,13 +1059,13 @@ or characters.  Also enforces limits."
                              (* (SETQ TEM (SHEET-CHAR-WIDTH WINDOW))
                                 (TRUNCATE SIZE TEM))))
                          (T SIZE)))
-		  (T SIZE))))) 
+		  (T SIZE)))))
 
 (DEFUN CONSTRAINT-FRAME-DO-POSITIONS (CONSTRS
                                       &OPTIONAL (STACKING CONSTRAINT-FRAME-DEFAULT-STACKING)
                                       (X 0) (Y 0)
                                       &AUX NODE PANES)
-  "Given that proposed size has been set up, set up the proposed positions.  Returns a list 
+  "Given that proposed size has been set up, set up the proposed positions.  Returns a list
 of all involved panes."
   (DOLIST (AENTRY (FIRST CONSTRS))
     ;; Loop over windows in order, and assign positions
@@ -1095,7 +1095,7 @@ of all involved panes."
       (SETF (AREF A 0 I) 1))
     A))
 
-(DEFVAR BLANKING-ARRAY) 
+(DEFVAR BLANKING-ARRAY)
 
 (DEFUN CONSTRAINT-FRAME-WHITE-BLANKING (IGNORE X Y W H ARRAY)
   (DECLARE (:SELF-FLAVOR SHEET))
@@ -1111,7 +1111,7 @@ of all involved panes."
 
 (DEFUN CONSTRAINT-FRAME-STIPPLE-BLANKING (IGNORE X Y W H ARRAY GRAY-ARRAY)
   (DECLARE (:SELF-FLAVOR SHEET))
-  (prepare-sheet (self)	 
+  (prepare-sheet (self)
     (BITBLT CHAR-ALUF W H
 	    GRAY-ARRAY (REM X (ARRAY-DIMENSION GRAY-ARRAY 1))
 	    (REM Y (ARRAY-DIMENSION GRAY-ARRAY 0))
@@ -1132,7 +1132,7 @@ or an array of stipple pattern to BITBLT from."
 	((ARRAYP BLANK-TYPE)
 	 ;; Stipple array -- draw in standard way
 	 (CONSTRAINT-FRAME-STIPPLE-BLANKING NODE X Y W H SCREEN-ARRAY BLANK-TYPE))
-	(T (FERROR NIL "~S is an unknown type of blanking" BLANK-TYPE)))) 
+	(T (FERROR NIL "~S is an unknown type of blanking" BLANK-TYPE))))
 
 ;;; Constraint macros
 
@@ -1173,7 +1173,7 @@ attribute leave whitespace around it on all four sides.  Format is:
 	(,SYM3 ,(THIRD OLD-DESC) ,SYM4)
 	((,(THIRD OLD-DESC) :FIXED))
 	((,SYM3 :BLANK ,COLOR-OF-BORDER :EVEN) (,SYM4 :BLANK ,COLOR-OF-BORDER :EVEN))))
-      ((,SYM1 :BLANK ,COLOR-OF-BORDER :EVEN) (,SYM2 :BLANK ,COLOR-OF-BORDER :EVEN))))) 
+      ((,SYM1 :BLANK ,COLOR-OF-BORDER :EVEN) (,SYM2 :BLANK ,COLOR-OF-BORDER :EVEN)))))
 
 (DEFUN (:PROPERTY INTERDIGITATED-WHITESPACE CONSTRAINT-MACRO) (OLD-DESC STACKING)
   "Leave whitespace between all specified constraints (alternates stacking):
@@ -1229,7 +1229,7 @@ whitespace."
   (MULTIPLE-VALUE-BIND (IGNORE IGNORE NEW-WIDTH NEW-HEIGHT)
       ;; menu-deduce-size is obsolete but it's usage is correct in this case
       ;; PMH 7/2/87
-      (inhibit-style-warnings			
+      (inhibit-style-warnings
       (MENU-DEDUCE-PARAMETERS N-COLUMNS N-ROWS
 			      (IF (EQ STACKING :VERTICAL)
 				  (- REM-WIDTH LEFT-MARGIN-SIZE RIGHT-MARGIN-SIZE)

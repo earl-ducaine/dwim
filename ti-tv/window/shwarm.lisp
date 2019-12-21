@@ -22,24 +22,24 @@
 ;;;                       to make sure who-line-screen is visible at boot on CSIB.
 ;;;  04/10/89  JLM     Moved defvar of INITIAL-LISP-LISTENER to top of file to quiet more warnings.
 ;;;  03/23/89  MAY    Changes to quiet cwarn errors.
-;;;  03/20/89  MAY      More changes to define-screen for build on MX. 
+;;;  03/20/89  MAY      More changes to define-screen for build on MX.
 ;;;  03/09/89  MAY/JLM Changes to clean up code and fix build problems.
 ;;;		       o Added associated-who-line-is-who-line-screen-p to *initial-screen-tests*
-;;;		       o Cleanup of create-acceptable-initial-who-line-screen 
-;;;		       o added :screens-previously-selected-windows init in create-acceptable-initial-screen 
+;;;		       o Cleanup of create-acceptable-initial-who-line-screen
+;;;		       o added :screens-previously-selected-windows init in create-acceptable-initial-screen
 ;;;		       o Moved setf of who-line-screen from  find-or-create-acceptable-initial-screen
 ;;;                          to initial-screen-setup - since create-acceptable-initial-who-line-screen USES it.
 ;;;		       o Simplified expose-initial-screens knowing that *intial-screen* MUST point to who-line-screen
 ;;;		        o LOCKED main-screen to *initial-screen* in INITIALIZE during boot and moved
 ;;;		         code to invoke THINGS-TO-DO-FIRST-TIME AFTER (initial-screen-setup) when
 ;;;			 things are initialized in system build.
-;;;  03/07/89  JLM    Added DEFVARs for mp functions to be filled in by mp installation 
+;;;  03/07/89  JLM    Added DEFVARs for mp functions to be filled in by mp installation
 ;;;  02/27/89  JLM    Added setup-screens-for-mp and changed window-initialize for the MP.
-;;;  02/24/89  MAY   Changes to define-screen to build mac load band - who-line-screen exposing/refresh 
+;;;  02/24/89  MAY   Changes to define-screen to build mac load band - who-line-screen exposing/refresh
 ;;;		     with bit-array mapped to non-existant explorer! ALSO change to
 ;;;                       create-acceptable-initial-who-line-screen to get plane mask right for build.
 ;;;  02/15/89  MAY   Changed  find-or-create-acceptable-initial-screen to ALWAYS set tv:who-line-screen.
-;;;  02/14/89  MAY   Changed EXPOSE-INITIAL-SCREENS to use SCREEN-SCREENS-WHO-LINE-SCREEN in/of SCREEN-SCREEN-DESCRIPTOR 
+;;;  02/14/89  MAY   Changed EXPOSE-INITIAL-SCREENS to use SCREEN-SCREENS-WHO-LINE-SCREEN in/of SCREEN-SCREEN-DESCRIPTOR
 ;;;  01/30/89  KJF     o [may] Change to expose-initial-screens for Multiple Monitors (MMON).
 ;;;                      o Fix define-screen to remove screens from all-the-screens as it did before.  SPR 8649.
 ;;;  		      o Change to main-screen-and-who-line for MMON systems.
@@ -66,16 +66,16 @@
 ;;;   8/27/87  KWW      Made changes that resulted from code reading, mostly just simple clean up.
 ;;;   7/13/87  KWW      Added optional color argument to text drawing methods and functions.
 ;;;    8/28/87  PMH      Modified SHEET-STRING-OUT to correctly clip right edge
-;;;    7/2/87   PMH       Changed SHEET-DISPLAY-LOZENGED-STRING-INTERNAL to better center the 
+;;;    7/2/87   PMH       Changed SHEET-DISPLAY-LOZENGED-STRING-INTERNAL to better center the
 ;;;                         text in the lozenge.
 ;;;                         Also allowed lozenges to be in top and bottom labels
 ;;;   4/24/87  TWE	Updated the io-buffer cleanout to happen on only a :kill or on returning
 ;;;			a window instance to a resource.
 ;;;  4/06/87  GRH	Rewrote draw-string-internal to be faster and use %draw-string.
-;;;   4/2/87   SLM        Added SYS:DECLARE-SUGGESTIONS-FOR and the call to 
+;;;   4/2/87   SLM        Added SYS:DECLARE-SUGGESTIONS-FOR and the call to
 ;;;                         SYS:WITH-SUGGESTIONS-MENUS-FOR to the :kill method for SHEET.
 ;;;   3/27/87  TWE	Fixed up work done on 3/26/87 so that it would compile for the test build.
-;;;   3/26/87  KK	Fixed problems with lozenged strings reported in SPR #3259. 
+;;;   3/26/87  KK	Fixed problems with lozenged strings reported in SPR #3259.
 ;;;                         LOZENGE-STRING-WIDTH eliminated and replaced by
 ;;;                         LOZENGED-STRING-GEOMETRY. SHEET-DISPLAYED-LOZENGED-STRING,
 ;;;                         SHEET-DISPLAYED-LOZENGED-STRING-INTERNAL, SHEET-CHARACTER-WIDTH, and
@@ -85,14 +85,14 @@
 ;;;   3/18/87  KK	Fixed SHEET-TYO-OUT to handle chars with font bits. Fixes SPR #3744.
 ;;;   3/13/87  KK	Fixed SHEET-LINE-OUT to properly display chars whose bits extend outside char
 ;;;                         height/width box. Fixes SPR #'s 3506, 3521.
-;;;   3/11/87  KK	Fix SHEET-DISPLAY-CENTERED-STRING for Rel 3 SPR # 3076: prepare sheet 
+;;;   3/11/87  KK	Fix SHEET-DISPLAY-CENTERED-STRING for Rel 3 SPR # 3076: prepare sheet
 ;;;                         before SHEET-INCREMENT-BITPOS.
-;;;   3/09/87  KK	Corrected typo in :INCREMENT-CURSORPOS to fix Rel 3 SPR #3001. 
+;;;   3/09/87  KK	Corrected typo in :INCREMENT-CURSORPOS to fix Rel 3 SPR #3001.
 ;;;                         Historical note: the typo had been lurking for 15 months!
 ;;;   2/05/87  TWE	Fixed DRAW-CHAR again so that italicized fonts will be drawn properly.
 ;;;   1/30/87  KDB	Fixed SHEET-STRING-OUT-EXPLICIT-1. INDEX was not incremented after
 ;;;                         seeing #\NEWLINE. Multi-line labels, etc. now work.
-;;;   1/29/87  KDB	Made fix to DRAW-CHAR suggested by MR to correcly draw fonts with 
+;;;   1/29/87  KDB	Made fix to DRAW-CHAR suggested by MR to correcly draw fonts with
 ;;;                         index tables. Added another fix for those with variable widths
 ;;;   1/19/87  KK	New implementation of SHEET-DISPLAY-CENTERED-STRING. This was
 ;;;			motivated by inability of previous version to center a text block given by
@@ -166,8 +166,8 @@
 (DEFUN SET-UP-CURRENT-SCREEN-COLOR ()
   "Reset the hardware in case of a WARM-BOOT."
   (IF *CURRENT-SCREEN-COLOR*
-      (BLACK-ON-WHITE)   ;;; Dept. of Redundency Dept.   
-      (WHITE-ON-BLACK))  ;;; Dept. of Redundency Dept. 
+      (BLACK-ON-WHITE)   ;;; Dept. of Redundency Dept.
+      (WHITE-ON-BLACK))  ;;; Dept. of Redundency Dept.
   )
 
 (DEFUN BLACK-ON-WHITE (&OPTIONAL (ignore DEFAULT-SCREEN))
@@ -175,7 +175,7 @@
   (SETQ *CURRENT-SCREEN-COLOR* T)
   (or (si:screen-black-on-white-p)
       (si:complement-screen)))
- 
+
 (DEFUN WHITE-ON-BLACK (&OPTIONAL (ignore DEFAULT-SCREEN))
   "Set SCREEN to display one bits as white and zeros as black."
   (SETQ *CURRENT-SCREEN-COLOR* NIL)
@@ -643,15 +643,15 @@ number of pixels if UNIT is :PIXEL."
 	   (WIDTH (IF (EQ UNIT :PIXEL) WIDTH
 		      (* WIDTH (SHEET-CHAR-WIDTH SHEET))))
 	   (from-x (MIN (+ (SHEET-CURSOR-X SHEET) WIDTH) (SHEET-INSIDE-RIGHT SHEET))))
-     
+
       (BITBLT ALU-SETA
-	      (- (SHEET-INSIDE-RIGHT SHEET) from-x)	;GSM  5 Jan 86 ;; LG 10/17/88 
-	      LINE-HEIGHT			
+	      (- (SHEET-INSIDE-RIGHT SHEET) from-x)	;GSM  5 Jan 86 ;; LG 10/17/88
+	      LINE-HEIGHT
 	      ARRAY
-	      from-x	
-	      (SHEET-CURSOR-Y SHEET)		
-	      ARRAY				
-	      (SHEET-CURSOR-X SHEET)		
+	      from-x
+	      (SHEET-CURSOR-Y SHEET)
+	      ARRAY
+	      (SHEET-CURSOR-X SHEET)
 	      (SHEET-CURSOR-Y SHEET))
       (DRAW-RECTANGLE-inside-clipped WIDTH	;GSM  5 Jan 86
 				     LINE-HEIGHT
@@ -721,10 +721,10 @@ The cursor position does not change."
 
 (DEFUN SHEET-DISPLAY-LOZENGED-STRING (sheet string &optional color)
   "Display STRING on SHEET inside a lozenge.  This is how special
-characters with no graphic or formatting meaning are output."  
+characters with no graphic or formatting meaning are output."
   (MULTIPLE-VALUE-BIND (width corner-width corner-height)
       (LOZENGED-STRING-GEOMETRY string)
-    
+
     ;; Make sure there is enough room on the line, if not CRLF and hope
     ;; the sheet isn't too narrow.  Relies on the fact that handling of
     ;; all exceptions leaves you no further to the right than you were
@@ -752,8 +752,8 @@ characters with no graphic or formatting meaning are output."
 
 (DEFUN SHEET-DISPLAY-LOZENGED-STRING-INTERNAL (sheet string x0 y0 xlim aluf
 					       &optional width corner-width corner-height color)
-  "The lozenge is actually displayed here.  First the characters 
-inside the lozenge are displayed, then the outline of the 
+  "The lozenge is actually displayed here.  First the characters
+inside the lozenge are displayed, then the outline of the
 lozenge is displayed. The final x position is returned."
 
   ;; Compute lozenge geometry if not already given.
@@ -761,7 +761,7 @@ lozenge is displayed. The final x position is returned."
     (MULTIPLE-VALUE-SETQ (width corner-width corner-height)
       (LOZENGED-STRING-GEOMETRY string)))
 
-  ;; Display the string  
+  ;; Display the string
   (SHEET-STRING-OUT-EXPLICIT-1
     sheet string
     (IF corner-width (+ x0 corner-width) x0)
@@ -820,11 +820,11 @@ lozenge is displayed. The final x position is returned."
 
 (DEFUN lozenged-string-geometry (string)
   "Return geometry used to draw the given string as a lozenged string:
-total width (including lozenge), lozenge corner width,  and lozenge 
-corner height. 
+total width (including lozenge), lozenge corner width,  and lozenge
+corner height.
 
-The lozenge corner dimensions define the size of the triangular corner 
-drawn on each end of the lozenge and describe the size of a rectangle 
+The lozenge corner dimensions define the size of the triangular corner
+drawn on each end of the lozenge and describe the size of a rectangle
 enclosing a corner.
 
 STRING may be any object convertible to a string via the STRING function.
@@ -840,17 +840,17 @@ be drawn, and NIL is returned for the lozenge corner width."
     (VALUES
       ;; Total width (string plus lozenge corners)
       (CEILING	    ;Handle possible fractional character widths for Mac
-	(+ (DOTIMES (i (LENGTH (SETQ string (STRING string))) string-width)      
+	(+ (DOTIMES (i (LENGTH (SETQ string (STRING string))) string-width)
 	     (INCF string-width
 		   (IF (AND (GRAPHIC-CHAR-P (SETQ c (ELT string i)))
 			    (SETQ contains-graphic-chars t))
-		       
+
 		       ;; Increment by ordinary char width
 		       lozenge-char-width
-		     
+
 		     ;; Else special character. Increment by width of lozenged character name.
 		     (lozenged-string-geometry (lozenged-special-char-name c)))))
-	   
+
 	   (IF contains-graphic-chars		       ;Add in corners unless all special chars
 	       (+ *lozenge-corner-width* *lozenge-corner-width*)
 	     0)))
@@ -1017,7 +1017,7 @@ If CHAR is specified, that character's width is the distance to move."
 	(DECF XLIM (FONT-CHAR-WIDTH FONT)))
       (LOOP WHILE (< INDEX END) DOING
 	    (MULTIPLE-VALUE-SETQ (XPOS INDEX)
-	      
+
 	      (DRAW-STRING-INTERNAL SHEET STRING INDEX END
 			    (SHEET-CURSOR-X SHEET) (+ (SHEET-CURSOR-Y SHEET)
 						      BASELINE-ADJUST)
@@ -1046,14 +1046,14 @@ If CHAR is specified, that character's width is the distance to move."
 	    (draw-char-internal FONT CH X Y ALU WINDOW (FONT-INDEXING-TABLE FONT))))))
 
 (DEFUN draw-string-internal (window string index end xpos ypos xlim font alu &optional color)
-  "Draw characters indexed in STRING from INDEX up to but not including END on WINDOW 
- at XPOS YPOS using FONT and ALU.  Returns the x-position for the next character to be 
+  "Draw characters indexed in STRING from INDEX up to but not including END on WINDOW
+ at XPOS YPOS using FONT and ALU.  Returns the x-position for the next character to be
  drawn.  A second value is returned if the end index is not reached.  It is the index of the
  first character not drawn, which can occur if the character overlaps xlim or is a non
  graphic character."
   (declare (inline graphic-char-p))
   (DECLARE (values new-xpos ending-index))
-  
+
   (prepare-color (window color)
     (LET* ((sys:clipping-rectangle-right-edge xlim)	; bind now for use in NUM
 	   (mac-window (mac-window-p window))
@@ -1085,18 +1085,18 @@ If CHAR is specified, that character's width is the distance to move."
 		    (RETURN xpos index))	; non printing char
 		(OR (draw-char-internal
 		      font ch (IF lkt (- xpos (AREF lkt ch)) xpos) ypos alu window fit)
-		    (RETURN xpos index))	; clipped 
+		    (RETURN xpos index))	; clipped
 		(INCF xpos (IF fwt (AREF fwt ch) wid))
 		(INCF index))
 	    ;; ...else easy case of small, fixed-width font.  Speed hack KED 2/25/87
 	    (DO ()
-		(())					
+		(())
 	      (OR (< index end)
 		  (RETURN xpos))		; reached the end
-	      (OR (graphic-char-p (SETQ ch (CHAR-CODE (AREF string index)))) 	
+	      (OR (graphic-char-p (SETQ ch (CHAR-CODE (AREF string index))))
 		  (RETURN xpos index))		; non printing char
 	      (OR (si:%draw-char font ch xpos ypos alu window)
-		  (RETURN xpos index))		; clipped 
+		  (RETURN xpos index))		; clipped
 	      (INCF xpos wid)
 	      (INCF index))))))))
 
@@ -1145,7 +1145,7 @@ If CHAR is specified, that character's width is the distance to move."
 Returns the index of the next character to be printed and where the cursor got to.
 The first value may be incremented indicating that the line was completed."
   (declare (inline graphic-char-p))
-  
+
   (LET ((x (IF set-xpos
 	       (MIN (+ set-xpos (sheet-inside-left sheet)) (sheet-inside-right sheet))
 	     (sheet-cursor-x sheet)))
@@ -1154,9 +1154,9 @@ The first value may be incremented indicating that the line was completed."
 	     (sheet-cursor-y sheet)))
 	(margin-flag (NOT (ZEROP (sheet-right-margin-character-flag sheet)))))
 
-    (prepare-color (sheet color)    
+    (prepare-color (sheet color)
     (prepare-sheet (sheet)
-      
+
       ;; Setting cursor position
       (SETF (sheet-cursor-x sheet) x)
       (IF (sheet-more-vpos sheet)
@@ -1173,22 +1173,22 @@ The first value may be incremented indicating that the line was completed."
 	   (%draw-rectangle
 	     (- (sheet-inside-right sheet) x)
 	     (sheet-line-height sheet)
-	     (sheet-cursor-x sheet) (sheet-cursor-y sheet) 
+	     (sheet-cursor-x sheet) (sheet-cursor-y sheet)
 	     (sheet-erase-aluf sheet) sheet))
        ;; If special case of italic line, move back and decrement
        ;; starting index.
        (WHEN (AND DWIDTH (NOT (ZEROP start)))
 	 (SETF (sheet-cursor-x sheet) (DECF x dwidth))
 	 (DECF start))
-       
-      ;; Drawing the string      
+
+      ;; Drawing the string
       (LOOP with index = start
 	    with end = (OR end (LENGTH string))
 	    with right-edge = (- (sheet-inside-right sheet)
 				 (IF margin-flag (sheet-char-width sheet) 0))
 	    with font-map = (sheet-font-map sheet)
 	    with alu = (sheet-char-aluf sheet)
-	    until (>= index end) 
+	    until (>= index end)
 	    for current-font-number = (CHAR-FONT (AREF string index))
 	    for current-font = (AREF font-map
 				     (IF (>= current-font-number (ARRAY-ACTIVE-LENGTH font-map))
@@ -1211,7 +1211,7 @@ The first value may be incremented indicating that the line was completed."
 				      current-font
 				      alu)
 	      (IF new-end
-		  ;;Then all characters didn't get printed 
+		  ;;Then all characters didn't get printed
 		  (IF (GRAPHIC-CHAR-P (AREF string new-end))
 		      ;; Then last character must have overlapped XLIM, so print margin character and get out.
 		      (PROGN
@@ -1221,10 +1221,10 @@ The first value may be incremented indicating that the line was completed."
 			(RETURN (IF (ZEROP (sheet-truncate-line-out-flag sheet))
 				    new-end
 				  (1+ end))
-				(- (sheet-cursor-x sheet) (sheet-inside-left sheet))))	
+				(- (sheet-cursor-x sheet) (sheet-inside-left sheet))))
 		    ;; Last character was non-graphic, let TYO handle it and go try to do the remainder of the string
 		    (SETF (sheet-cursor-x sheet) new-x)
-		    (sheet-tyo sheet (AREF string new-end) current-font) 
+		    (sheet-tyo sheet (AREF string new-end) current-font)
 		    (SETF index (1+ new-end))
 		    (SETF x (sheet-cursor-x sheet)
 			  y (sheet-cursor-y sheet)))
@@ -1369,7 +1369,7 @@ MAXIMUM-X was the largest X-position ever encountered during
 				      RIGHT-LIMIT))))
 	(SETQ WIDTH-INCR
 	      (%STRING-WIDTH (OR CWA PRINTING-CHARACTER-TRANSLATE-TABLE)
-	       (IF FONTX 
+	       (IF FONTX
                    (CODE-CHAR 0 0 FONTX)
                    ;;(DPB FONTX %%CH-FONT 0)
                    ;;ELSE
@@ -1384,7 +1384,7 @@ MAXIMUM-X was the largest X-position ever encountered during
 	(SETQ X (+ WIDTH-INCR X))
 	;; At end of string, loop back, to exit.
 	(IF (= I N)
-	  (GO SLOW)))) 
+	  (GO SLOW))))
 	;; Otherwise we stopped due to funny char or font change or
 	;; reaching the X limit.
     (SETQ MAXIMUM-X (MAX X MAXIMUM-X))
@@ -1524,10 +1524,10 @@ CH can be NIL; then you get the font's character-width."
        (T (FONT-CHAR-WIDTH FONT))))
     ((= CH #\NEWLINE) 0)			;Return
     ((= CH #\TAB)				;TAB
-     (LET ((relative-x-offset (- (SHEET-CURSOR-X SHEET) (sheet-inside-left sheet))))  ; may 01/18/89 
+     (LET ((relative-x-offset (- (SHEET-CURSOR-X SHEET) (sheet-inside-left sheet))))  ; may 01/18/89
        (IF (ZEROP (SETQ TEM (SHEET-TAB-WIDTH SHEET)))	; fix for zero tab width problem (dls).
 	   0	;; prevent divide by 0
-	   (- tem (rem relative-x-offset tem))))) ; may 01/18/89 
+	   (- tem (rem relative-x-offset tem))))) ; may 01/18/89
     ((AND (= CH #\BACKSPACE)
 	  (ZEROP (SHEET-BACKSPACE-NOT-OVERPRINTING-FLAG SHEET)))
      (- (SHEET-CHAR-WIDTH SHEET)))		;Backspace
@@ -1742,13 +1742,13 @@ All position arguments are relative to SHEET's outside edges."
 
 
 
-(DEFMETHOD (SHEET :STRING-OUT-UP) (STRING &OPTIONAL (START 0) (END NIL) 
+(DEFMETHOD (SHEET :STRING-OUT-UP) (STRING &OPTIONAL (START 0) (END NIL)
    (color (if (color-system-p self) (sheet-foreground-color self) -1)))
   "Display STRING going up the window using the current font in
 SHEET and the current cursor position."
   (SHEET-STRING-OUT-UP SELF STRING START END color))
 
-(DEFMETHOD (SHEET :STRING-OUT-DOWN) (STRING &OPTIONAL (START 0) (END NIL) 
+(DEFMETHOD (SHEET :STRING-OUT-DOWN) (STRING &OPTIONAL (START 0) (END NIL)
   (color (if (color-system-p self) (sheet-foreground-color self) -1)))
   "Display STRING going down the window using the current font in
 SHEET and the current cursor position."
@@ -1757,7 +1757,7 @@ SHEET and the current cursor position."
 ;;; The following variations on STRING-OUT allow one to draw characters
 ;;; up and down the screen.  The primitives used are not written in
 ;;; microcode which means that they are much slower than DRAW-CHAR.
-(DEFUN SHEET-STRING-OUT-UP (SHEET STRING &OPTIONAL (START 0) (END NIL) 
+(DEFUN SHEET-STRING-OUT-UP (SHEET STRING &OPTIONAL (START 0) (END NIL)
   (color (if (color-system-p sheet) (sheet-foreground-color sheet) -1)))
   "Display STRING going up the window using the current font in
 SHEET and the current cursor position."
@@ -1779,7 +1779,7 @@ SHEET and the current cursor position."
 		 (AREF WIDTH-TABLE CHARACTER)
 		 (FONT-CHAR-WIDTH FONT))))))))
 
-(DEFUN SHEET-STRING-OUT-DOWN (SHEET STRING &OPTIONAL (START 0) (END NIL) 
+(DEFUN SHEET-STRING-OUT-DOWN (SHEET STRING &OPTIONAL (START 0) (END NIL)
   (color (if (color-system-p sheet) (sheet-foreground-color sheet) -1)))
   "Display STRING going down the window using the current font in
 SHEET and the current cursor position."
@@ -1803,7 +1803,7 @@ SHEET and the current cursor position."
 	      (FONT-CHAR-WIDTH FONT)))))))
 
 (DEFUN DRAW-CHAR-UP (FONT CHARACTER
-		     &OPTIONAL (X NIL) (Y NIL) (ALU NIL) (SHEET SELECTED-WINDOW) 
+		     &OPTIONAL (X NIL) (Y NIL) (ALU NIL) (SHEET SELECTED-WINDOW)
    (color (if (color-system-p sheet) (sheet-foreground-color sheet) -1)))
   "Draw character CHARACTER in FONT at X, Y in SHEET using
 alu-function ALU.  X and Y are relative to SHEET's outside edges."
@@ -1828,8 +1828,8 @@ alu-function ALU.  X and Y are relative to SHEET's outside edges."
 	(SIMPLE-DRAW-CHAR-UP FONT CHARACTER X Y ALU SHEET color)))))
 
 (DEFUN DRAW-CHAR-DOWN (FONT CHARACTER
-		       &OPTIONAL (X NIL) (Y NIL) (ALU NIL) (SHEET SELECTED-WINDOW) 
-  (color (if (color-system-p sheet) (sheet-foreground-color sheet) -1))) 
+		       &OPTIONAL (X NIL) (Y NIL) (ALU NIL) (SHEET SELECTED-WINDOW)
+  (color (if (color-system-p sheet) (sheet-foreground-color sheet) -1)))
   "Draw character CHARACTER in FONT at X, Y in SHEET using
 alu-function ALU.  X and Y are relative to SHEET's outside edges."
   (UNLESS ALU
@@ -1852,13 +1852,13 @@ alu-function ALU.  X and Y are relative to SHEET's outside edges."
 	  (SIMPLE-DRAW-CHAR-DOWN FONT CHARACTER X Y ALU SHEET color))
 	(SIMPLE-DRAW-CHAR-DOWN FONT CHARACTER X Y ALU SHEET color)))))
 
-(DEFUN SIMPLE-DRAW-CHAR-UP (FONT CHARACTER X Y ALU SHEET &optional 
+(DEFUN SIMPLE-DRAW-CHAR-UP (FONT CHARACTER X Y ALU SHEET &optional
   (color (if (color-system-p sheet) (sheet-foreground-color sheet) -1)))
   "Draws a single character going up the window."
   ;; Note that this is a simple version since it does not handle wide
   ;; fonts.  We start drawing the characters at the position specified
   ;; by (X,Y).
-  ;; 
+  ;;
   ;; This function deals directly with the font array.  Before trying to
   ;; understand what is going on here, it is important to read about
   ;; the font layout in the Window System manual.  Only after that is
@@ -1879,7 +1879,7 @@ alu-function ALU.  X and Y are relative to SHEET's outside edges."
 	 ;; This is a counter we are going to use to tell us when we
 	 ;; are going on to another 32 bit word.  When this counter
 	 ;; gets up to RASTERS-PER-WORD then we are to start the next
-	 ;; word. 
+	 ;; word.
 	 (NEXT-WORD-COUNTER RASTERS-PER-WORD))
     (DOTIMES (HEIGHT-INDEX HEIGHT)
       (SETQ WORD-BASE
@@ -1902,13 +1902,13 @@ alu-function ALU.  X and Y are relative to SHEET's outside edges."
 	    (SEND SHEET :DRAW-POINT (+ X HEIGHT-INDEX) (- Y WIDTH-INDEX); We are going up, so subtract.
 		  ALU (AREF FONT (+ WORD-BASE WIDTH-INDEX))))))))
 
-(DEFUN SIMPLE-DRAW-CHAR-DOWN (FONT CHARACTER X Y ALU SHEET &optional 
+(DEFUN SIMPLE-DRAW-CHAR-DOWN (FONT CHARACTER X Y ALU SHEET &optional
   (color (if (color-system-p sheet) (sheet-foreground-color sheet) -1)))
   "Draws a single character going down the window."
   ;; Note that this is a simple version since it does not handle wide
   ;; fonts.  We start drawing the characters at the position specified
   ;; by (X,Y).
-  ;; 
+  ;;
   ;; This function deals directly with the font array.  Before trying to
   ;; understand what is going on here, it is important to read about the
   ;; font layout in the Window System manual.  Only after that is done,
@@ -1929,7 +1929,7 @@ alu-function ALU.  X and Y are relative to SHEET's outside edges."
 	 ;; This is a counter we are going to use to tell us when we
 	 ;; are going on to another 32 bit word.  When this counter
 	 ;; gets up to RASTERS-PER-WORD then we are to start the next
-	 ;; word. 
+	 ;; word.
 	 (NEXT-WORD-COUNTER RASTERS-PER-WORD))
     (DOTIMES (HEIGHT-INDEX HEIGHT)
       (SETQ WORD-BASE
@@ -2045,17 +2045,17 @@ SHEET's cursor is not used or moved."
 LEFT and RIGHT are relative to SHEET's margin.
 TOP specifies the vertical position of the top of the output, relative
 to SHEET's top margin.  The output may be multiple lines.
-Centering is based on the length of the longest line substring. All lines 
+Centering is based on the length of the longest line substring. All lines
 are then left-justified to the same horizontal position.
 
 SHEET's current font, alu function and line height are used.
 SHEET's cursor is left at the end of the string."
- (prepare-color (sheet color)  
-  (LET* ((EOS         (ARRAY-ACTIVE-LENGTH STRING))	 
+ (prepare-color (sheet color)
+  (LET* ((EOS         (ARRAY-ACTIVE-LENGTH STRING))
 	 (LEFT-MARGIN (DO* ((LONGEST 0)	;; Pixel length of longest line substring
 			    (SOL     0 (IF EOL (1+ EOL)))
-			    EOL) 
-			   ((NULL SOL) (MAX 0 (+ LEFT (TRUNCATE (- RIGHT LEFT LONGEST) 2)))) 
+			    EOL)
+			   ((NULL SOL) (MAX 0 (+ LEFT (TRUNCATE (- RIGHT LEFT LONGEST) 2))))
 			(SETF LONGEST (MAX LONGEST (SHEET-STRING-LENGTH
 						     SHEET
 						     STRING
@@ -2065,21 +2065,21 @@ SHEET's cursor is left at the end of the string."
 								 STRING
 								 SOL
 								 EOS
-								 )))))				
+								 )))))
 			)))
-    
+
     ;; Output string, positioning each substring, line-at-a-time, to the (centered) left margin .
     (SHEET-SET-CURSORPOS SHEET 0 TOP)
     (DO ((SOL 0 (IF EOL (1+ EOL)))
-	 EOL) 
-	((NULL SOL)) 
+	 EOL)
+	((NULL SOL))
       (PREPARE-SHEET (SHEET)
-	(SHEET-INCREMENT-BITPOS SHEET LEFT-MARGIN 0))	                ;Position to (centered) start position      
+	(SHEET-INCREMENT-BITPOS SHEET LEFT-MARGIN 0))	                ;Position to (centered) start position
       (SHEET-STRING-OUT SHEET STRING SOL (SETF EOL (%STRING-SEARCH-CHAR	;Output string upto next newline
 						     #\NEWLINE
 						     STRING
 						     SOL
-						     EOS)))      
+						     EOS)))
       (IF EOL (SHEET-CRLF SHEET))))))		                        ;Output next newline (if any)
 
 (DEFMETHOD (SHEET :STRING-OUT-X-Y-CENTERED-EXPLICIT) (&REST ARGS)
@@ -2226,7 +2226,7 @@ cursor is not used or moved."
        (DOLIST (I OLD-EXP-INFS)
 	 (SCALE-INFERIORS-MIXIN-SCALE-INFERIOR I T))
        (DOLIST (I INFERIORS)
-	 (OR (MEMBER I EXPOSED-INFERIORS :TEST #'EQ) 
+	 (OR (MEMBER I EXPOSED-INFERIORS :TEST #'EQ)
 	     (SCALE-INFERIORS-MIXIN-SCALE-INFERIOR I NIL))))))
 
 (DEFMETHOD (SCALE-INFERIORS-MIXIN :BEFORE :CHANGE-OF-DEFAULT-FONT) (IGNORE IGNORE)
@@ -2275,8 +2275,8 @@ cursor is not used or moved."
 ;;; be killed.
 (DEFMETHOD (SHEET :PROCESSES) ()
   (MAPCAN 'SEND (COPY-LIST INFERIORS) (CIRCULAR-LIST :PROCESSES)))
-
-(DEFFLAVOR STANDARD-SCREEN () (SCALE-INFERIORS-MIXIN SCREEN))
+
+(defflavor standard-screen () (scale-inferiors-mixin screen))
 
 ;;; This height may get hacked by the who-line making code if the
 ;;; wholine ends up at the bottom of the main screen (which it usually
@@ -2401,12 +2401,12 @@ or if the associated who-line screen is not really a who-line screen, returns NI
 	  (>= who-left screen-right)
 	  (<= who-right screen-left)))))
 
-;; may 03/09/89 Added to *initial-screen-tests* - *initial-screen* MUST point to tv:who-line-screen 
+;; may 03/09/89 Added to *initial-screen-tests* - *initial-screen* MUST point to tv:who-line-screen
 (DEFUN associated-who-line-is-who-line-screen-p (screen)
   (EQ (screen-screens-who-line-screen screen)
       tv:who-line-screen))
 
-;; may 04/25/89 Added to *initial-screen-tests* 
+;; may 04/25/89 Added to *initial-screen-tests*
 ;; Must insure that initial who-line-screen is visible - its plane-mask is same for screen and who-line-screen.
 (defun associated-who-line-screen-is-compatible-p (screen)
   "Returns T if associated who-line-screen of SCREEN has the same
@@ -2450,7 +2450,7 @@ or if the associated who-line screen is not really a who-line screen, returns NI
 	ALWAYS (FUNCALL test screen)))
 
 
-;; may 03/09/89 
+;; may 03/09/89
 (DEFUN create-acceptable-initial-who-line-screen ()
   ;; First force buffer-address to appropriate, non-color value.
   (SETQ main-screen-buffer-address (IF sib-is-csib
@@ -2463,13 +2463,13 @@ or if the associated who-line screen is not really a who-line screen, returns NI
   (who-line-setup   ;;tv:make-who-line-screen
     nil  ;; Force unique name to be generated.
     nil
-    *initial-who-line-screen-bits-per-pixel* 
+    *initial-who-line-screen-bits-per-pixel*
     (if sib-is-csib :both *initial-who-line-screen-display-type*) ;; may 02/24/89 Need :both to get plane-mask to 255.
     )
   ;; Return who-line-screen just created
   who-line-screen)
 
-;; may 03/09/89 
+;; may 03/09/89
 (DEFUN find-or-create-acceptable-initial-who-line-screen ()
   "Returns a screen which passes ACCEPTABLE-INITIAL-WHO-LINE-SCREEN-P.  If none found, creates one."
   (OR (LOOP FOR screen IN (REMOVE-DUPLICATES
@@ -2490,7 +2490,7 @@ or if the associated who-line screen is not really a who-line screen, returns NI
 ;;; If any change is made here, be sure to update the MMON version also.
 ;;; ********* Attention ! *********
 ;;;
-(DEFUN create-acceptable-initial-screen () ;; may 03/09/89 
+(DEFUN create-acceptable-initial-screen () ;; may 03/09/89
   "Creates an acceptable initial screen which is compatible with the current value of WHO-LINE-SCREEN.
  WHO-LINE-SCREEN MUST be setup FIRST!"
   (define-screen
@@ -2591,10 +2591,10 @@ ALSO finds or creates the who-line-screen for *initial-screen*."
     ;; so we have to do it here.
     (WHEN (SEND who-line-screen :exposed-p)
       (SEND who-line-screen :deexpose))
-    
+
     ;; NIL it out to force initialization in (standard-screen :around :expose)
     (SETF who-line-screen nil)
-    
+
     ;; Prevent deexposure of DEFAULT-SCREEN when it hasn't been exposed yet...
     (WHEN (AND default-screen (NOT (SEND default-screen :exposed-p)))
       (SETF default-screen NIL)))
@@ -2638,7 +2638,7 @@ Similar to BITBLT, but much slower."
 ;;; ********* Attention ! *********
 ;;;
 ;;; NOTE: This is not called from WINDOW-INITIALIZE when (MAC-SYSTEM-P).
-(DEFUN initialize () ;&optional (color-screen? tv:*color-system*)) ;; may 03/09/89 
+(DEFUN initialize () ;&optional (color-screen? tv:*color-system*)) ;; may 03/09/89
   ;; MAIN-SCREEN isn't created here anymore, so optional argument isn't needed.  CJJ 04/14/88
   (sheet-clear-locks)
   ;; Initialize the user-input activity time to the current time.  That
@@ -2669,18 +2669,18 @@ Similar to BITBLT, but much slower."
 ;  (AND main-screen
 ;       who-line-screen
 ;       (NOT (screen-screens-previously-selected-windows main-screen))
-;       (things-to-do-first-time))  
+;       (things-to-do-first-time))
   ;; WHO-LINE-SCREEN is set up below in conjuction with *INITIAL-SCREEN*.  CJJ 04/14/88
   (initial-screen-setup)   ;; was (who-line-setup)
 
   ;; Use *INITIAL-SCREEN* for MAIN-SCREEN when MAIN-SCREEN doesn't exist - at build time.
   ;;(OR main-screen (SETQ main-screen *initial-screen*))
   ;; may 03/09/89. MAIN-SCREEN and *initial-screen* MUST be same at boot and FOREVER.
-  ;; The variable main-screen has been renamed to default-screen. A new variable *initial-screen* 
+  ;; The variable main-screen has been renamed to default-screen. A new variable *initial-screen*
   ;; is now needed for boot purposes when more than one screen became possible.
   ;; Now main-screen is a misnomer since more that one screen can exist.
   ;; Any code referencing main-screen should probably use default-screen instead.
-  (SETQ main-screen *initial-screen*) ;; may 03/09/89 
+  (SETQ main-screen *initial-screen*) ;; may 03/09/89
 
   ;; Ensure setup for multiple-screens has been done.
   ;; may 03/09/89 Moved and modified call to things-to-do-first-time from above for system build.
@@ -2752,12 +2752,12 @@ made to create an unique name to use."
       (WHEN (printer-screen-p screen)			;;ab 9/15/88.  Force alu for printer screen for correct
 	(SETF (sheet-erase-aluf screen) alu-setz)))	;;lasar printer support on microExplorer.
 
-    (when (AND (mac-system-p) 			;; may 03/20/89 
+    (when (AND (mac-system-p) 			;; may 03/20/89
 	       (typep screen 'who-line-screen)) ;; may 02/24/89
       ;; Guarantee any access to screen-array invokes debugger rather than crashing
-      (SETF (sheet-screen-array screen) nil) 	;; may 02/24/89 
+      (SETF (sheet-screen-array screen) nil) 	;; may 02/24/89
       ;; Exit. We can't expose on mac with explorer screen array
-      (return-from DEFINE-SCREEN screen))	;; may 02/24/89 
+      (return-from DEFINE-SCREEN screen))	;; may 02/24/89
 
     ;; Bind global special so certain things don't happen during this expose.
     ;; See method (standard-screen :around :expose).  04/20/88 KJF.
@@ -2870,7 +2870,7 @@ made to create an unique name to use."
 	  w:*initial-screen* mouse-sheet)
     (SETQ *window-system-mouse-on-the-mac* (mac-window-p default-screen)))
   (UNLESS initial-lisp-listener
-    (SETQ initial-lisp-listener (make-window 
+    (SETQ initial-lisp-listener (make-window
 				  ;; If we have a simple lisp listener flavor then instantiate
 				  ;; that, otherwise, get the UCL version.
 				  (IF (GET 'simple-lisp-listener 'si:flavor)
@@ -2884,7 +2884,7 @@ made to create an unique name to use."
 	   mp-displayp
 	   (not (funcall mp-displayp (logand #xf si:processor-slot-number))))
       (progn (setf default-screen main-screen)
-	     (setf who-line-screen (screen-screens-who-line-screen main-screen)) ;; may 03/07/89 
+	     (setf who-line-screen (screen-screens-who-line-screen main-screen)) ;; may 03/07/89
 	     (when MP-disable-run-light (funcall MP-disable-run-light)))
       (SEND initial-lisp-listener :select))
   (WHEN first-time
@@ -2898,11 +2898,11 @@ made to create an unique name to use."
 				(length (si:find-explorer-II-procs))))
 	 (rel-pos (if (si:cool-boot-p)
 		      (if (or (= number-of-screens 1)
-			      (not mp-get-relative-position-of-screen )) 
+			      (not mp-get-relative-position-of-screen ))
 			  0
 			  (funcall mp-get-relative-position-of-screen (logand #xf si:processor-slot-number)))
 		      (or (position (logand #xf si:processor-slot-number) (si:find-explorer-II-procs)) 0)))
-	 
+
 	 (WHO-LINE-DOC-LINES DEFAULT-NUMBER-OF-WHO-LINE-DOCUMENTATION-LINES)
 	 (WHO-LINE-DOC-FONT (LIST *MOUSE-DOCUMENTATION-LINE-STANDARD-FONT*))
 	 (WHO-VSP WHO-LINE-VSP)
@@ -2922,7 +2922,7 @@ made to create an unique name to use."
 			WHO-VSP
 			WHO-LINE-STATUS-FONT-HEIGHT
 			WHO-VSP))
-    
+
     (DOLIST (WIND (SEND WHO-LINE-SCREEN :INFERIORS))
       (COND ((EQ WIND WHO-LINE-DOCUMENTATION-WINDOW)
 	     (SEND WIND :SET-FONT-MAP WHO-LINE-DOC-FONT)
